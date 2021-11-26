@@ -1,4 +1,4 @@
-# Aarhus University : Resources
+# External Resources
 
 A subset of the resources provided by [Aarhus
 University](https://medarbejdere.au.dk/administration/kommunikation/omdesignet/logo/browse)

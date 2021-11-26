@@ -22,6 +22,10 @@ jobs:
           ssmg-complexity.tex
           adiar/adiar_core.tex
 
+    - name: 'remove external/*.pdf files'
+      run: |
+        rm -rf external/*.pdf
+
     - name: 'mv *.pdf files'
       run: |
          mkdir out
