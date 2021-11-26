@@ -1,0 +1,35 @@
+name: build
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    name: 'compile and push'
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: 'git clone --recursive'
+      uses: actions/checkout@v2
+      with:
+        submodules: 'recursive'
+
+    - name: 'compile *.tex files'
+      uses: xu-cheng/latex-action@master
+      with:
+        root_file: | 
+          ssmg-complexity.tex
+
+    - name: 'mv *.pdf files'
+      run: |
+         mkdir out
+         for f in *.pdf ; do mv $f out/$f; done
+
+    - name: 'git push'
+      uses: JamesIves/github-pages-deploy-action@releases/v3
+      with:
+        ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+        BRANCH: out
+        FOLDER: out
+  
