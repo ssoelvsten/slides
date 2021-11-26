@@ -14,3 +14,7 @@ workshops, and elsewhere. The compiled output can be found on the
 
   Presentations related to the [Adiar](https://github.com/SSoelvsten/adiar/)
   project.
+
+- **One Minute Madness**
+
+  A single slide for me to present myself and my research.
