@@ -20,6 +20,7 @@ jobs:
       with:
         working_directory: ./
         root_file: | 
+          mlightdp.tex
           ssmg-complexity.tex
           one_minute_madness.tex
 

@@ -1,0 +1,303 @@
+\documentclass[english, aspectratio=169]{beamer}
+% english is for the language used in standard texts (figures, tables etc)
+% aspectratio of 16:9 or set it for more old school to 4:3 (without the ':')
+
+% ---------------------------------------------------------------------------- %
+% Load base preamble
+% ---------------------------------------------------------------------------- %
+\usepackage{import}
+\subimport{preamble/}{beamer.tex}
+
+% ---------------------------------------------------------------------------- %
+% Local macros
+% ---------------------------------------------------------------------------- %
+
+
+% ---------------------------------------------------------------------------- %
+% TITLEPAGE
+% ---------------------------------------------------------------------------- %
+\title{MLightDP}
+
+\author{\textbf{Steffan Christ S\o lvsten} and Anna Mie Hansen}
+
+\date{January 2020}
+
+\institute{\includegraphics[width=0.2\linewidth]{./external/aulogo_uk_var2_black.eps}}
+
+% ---------------------------------------------------------------------------- %
+% Content
+% ---------------------------------------------------------------------------- %
+\begin{document}
+
+\titleframe
+
+\begin{frame}
+  \begin{definition}[Differential Privacy]
+    Given parameters $\epsilon \geq 0$ then a probabilistic algorithm $M : A
+    \mapsto B$ is $\epsilon$-differentially private if
+
+    \begin{align*}
+      \forall a_1, a_2 &\in A\ \forall O \subset B :
+      \\ & a_1 \Psi a_2 \implies
+           \Pr \left[ M(a_1) \in O \right] \leq e^\epsilon \Pr \left[ M(a_2) \in O \right]
+           \enspace .
+    \end{align*}    
+  \end{definition}
+\end{frame}
+
+\blankframe
+
+\subsection{Randomness Alignment}
+\begin{frame}
+  \frametitle{Randomness Alignment}
+  
+  Consider $q^{(1)}, q^{(2)} \in \R$, where
+  \begin{equation*}
+    -1 \leq q^{(1)} - q^{(2)} = \hat{q} \leq 1 \enspace .
+  \end{equation*}
+
+  \pause
+  
+  If $\eta_1 \sim \mathit{Lap}(1/\epsilon)$ for $q^{(1)}$ we'd like a $\eta_2
+  \sim \mathit{Lap}(1/\epsilon)$ for $q^{(2)}$ such that
+  \begin{equation*}
+    \eta_2 = f(\eta_1) = \eta_1 + \hat{q}
+    \enspace ,
+  \end{equation*}
+  because then
+  \begin{equation*}
+    q^{(1)} + \eta_1 = q^{(1)} + \eta_1 + \hat{q} = q^{(2)} + \eta_2
+    \enspace ,
+  \end{equation*}
+
+  \pause
+  
+  and then
+  \begin{equation*}
+    \Pr \left[ q^{(1)} + \mathit{Lap}(1/\epsilon) \in O \right]
+    \leq e^\epsilon \Pr \left[ q^{(2)} + \mathit{Lap}(1/\epsilon)  \in O \right]
+    \enspace .
+  \end{equation*}
+\end{frame}
+
+\begin{frame}
+  \frametitle{LightDP}
+  Based on the above, Zhang and Kifer '17 propose a type system \emph{LightDP}
+  with dependent types, to prove differential privacy of algorithms.
+
+  \begin{equation*}
+    \tau ::=
+    \mathit{num}_{\mathbbm{d}}
+    \ |\
+    \mathit{num}_{*}
+    \ |\
+    \mathit{bool}_0
+    \ |\
+    \mathit{list}\ \tau
+    \ |\
+    \tau_1 \rightarrow \tau_2
+  \end{equation*}
+  
+  The number type also contains the numerical \emph{distances} between the two
+  executions.
+\end{frame}
+
+\begin{frame}
+  \frametitle{LightDP}
+
+  A program is differentially private, if
+
+  \pause
+
+  \begin{itemize}
+  \item The returned value has distance $0$
+  \end{itemize}
+  
+  \begin{prooftree}
+    \AxiomC{$\Gamma \vdash e : \mathcal{B}_0$ or $\Gamma \vdash e : \mathit{list}\ \mathcal{B}_0$ or \dots}
+    \RightLabel{(T-Return)\footnotemark[1]}
+    \UnaryInfC{$\Gamma \vdash \mathit{return}\ e \rightharpoonup \mathit{return}\ e$}
+  \end{prooftree}
+  
+  \vspace{1em}\pause
+
+  \begin{itemize}
+  \item The privacy budget variable $v_\epsilon$ is less or equal to $\epsilon$
+    in the \emph{transformed} program on all return paths.
+  \end{itemize}
+  
+  \begin{prooftree}
+    \AxiomC{$\Gamma(\eta) = \mathit{num}_{\mathbbm{d}}$}
+    \AxiomC{$e : \mathit{num}_0$}
+    \RightLabel{(T-Laplace)\footnotemark[1]}
+    \BinaryInfC{$\Gamma \vdash \eta :=\ \mathit{Lap}(e) \rightharpoonup
+      \mathit{havoc}\ \eta;\ v_\epsilon := v_\epsilon + \lvert \mathbbm{d} \rvert / e$}
+  \end{prooftree}
+
+  \footnotetext[1]<2->{These rules are variations of the ones by Zhang and Kifer, to remove the disconnect
+    between the rule and their/our implementation.}
+
+\end{frame}
+
+\begin{frame}[plain,noframenumbering]{}
+  \pause
+  \begin{center}
+    \huge MLightDP
+  \end{center}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Example: \lstinline{laplace_mechanism.mldp}}
+  
+  Remember, the randomness alignment example from before where $-1 \leq q^{(1)}
+  - q^{(2)} = \hat{q} \leq 1$ and adding $\eta \sim \mathit{Lap}(1/\epsilon)$ to
+  $q$ makes them differentially private.
+
+  \vspace{1em}
+
+  \begin{onlyenv}<1-4>
+    \begin{lstlisting}[language=none]
+      *@\pause@*
+      LaplaceMechanism(q: float)*@\pause@*
+      {
+        let eta : float      = Lap(1 / epsilon);*@\pause@*
+        return q + eta;
+      }
+    \end{lstlisting}
+  \end{onlyenv}
+  \begin{onlyenv}<5>
+    \begin{lstlisting}[language=none]
+      precondition: -1.0 <= ^q /\ ^q <= 1.0
+      LaplaceMechanism(q: float[^q], ^q : float[0])
+      {
+        let eta : float      = Lap(1 / epsilon);
+        return q + eta;
+      }
+    \end{lstlisting}
+  \end{onlyenv}
+  \begin{onlyenv}<6>
+    \begin{lstlisting}[language=none]
+      precondition: -1.0 <= ^q /\ ^q <= 1.0
+      LaplaceMechanism(q: float[^q], ^q : float[0])
+      {
+        let eta : float[-^q] = Lap(1 / epsilon);
+        return q + eta;
+      }
+    \end{lstlisting}
+  \end{onlyenv}
+  \begin{onlyenv}<7>
+    \begin{lstlisting}[language=none]
+      precondition: -1.0 <= ^q /\ ^q <= 1.0
+      LaplaceMechanism(q: float[*])
+      {
+        let eta : float[-^q] = Lap(1 / epsilon);
+        return q + eta;
+      }
+    \end{lstlisting}
+  \end{onlyenv}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Example: \lstinline{laplace_mechanism.dfy}}
+
+  The transformed \emph{Dafny} program then is:
+
+  \vspace{1em}
+
+  \begin{lstlisting}[language=none, basicstyle=\tiny]
+    method LaplaceMechanism(epsilon : real, q : real, ghost q_hat0 : real)
+      returns (_:real)
+      requires epsilon > 0.0
+      requires -1.0 <= q_hat0 && q_hat0 <= 1.0
+    {*@\pause@*
+      ghost var v_epsilon : real := 0.0;*@\pause@*
+
+      assert 0.0 == 0.0; // T-Laplace
+      assert 0.0 == 0.0; // T-OTimes
+      assert 0.0 == 0.0; // T-OTimes*@\pause@*
+      var eta :| 0.0 <= eta;
+      if * { eta := eta; } else { eta := -eta; }*@\pause@*
+      v_epsilon := v_epsilon + Abs(-q_hat0) / ((1 as real) / epsilon);*@\pause@*
+
+      assert q_hat0 + -q_hat0 == 0.0; // T-Return
+      assert v_epsilon <= epsilon; // T-Return*@\pause@*
+      return q + eta;
+    }
+  \end{lstlisting}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Examples}
+  
+  \begin{table}
+    \small
+    \centering
+    \begin{tabular}{l l}
+      Verified?       & Example Program
+      \\
+      \checkmark      & \lstinline{laplace_mechanism.mldp}
+      \\
+      \checkmark      & \lstinline{sparse_vector.mldp} of Zhang and Kifer '17
+      \\
+      \checkmark \footnotemark[1]
+                      & \lstinline{numerical_sparse_vector.mldp} of Zhang and Kifer '17
+      \\
+      \checkmark \footnotemark[1]
+                      & \lstinline{gap_sparse_vector.mldp} of Wang et.\ al.\ '19
+      \\
+                      & \lstinline{partial_sum.mldp} of Zhang and Kifer '17
+      \\
+                      & \lstinline{smart_sum.mldp} of Zhang and Kifer '17
+    \end{tabular}
+  \end{table}
+
+  \footnotetext[1]{We had to modify the given invariants to make these work.}
+\end{frame}
+
+\blankframe
+
+\begin{frame}
+  \frametitle{Comparison}
+  
+  \begin{table}
+    \small
+    \centering
+    \begin{tabular}{c c l}
+      \emph{LightDP} & \emph{MLightDP} & Feature
+      \\ \hline \hline
+          \checkmark & \checkmark      & DP Type checking
+      \\ \hline
+                     & \checkmark      & Output to a Software Verification tool
+      \\ \hline
+                     & \checkmark      & Semantic Analysis of distances
+      \\ \hline
+                     &                 & Refinement: Distance inference
+      \\
+                     & --              & Refinement: Mutable Dependency tracking
+      \\ \hline
+                     & --              & Free usage of the Laplace
+      \\ \hline
+                     &                 & Automating non-linearity
+      \\ \hline
+                     & --              & Other
+    \end{tabular}
+  \end{table}
+\end{frame}
+
+\begin{frame}
+  \frametitle{MLightDP}
+
+  The Goal of our project is to create a less prototypical experience than their
+  current prototype.
+
+  \begin{enumerate}
+  \item Create more intuitive typing annotations.
+  \item Be capable of accommodating the complete pipeline.
+  \item Dispense with assumptions of Zhang and Kifer about the input.
+  \item Make their rules of more fine-grained / less conservative.
+  \item Soundly add new operators, functions, and alternative random distributions to
+    the language.
+  \end{enumerate}
+\end{frame}
+
+\end{document}
