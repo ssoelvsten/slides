@@ -1,0 +1,17 @@
+\node[shape = circle, black, inner sep=6pt, draw = black] (before_n) {$x_i$};
+\node[shape = circle, black, draw = black, below left=1cm and 0.4cm of before_n] (before_low) {};
+\node[shape = circle, black, draw = black, below right=1cm and 0.4cm of before_n] (before_high) {};
+
+\draw[->, dashed] (before_n) edge (before_low);
+\draw[->] (before_n) edge (before_high);
+
+% implication
+\node[shape = circle, black,below right=0cm and 1.2cm of before_n] (implies) {$\implies$};
+
+% after
+\node[shape = circle, black, draw = black, right=3cm of before_n] (after_n) {\tiny $(i,\mathit{id})$};
+\node[shape = circle, black, draw = black, below left=0.9cm and 0.4cm of after_n] (after_low) {};
+\node[shape = circle, black, draw = black, below right=0.9cm and 0.4cm of after_n] (after_high) {};
+
+\draw[->, dashed] (after_n) edge (after_low);
+\draw[->] (after_n) edge (after_high);

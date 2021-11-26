@@ -1,0 +1,291 @@
+\begin{columns}
+  \begin{column}{0.25\linewidth}
+    \centering
+    
+    \begin{tikzpicture}[scale=0.7, every node/.style={transform shape}]
+      % level: 0
+      % (0,0), (0,0)    1
+      \node[shape = circle, draw = black]
+      (00) {\tiny $(0,0)$};
+
+      % level: 1
+      % (1,0), (2,1)    1
+      \node[shape = circle, draw = black, below right= .5cm and .3cm of 00]
+      (10) {\tiny $(1,0)$};
+
+      % level: 2
+      % (2,0), (2,1)    2
+      \node[shape = circle, draw = black, below= 1.4cm of 00]
+      (21) {\tiny $(2,1)$};
+
+      % (2,0), (2,0)    1
+      \node[shape = circle, draw = black, left= .7cm of 21]
+      (20) {\tiny $(2,0)$};
+
+      % (3,1), (2,1)    3
+      \node[shape = circle, draw = black, right= .7cm of 21]
+      (22) {\tiny $(2,2)$};
+
+      % level: 3
+      % (3,0), (3,0)    1
+      \node[shape = circle, draw = black, below= .6cm of 20]
+      (30) {\tiny $(3,0)$};
+
+      % (3,0), true     2
+      \node[shape = circle, draw = black, below= .6cm of 21]
+      (31) {\tiny $(3,1)$};
+      
+      % (3,1), (3,0)    3
+      \node[shape = circle, draw = black, below= .6cm of 22]
+      (32) {\tiny $(3,2)$};
+
+      % leafs
+      \node[shape = rectangle, draw = black, below right=.9cm and .5cm of 31]
+      (sink_F) {$\bot$};
+
+      \node[shape = rectangle, draw = black, below left=.9cm and .5cm of 31]
+      (sink_T) {$\top$};
+
+      % leaf arcs
+      \draw[->, red, dashed]
+      (30) edge[bend right=10] (sink_T)
+      (31) edge[bend right=10] (sink_T)
+      (32) edge[bend right=10] (sink_F)
+      ;
+
+      \draw[->, red]
+      (21) edge[bend left=20] (sink_F)
+      (22) edge[bend left=60] (sink_F)
+      (30) edge[bend left=10] (sink_F)
+      (31) edge[bend left=10] (sink_F)
+      (32) edge[bend left=10] (sink_F)
+      ;
+      
+      % internal arcs
+      \draw[->, blue, dashed] 
+      (20) edge (00)
+      (21) edge (10)
+      (30) edge (21)
+      (31) edge (20)
+      (32) edge (22)
+      ;
+
+      \draw[->, blue]
+      (10) edge (00)
+      (22) edge (10)
+      (32) edge (20)
+      ;
+
+      % animations
+      \onslide<2>{
+        \draw[->, orange, dashed, thick] (32) edge[bend right=10] (sink_F);
+        \draw[->, orange, thick] (32) edge[bend left=10] (sink_F);
+      }
+      \onslide<3>{
+        \draw[->, orange, dashed, thick] (31) edge[bend right=10] (sink_T);
+        \draw[->, orange, thick] (31) edge[bend left=10] (sink_F);
+      }
+      \onslide<4>{
+        \draw[->, orange, dashed, thick] (30) edge[bend right=10] (sink_T);
+        \draw[->, orange, thick, thick] (30) edge[bend left=10] (sink_F);
+      }
+      \onslide<7>{
+        \draw[->, purple, dashed, thick] (32) edge (22);
+        \draw[->, purple, thick] (32) edge (20);
+      }
+      \onslide<8>{
+        \draw[->, purple, dashed, thick] (31) edge (20);
+      }
+      \onslide<9>{
+        \draw[->, purple, dashed, thick] (30) edge (21);
+      }
+      \onslide<10>{
+        \draw[->, orange, thick] (22) edge[bend left=60] (sink_F);
+      }
+      \onslide<11>{
+        \draw[->, orange, thick] (21) edge[bend left=20] (sink_F);
+      }
+      \onslide<15>{
+        \draw[->, purple, thick] (22) edge (10);
+      }
+      \onslide<16>{
+        \draw[->, purple, dashed, thick] (21) edge (10);
+      }
+      \onslide<17>{
+        \draw[->, purple, dashed, thick] (20) edge (00);
+      }
+      \onslide<20>{
+        \draw[->, purple, thick] (10) edge (00);
+      }
+    \end{tikzpicture}      
+  \end{column}
+  \begin{column}{0.49\linewidth}
+    \centering
+
+    \onslide<7->{ \tiny Priority Queue: $Q_{\mathit{red}}$:
+      
+      \begin{tabular}{rll}
+        [ & \onslide<7-9>{$\arc{(2,2)}{\bot}{\bot}$      & ,}
+        \\
+          & \onslide<9-10>{$\arc{(2,1)}{\bot}{(3,\max)}$ & ,}
+        \\ 
+          & \onslide<7-11>{$\arc{(2,0)}{\top}{\bot}$     & ,}
+        \\
+          & \onslide<8-11>{$\arc{(2,0)}{\bot}{(3,\max)}$ & ,}
+        \\
+          & \onslide<15-17>{$\arc{(1,0)}{\top}{\bot}$      & ,}
+        \\
+          & \onslide<16-17>{$\arc{(1,0)}{\bot}{(2,\max)}$  & ,}
+        \\
+          & \onslide<20>{$\arc{(0,0)}{\top}{(1,\max)}$  & ,}
+        \\
+          & \onslide<17-20>{$\arc{(0,0)}{\bot}{(2,\max)}$} & ]
+      \end{tabular}
+    }
+
+    \vspace{10pt}
+    
+    \only<2-9>{ \tiny Level: $3$
+
+      \only<2->{
+        \begin{tabular}{r>{\centering}m{3cm}l}
+          [ & \onslide<2-6>{$[(3,2) \mapsto \bot]$} & ]
+        \end{tabular}
+      }
+
+      \vspace{5pt}
+
+      \onslide<3->{%
+        \begin{tabular}{r>{\centering}m{3cm}l}
+          [ & \only<3-4>{$\triple{(3,1)}{\top}{\bot}$}
+              \only<5-7>{$[(3,1) \mapsto (3,\max)]$}
+              \only<8->{\phantom{$[(3,1) \mapsto (3,\max)]$}}
+          & ,
+          \\
+            & \only<4-5>{$\triple{(3,0)}{\top}{\bot}$}
+              \only<6-8>{$[(3,0) \mapsto (3,\max)]$}
+          & ]
+        \end{tabular}
+      }%
+    }
+    \only<10-17>{ \tiny Level: $2$
+
+      \only<10->{
+        \begin{tabular}{r>{\centering}m{3cm}l}
+          [ & \onslide<10-14>{$[(2,2) \mapsto \bot]$} & ]
+        \end{tabular}
+      }
+
+      \vspace{5pt}
+
+      \onslide<11->{%
+        \begin{tabular}{r>{\centering}m{3cm}l}
+          [ & \only<11-12>{$\triple{(2,1)}{(3,\max)}{\bot}$}
+              \only<13-15>{$[(2,1) \mapsto (2,\max)]$}
+              \only<16->{\phantom{$[(2,1) \mapsto (2,\max)]$}}
+          & ,
+          \\
+            & \only<12-13>{$\triple{(2,0)}{(3,\max)}{\bot}$}
+              \only<14-16>{$[(2,0) \mapsto (2,\max)]$}
+          & ]
+        \end{tabular}
+      }%
+    }
+    \only<18-20>{ \tiny Level: $1$
+
+      \begin{tabular}{r>{\centering}m{3cm}l}
+        [ & \phantom{$[(1,0) \mapsto \bot]$} & ]
+      \end{tabular}
+
+      \vspace{5pt}
+
+      \begin{tabular}{r>{\centering}m{3cm}l}
+        [ & \only<18>{$\triple{(1,0)}{(2,\max)}{\bot}$}
+            \only<19>{$[(1,0) \mapsto (1,\max)]$}
+            \only<20->{\phantom{$[(1,0) \mapsto (1,\max)]$}}
+        & ]
+      \end{tabular}
+      \vspace{8pt}
+    }
+    \only<21-23>{ \tiny Level: $0$
+
+      \begin{tabular}{r>{\centering}m{3cm}l}
+        [ & \phantom{$[(1,0) \mapsto \bot]$} & ]
+      \end{tabular}
+
+      \vspace{5pt}
+
+      \begin{tabular}{r>{\centering}m{3cm}l}
+        [ & \only<21>{$\triple{(0,0)}{(2,\max)}{(1,\max)}$}
+            \only<22>{$[(0,0) \mapsto (0,\max)]$}
+            \only<23->{\phantom{$[(0,0) \mapsto (1,\max)]$}}
+        & ]
+      \end{tabular}
+      \vspace{8pt}
+    }
+    
+  \end{column}
+  \begin{column}{0.25\linewidth}
+    \centering
+
+    \onslide<5->{ \tiny Output:
+
+      {%
+        \only<5>{$\triple{(3,\max)}{\top}{\bot}$}%
+        \only<13>{$\triple{(2,\max)}{(3,\max)}{\bot}$}%
+        \only<19>{$\triple{(1,\max)}{(2,\max)}{\bot}$}%
+        \only<22>{$\triple{(0,\max)}{(2,\max)}{(1,\max)}$}%
+      }%
+      {% phantoms
+        \only<6-12>{\phantom{$\triple{(3,0)}{\bot}{\top}$}}%
+        \only<14-18>{\phantom{$\triple{(3,0)}{\bot}{\top}$}}%
+        \only<20-21>{\phantom{$\triple{(3,0)}{\bot}{\top}$}}%
+        \only<23->{\phantom{$\triple{(3,0)}{\bot}{\top}$}}%
+      }%
+    }
+    \vspace{10pt}
+    
+    \begin{tikzpicture}[scale=0.7, every node/.style={transform shape}]
+      % nodes
+      \onslide<22->{
+        \node[shape = circle, draw = black]
+        (0) {\tiny $(0,\max)$};
+      }
+
+      \onslide<19->{
+        \node[shape = circle, draw = black, below right= .3cm and .5cm of 0]
+        (1) {\tiny $(1,\max)$};
+      }
+
+      \onslide<13->{
+        \node[shape = circle, draw = black, below left=.3cm and .5cm of 1]
+        (2) {\tiny $(2,\max)$};
+      }
+
+      \onslide<5->{
+        \node[shape = circle, draw = black, below=.4cm of 2]
+        (3) {\tiny $(3,\max)$};
+      }
+
+      \onslide<5->{
+        \node[shape = rectangle, draw = black, below right=.5cm and .5cm of 3]
+        (sink_F) {$\bot$};
+      }
+
+      \onslide<5->{
+        \node[shape = rectangle, draw = black, below left=.5cm and .5cm of 3]
+        (sink_T) {$\top$};          
+      }
+
+      \onslide<5->{\draw[->, dashed] (3) edge (sink_T);}
+      \onslide<13->{\draw[->, dashed] (2) edge (3);}
+      \onslide<19->{\draw[->, dashed] (1) edge (2);}
+      \onslide<22->{\draw[->, dashed] (0) edge (2);}
+
+      \onslide<5->{\draw[->] (3) edge (sink_F);}
+      \onslide<13->{\draw[->] (2) edge[bend left=6] (sink_F);}
+      \onslide<19->{\draw[->] (1) edge (sink_F);}
+      \onslide<22->{\draw[->] (0) edge (1);}        
+    \end{tikzpicture}
+  \end{column}
+\end{columns}

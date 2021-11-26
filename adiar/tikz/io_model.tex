@@ -1,0 +1,58 @@
+\begin{tikzpicture}
+  % ALU
+  \node[
+  draw,
+  trapezium,
+  shape border rotate=180,
+  text width=1cm,
+  align=center,
+  ] at (0.03,0) (cpu) {CPU};
+
+  % Main memory
+  \begin{scope}
+    \clip(-1.13,1) rectangle (1.19,1.4);
+    \filldraw[
+    color=black!60!white,
+    fill=black!5!white,
+    pattern=vertical lines,
+    pattern color=black!30!white
+    ] (-9,1.25) rectangle ++(18,0.5)
+    ;
+  \end{scope}
+
+  \node[
+  draw,
+  rectangle,
+  text width=2.08cm,
+  align=center,
+  ] at (0.03,1.5) (m) {$M$};
+
+  % Disk
+  \begin{scope}
+    \clip(-6,2.5) rectangle (6,2.9);
+    \filldraw[
+    color=black!60!white,
+    fill=black!5!white,
+    pattern=vertical lines,
+    pattern color=black!30!white
+    ] (-9,2.75) rectangle ++(18,0.5)
+    ;
+  \end{scope}
+
+  \node[
+  draw,
+  rectangle,
+  text width=5.04cm,
+  align=center,
+  ] at (0.03,3) (n) {$N$};
+
+  \path[->]
+  (cpu) edge[bend left=40] (m)
+  (m) edge[bend left=40] (cpu)
+
+  (n) edge[bend left=40] (m)
+  (m) edge[bend left=40] (n)
+  ;
+
+  \node at (0.02,2.24) {\textcolor{gray}{$B$}};
+\end{tikzpicture}

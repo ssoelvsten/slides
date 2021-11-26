@@ -1,0 +1,574 @@
+\documentclass[english, aspectratio=169]{beamer}
+% english is for the language used in standard texts (figures, tables etc)
+% aspectratio of 16:9 or set it for more old school to 4:3 (without the ':')
+
+% ---------------------------------------------------------------------------- %
+% Load base preamble
+% ---------------------------------------------------------------------------- %
+
+\usepackage{import}
+\subimport{../preamble/}{beamer.tex}
+
+% ---------------------------------------------------------------------------- %
+% Local settings
+% ---------------------------------------------------------------------------- %
+\newcommand{\B}[0]{\ensuremath{\mathbb{B}}}
+
+\newcommand{\sort}[0]{\text{sort}}
+
+\newcommand{\triple}[3]{\ensuremath{(#1, #2, #3)}}
+\renewcommand{\arc}[3]{\ensuremath{#1 \xrightarrow{_{#2}} #3}}
+
+
+\tikzstyle{plot_adiar}=[color=black, mark=o, mark size=1pt, line width=0.7pt]
+\tikzstyle{plot_buddy}=[color=red, mark=triangle, mark size=1pt, line width=0.7pt]
+\tikzstyle{plot_cudd}=[color=blue, mark=diamond, mark size=1pt, line width=0.7pt]
+\tikzstyle{plot_sylvan}=[color=purple, mark=square, mark size=1pt, line width=0.7pt]
+
+% Horizontal legends: https://tex.stackexchange.com/a/101578
+% argument #1: any options
+\makeatletter
+\newenvironment{customlegend}[1][]{%
+    \begingroup
+    % inits/clears the lists (which might be populated from previous
+    % axes):
+    \pgfplots@init@cleared@structures
+    \pgfplotsset{#1}%
+}{%
+    % draws the legend:
+    \pgfplots@createlegend
+    \endgroup
+}%
+
+% makes \addlegendimage available (typically only available within an
+% axis environment):
+\def\addlegendimage{\pgfplots@addlegendimage}
+\makeatother
+
+% ---------------------------------------------------------------------------- %
+% Bibliography
+% ---------------------------------------------------------------------------- %
+\usepackage[
+  backend=bibtex,
+  style=alphabetic,
+  sortlocale=EN_GB,
+]{biblatex}
+\addbibresource{references.bib}
+
+% ------------------------------------------------------------------------------
+% TITLEPAGE
+% ------------------------------------------------------------------------------
+\title{
+  Efficient External Memory Algorithms\\
+  for Binary Decision Diagram Manipulation
+}
+
+\author{\textbf{Steffan Christ S\o lvsten},
+  Jaco van de Pol,\\
+  Anna Blume Jakobsen,
+  and Mathias Weller Berg Thomasen
+}
+
+\institute{Aarhus University}
+
+\date{\today}
+
+\begin{document}
+
+\titleframe
+
+\blankframe
+
+\begin{frame}
+  \begin{figure}
+    \centering
+
+    \input{tikz/io_model}
+
+    \caption{The I/O model by Aggarwal and Vitter '87}
+  \end{figure}
+
+\end{frame}
+
+\begin{frame}
+  For any realistic values of $N$, $M$, and $B$ we have that
+
+  \begin{equation*}
+      N/B \quad < \quad \sort(N) \triangleq N/B \cdot \log_{M/B} N/B \quad \ll \quad N
+    \enspace ,
+  \end{equation*}
+
+  \begin{theorem}[Aggarwal and Vitter '87]
+    $N$ elements can be sorted in $\Theta(\sort(N))$ I/Os.
+  \end{theorem}
+  \begin{theorem}[Arge '95]
+    $N$ elements can be inserted in and extracted from a Priority Queue in
+    $\Theta(\sort(N))$ I/Os.
+  \end{theorem}
+\end{frame}
+
+\begin{frame}
+  %Representation of functions $\B^n \rightarrow \B$ by Bryant '86.
+
+  \begin{figure}
+    \centering
+
+    \begin{subfigure}{0.49\linewidth}
+      \centering
+
+      \begin{tikzpicture}[scale=0.8, every node/.style={transform shape}]
+        \input{tikz/bdd_example_a.tex}
+      \end{tikzpicture}
+
+      \caption{$(x_0 \wedge x_1 \wedge x_3) \vee (x_2 \oplus x_3)$}
+    \end{subfigure}
+    \begin{subfigure}{0.49\linewidth}
+      \centering
+
+      \begin{tikzpicture}[scale=0.8, every node/.style={transform shape}]
+        \input{tikz/bdd_example_b.tex}
+      \end{tikzpicture}
+
+      \caption{$\neg (x_0 \ ?\ x_2 \vee x_3 \ :\ x_2 \wedge x_3)$}
+    \end{subfigure}
+
+    \caption{Examples of (Reduced Ordered) Binary Decision Diagrams.}
+  \end{figure}
+\end{frame}
+
+\begin{frame}
+  \begin{theorem}[Bryant '86]
+    For a fixed variable order, if one exhaustively applies the two rules below,
+    then one obtains the Reduced OBDD, which is a unique canonical form of the
+    function.    
+  \end{theorem}
+
+  \begin{figure}
+    \centering
+    
+    \begin{subfigure}[b]{0.40\linewidth}
+      \centering
+
+      \begin{tikzpicture}[scale=0.9, every node/.style={transform shape}]
+        \input{tikz/reduction_rule_1.tex}
+      \end{tikzpicture}
+      
+      \caption{Rule 1: Remove redundant nodes}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.59\linewidth}
+      \centering
+
+      \begin{tikzpicture}[scale=0.9, every node/.style={transform shape}]
+        \input{tikz/reduction_rule_2.tex}
+      \end{tikzpicture}
+      
+      \caption{Rule 2: Merge duplicate nodes}
+    \end{subfigure}
+
+  \end{figure}
+  
+\end{frame}
+
+\blankframe
+
+\begin{frame}
+  \begin{figure}
+    \centering
+    
+    \begin{subfigure}[b]{0.48\linewidth}
+      \centering
+
+      \begin{tikzpicture}
+        \input{pgf/buddy_cache_time.tex}
+      \end{tikzpicture}
+
+      \label{fig:sylvan:misses}
+    \end{subfigure}
+    \quad
+    \begin{subfigure}[b]{0.48\linewidth}
+      \centering
+
+      \begin{tikzpicture}
+        \input{pgf/buddy_cache_misses.tex}
+      \end{tikzpicture}
+
+      \label{fig:sylvan:time per node}
+    \end{subfigure}
+
+    \begin{tikzpicture}
+      \begin{customlegend}[
+        legend columns=-1,
+        legend style={draw=none,column sep=1ex},
+        legend entries={BuDDy}
+        ]
+        \addlegendimage{style=plot_buddy}
+      \end{customlegend}
+    \end{tikzpicture}
+    
+    \caption{Cache behaviour for the $N$-Queens problem.}
+  \end{figure}
+
+\end{frame}
+
+\begin{frame}
+  \begin{figure}
+    \centering
+    
+    \begin{tikzpicture}
+      \input{pgf/buddy_cache_swap.tex}
+    \end{tikzpicture}
+
+    \begin{tikzpicture}
+      \begin{customlegend}[
+        legend columns=-1,
+        legend style={draw=none,column sep=1ex},
+        legend entries={BuDDy}
+        ]
+        \addlegendimage{style=plot_buddy}
+      \end{customlegend}
+    \end{tikzpicture}
+    
+    \caption{Running time for \emph{Tic-Tac-Toe} with $N=21$.}
+  \end{figure}
+
+\end{frame}
+
+\begin{frame}[fragile]
+  \input{anim/count_paths_rec.tex}
+\end{frame}
+
+\blankframe
+
+\begin{frame}
+  Let every node be uniquely identified by a tuple $(\mathit{label},
+  \mathit{id}) : \N \times \N$.
+
+  \begin{center}
+    \begin{tikzpicture}[scale=0.9, every node/.style={transform shape}]
+      \input{tikz/node_remapping}
+    \end{tikzpicture}
+  \end{center}
+  Nodes are ordered based on their \emph{uid} as follows
+  \begin{equation*}
+    \label{eq:ordering}
+    (i_1, \mathit{id}_1) < (i_2, \mathit{id}_2)
+    \equiv
+    i_1 < i_2 \vee (i_1 = i_2 \wedge \mathit{id}_i < \mathit{id}_j)
+  \end{equation*}
+\end{frame}
+
+\begin{frame}
+  \begin{figure}
+    \centering
+
+    \begin{subfigure}{0.49\linewidth}
+      \centering
+
+      \begin{subfigure}[b]{0.33\linewidth}
+        \centering
+
+        \begin{tikzpicture}[scale=0.6, every node/.style={transform shape}]
+          \input{tikz/bdd_example_a.tex}
+        \end{tikzpicture}
+      \end{subfigure}
+      \begin{subfigure}[b]{0.55\linewidth}
+        \centering
+        { \tiny
+          \begin{tabular}{r c l}
+            [ & $\triple{(0,0)}{(2,0)}{(1,0)}$ & ,
+            \\ \\
+              & $\triple{(1,0)}{(2,0)}{(3,1)}$ & ,
+            \\ \\
+              & $\triple{(2,0)}{(3,0)}{(3,1)}$ & ,
+            \\ \\
+              & $\triple{(3,0)}{\bot}{\top}$   & ,
+            \\ \\
+              & $\triple{(3,1)}{\top}{\bot}$   & ]
+          \end{tabular}
+          \vspace{6pt}
+        }
+      \end{subfigure}
+
+      \caption{$(x_0 \wedge x_1 \wedge x_3) \vee (x_2 \oplus x_3)$}
+    \end{subfigure}
+    \begin{subfigure}{0.49\linewidth}
+      \centering
+
+      \begin{subfigure}[b]{0.33\linewidth}
+        \centering
+        \begin{tikzpicture}[scale=0.6, every node/.style={transform shape}]
+          \input{tikz/bdd_example_b.tex}
+        \end{tikzpicture}
+      \end{subfigure}
+      \begin{subfigure}[b]{0.55\linewidth}
+        \centering
+        { \tiny
+          \begin{tabular}{r c l}
+            [ & $((0,0), (2,0), (2,1))$ & ,
+            \\ \\
+              & $((2,0), \top, (3,0))$ & ,
+            \\ \\
+              & $((2,1), (3,0), \bot)$   & ,
+            \\ \\
+              & $((3,0), \top, \bot)$   & ]
+          \end{tabular}
+          \vspace{10pt}
+        }
+      \end{subfigure}
+
+      \caption{$\neg (x_0 \ ?\ x_2 \vee x_3 \ :\ x_2 \wedge x_3)$}
+    \end{subfigure}
+
+    \caption{Node-based representation of prior shown BDDs}
+  \end{figure}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{CountPaths Example}
+
+  \input{anim/count_paths_tfp.tex}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Apply Example ($\wedge$)}
+
+  \input{anim/apply_tfp.tex}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Reduce Example}
+
+  \input{anim/reduce_tfp.tex}  
+\end{frame}
+
+\blankframe
+
+\begin{frame}
+  \input{anim/levelized_priority_queue.tex}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Memory layout and efficient sorting}
+
+  The unique identifier of nodes and leafs can be represented in a single 64-bit
+  integer.
+  
+  \begin{figure}
+  \begin{subfigure}[b]{0.49\linewidth}
+    \centering
+
+    \begin{tikzpicture}
+      \input{tikz/uid_leaf.tex}
+    \end{tikzpicture}
+
+    \caption{Unique identifier of a leaf \texttt{v}}
+  \end{subfigure}
+  \begin{subfigure}[b]{0.49\linewidth}
+    \centering
+
+    \begin{tikzpicture}
+      \input{tikz/uid_leaf.tex}
+    \end{tikzpicture}
+    
+    \caption{Unique identifier of an internal node}
+  \end{subfigure}
+  \end{figure}
+
+  The \texttt{f} bit-flag is used to store the \emph{is\_high} boolean inside of
+  the \texttt{source} of an arc.
+  
+\end{frame}
+
+\begin{frame}[plain,noframenumbering]{} % like \blankframe until reveal
+  \pause
+
+  \begin{center}
+    {\Huge \textbf{Adiar}}
+
+    \vspace{12pt}
+    
+    \textcolor{gray}{\small
+      \href{http://github.com/ssoelvsten/adiar}{github.com/ssoelvsten/adiar}
+    }
+  \end{center}
+\end{frame}
+
+\begin{frame}
+  \begin{figure}
+    \centering
+    
+    \begin{subfigure}[b]{0.48\linewidth}
+      \centering
+
+      \begin{tikzpicture}
+        \begin{axis}[%
+          width=0.95\linewidth, height=0.7\linewidth,
+          every tick label/.append style={font=\scriptsize},
+          % x-axis
+          xlabel={number of nodes},
+          xmajorgrids=true,
+          xmin=51000000,
+          xmax=300000000000,
+          xmode = log,
+          % y-axis
+          ymin=1,
+          ymax=1000000,
+          ylabel={Time (seconds)},
+          ytick distance={10},
+          ymode=log,
+          yminorgrids=false,
+          ymajorgrids=true,
+          grid style={dashed,black!20},
+          ]
+          \only<5-> {
+            \addplot+ [style=plot_adiar]
+            table {./data/queens_adiar_time.tex};
+          }
+
+          \only<2-> {
+            \addplot+ [style=plot_buddy]
+            table {./data/queens_buddy_time.tex};
+          }
+
+          \only<3-> {
+            \addplot+ [style=plot_cudd]
+            table {./data/queens_cudd_time.tex};
+          }
+
+          \only<4-> {
+            \addplot+ [style=plot_sylvan]
+            table {./data/queens_sylvan_time.tex};
+          }
+        \end{axis}
+      \end{tikzpicture}
+
+      \label{fig:queens:time}
+    \end{subfigure}
+    \quad
+    \begin{subfigure}[b]{0.48\linewidth}
+      \centering
+
+      \begin{tikzpicture}
+        \begin{axis}[%
+          width=0.95\linewidth, height=0.7\linewidth,
+          every tick label/.append style={font=\scriptsize},
+          % x-axis
+          xlabel={number of nodes},
+          xmajorgrids=true,
+          xmin=51000000,
+          xmax=300000000000,
+          xmode = log,
+          % y-axis
+          ymin=0,
+          ymax=2.2,
+          ytick distance={0.5},
+          ylabel={$\mu$s / node},
+          yminorgrids=true,
+          ymajorgrids=true,
+          grid style={dashed,black!20},
+          ]
+
+          \only<2-> {
+            \addplot+ [style=plot_buddy]
+            table {./data/queens_buddy_time_per_node.tex};
+          }
+          
+          \only<3-> {
+            \addplot+ [style=plot_cudd]
+            table {./data/queens_cudd_time_per_node.tex};
+          }
+
+          \only<4-> {
+            \addplot+ [style=plot_sylvan]
+            table {./data/queens_sylvan_time_per_node.tex};
+          }
+          
+          \only<5-> {
+            \addplot+ [style=plot_adiar]
+            table {./data/queens_adiar_time_per_node.tex};
+          }
+        \end{axis}
+      \end{tikzpicture}
+
+      \label{fig:queens:time per node}
+    \end{subfigure}
+
+    \begin{tikzpicture}
+      \begin{customlegend}[
+        legend columns=-1,
+        legend style={draw=none,column sep=1ex},
+        legend entries={BuDDy, CUDD, Sylvan, Adiar}
+        ]
+        \addlegendimage{style=plot_buddy}
+        \addlegendimage{style=plot_cudd}
+        \addlegendimage{style=plot_sylvan}
+        \addlegendimage{style=plot_adiar}
+      \end{customlegend}
+    \end{tikzpicture}
+    
+    \caption{Minimum running times for the $N$-Queens problem.}
+  \end{figure}
+
+\end{frame}
+
+\blankframe
+
+\begin{frame}
+  \begin{table}[ht!]
+    \scriptsize
+    
+    \centering
+    \begin{tabular}{r l || c | c}
+      \multicolumn{2}{c||}{Algorithm} & Depth-first & Time-forwarded
+      \\ \hline \hline
+      Reduce         &                                    & $O(N)$                       & $O(\sort(N))$
+      \\ \hline \multicolumn{4}{c}{BDD Manipulation} \\ \hline
+      Apply          & $f \odot g$                        & $O(N_f \cdot N_g)$           & $O(\sort(N_f \cdot N_g))$
+      \\
+      If-Then-Else   & $f\ ?\ g\ :\ h$                    & $O(N_f \cdot N_g \cdot N_h)$ & $O(\sort (N_f \cdot N_g \cdot N_h))$
+      \\
+      Restrict       & $f|_{x_i = v}$                      & $O(N)$                       & $O(\sort(N))$
+      \\
+      Negation       & $\neg f$                           & $O(1)$                       & $O(1)$
+      \\
+      Quantification & $\exists/\forall v : f|_{x_i = v}$  & $O(N^2)$                     & $O(\sort(N^2))$
+      % \\
+      % \textcolor{gray}{Composition}
+      %   & \textcolor{gray}{$f|_{x_i = g}$}
+      %   & \textcolor{gray}{$O(N_f^2 \cdot N_g)$}
+      %   & \textcolor{gray}{$O(\sort(N_f^2 \cdot N_g))$}
+      \\ \hline \multicolumn{4}{c}{Counting} \\ \hline
+      Count Paths    & $\# $paths in $f$ to $\top$        & $O(N)$                       & $O(\sort(N))$
+      \\
+      Count SAT      & $\# x : f(x)$                      & $O(N)$                       & $O(\sort(N))$
+      \\ \hline \multicolumn{4}{c}{Other} \\ \hline
+      Equality       & $f \equiv g$                       & $O(1)$                       & $O(\sort(N))$
+      \\
+      Evaluate       & $f(x)$                             & $O(L)$                       & $O(N/B)$
+      \\
+      Min/Max SAT    & $\min/\max\{ x \ |\ f(x) \}$       & $O(L)$                       & $O(N/B)$
+    \end{tabular}
+
+    \caption{I/O-complexity of depth-first algorithms compared to our
+      time-forwarded.}
+  \end{table}
+  
+\end{frame}
+
+\begin{frame}
+
+  \begin{center}
+    \begin{tikzpicture}[scale=0.7, every node/.style={transform shape}]
+      \input{tikz/octupus.tex}
+    \end{tikzpicture}
+  \end{center}
+  
+\end{frame}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

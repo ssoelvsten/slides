@@ -1,0 +1,36 @@
+\node[shape = circle, black, draw = black] (i1) {$x_i$};
+\node[shape = circle, black, draw = black, right=of i1] (i2) {$x_i$};
+
+\node[shape = circle, draw = black, below=of i1] (child1) {};
+\node[shape = circle, draw = black, below=of i2] (child2) {};
+
+\node[shape = circle, draw = black, above=of i1] (parent1) {};
+\node[shape = circle, draw = black, above=of i2] (parent2) {};
+
+% implication
+\node[shape = circle, black,right=0.5cm of i2] {$\implies$};
+
+% after
+\node[shape = circle, draw = black, right=4cm of child1] (c1a) {};
+\node[shape = circle, draw = black, right=4cm of child2] (c2a) {};
+
+\node[shape = circle, black, draw = black, right=2.7cm of i2] (ia) {$x_i$};
+
+\node[shape = circle, draw = black, right=4cm of parent1] (p1a) {};
+\node[shape = circle, draw = black, right=4cm of parent2] (p2a) {};
+
+
+\draw[->, dashed]
+(i1) edge (child1)
+(i2) edge (child1)
+(ia) edge (c1a)
+;
+\draw[->]
+(i1) edge (child2)
+(i2) edge (child2)
+(parent1) edge (i1)
+(parent2) edge (i2)
+(p1a) edge (ia)
+(p2a) edge (ia)
+(ia) edge (c2a)
+;

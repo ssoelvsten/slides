@@ -20,10 +20,12 @@ jobs:
       with:
         root_file: | 
           ssmg-complexity.tex
+          adiar/adiar_core.tex
 
     - name: 'mv *.pdf files'
       run: |
          mkdir out
+         for f in **/*.pdf ; do mv $f out/$f; done
          for f in *.pdf ; do mv $f out/$f; done
 
     - name: 'git push'

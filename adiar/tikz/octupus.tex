@@ -1,0 +1,43 @@
+% Main track
+\node[shape = circle, draw = black, line width = 1pt] (arge) {\textbf{Arge '96}};
+\node[shape = circle, draw = black, above=1cm of arge, line width = 1pt] (adiar_core) {\textbf{Adiar 1.0}};
+
+
+\node[above = 3cm of adiar_core] (model_checking) {\color{gray} \textbf{Model Checking}};
+\node[above right = 1cm and 0.1cm of adiar_core] (equality_checking) {Equality Checking};
+\node[above left = 2cm and 0.1cm of adiar_core] (quantification) {Multi-variable $\exists$ / $\forall$};
+
+\draw[rounded corners, line width = 3pt] (arge) -- (adiar_core);
+\draw[->, gray, rounded corners, line width = 3pt] (adiar_core) -- (model_checking);
+\draw[->, rounded corners, line width = 1.2pt] (adiar_core) |- ($(adiar_core)+(.5,2)$) -- (equality_checking);
+\draw[->, densely dotted, rounded corners, line width = 1.2pt] (adiar_core) |- ($(adiar_core)+(-.5,3)$) -- (quantification);
+
+% Tangents (mine)
+\onslide<2->{
+  \node[left = 4cm of adiar_core] (parallel) {\color{gray} Parallelisation};
+  \draw[->, gray, rounded corners, line width = 1.2pt] (adiar_core) -- (parallel);
+
+  \node[below left = 0cm and 0cm of adiar_core] (zdd) {\begin{tabular}{c} Zero-suppressed \\ Decision Diagram \end{tabular}};
+  \draw[->, rounded corners, line width = 1.2pt] (adiar_core) -- ($(adiar_core)+(-1.3,0)$) -| (zdd);
+
+  \node[above left = .8cm and .8cm of adiar_core] (internal) {Internal Memory};
+  \draw[->, densely dotted, rounded corners, line width = 1.2pt] (adiar_core) -- ($(adiar_core)+(-1.3,0)$) -| (internal);        
+
+  \node[above left = 0cm and 2.5cm of adiar_core] (verified) {Verified};
+  \draw[->, densely dotted, rounded corners, line width = 1.2pt] (adiar_core) -- ($(adiar_core)+(-1.3,0)$) -| (verified);
+}
+
+% Tangents (other)
+\onslide<3->{
+  \node[above right = 0cm and 1.4cm of adiar_core] (complement) {\color{gray} Attributed Edges};
+  \draw[->, gray, rounded corners, line width = 1.2pt] (adiar_core) -- ($(adiar_core)+(1.3,0)$) -| (complement);
+
+  \node[below right = 0cm and 1.9cm of adiar_core] (add) {\color{gray} \begin{tabular}{c} Arithmetic \\ Decision Diagram \end{tabular}};
+  \draw[->, gray, rounded corners, line width = 1.2pt] (adiar_core) -- ($(adiar_core)+(1.3,0)$) -| (add);
+
+  \node[right = 4.2cm of adiar_core] (proof) {\color{gray} Proof Logging};
+  \draw[->, gray, rounded corners, line width = 1.2pt] (adiar_core) -- (proof);
+
+  \node[below right = 1.4cm and .2cm of adiar_core] (reorder) {\color{gray} Variable Reordering};
+  \draw[->, gray, rounded corners, line width = 1.2pt] (adiar_core) -- ($(adiar_core)+(1.3,0)$) -| (reorder);
+}

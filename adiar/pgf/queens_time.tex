@@ -1,0 +1,39 @@
+\begin{axis}[%
+  width=0.95\linewidth, height=0.7\linewidth,
+  every tick label/.append style={font=\scriptsize},
+  % x-axis
+  xlabel={N},
+  xmajorgrids=true,
+  xtick={12,...,17},
+  xmin=11.5,
+  xmax=17.5,
+  % y-axis
+  ymin=1,
+  ymax=1000000,
+  ylabel={Time (seconds)},
+  ytick distance={10},
+  ymode=log,
+  yminorgrids=false,
+  ymajorgrids=true,
+  grid style={dashed,black!20},
+  ]
+  \only<5-> {
+    \addplot+ [style=plot_adiar]
+    table {./data/queens_adiar_time.tex};
+  }
+
+  \only<2-> {
+    \addplot+ [style=plot_buddy]
+    table {./data/queens_buddy_time.tex};
+  }
+
+  \only<3-> {
+    \addplot+ [style=plot_cudd]
+    table {./data/queens_cudd_time.tex};
+  }
+
+  \only<4-> {
+    \addplot+ [style=plot_sylvan]
+    table {./data/queens_sylvan_time.tex};
+  }
+\end{axis}

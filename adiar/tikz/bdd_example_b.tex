@@ -1,0 +1,34 @@
+  % nodes
+  \node[shape = circle, draw = black]
+  (0) {$x_0$};
+
+  \node[shape = circle, draw = black, below left=1.4cm and .5cm of 0]
+  (21) {$x_2$};
+
+  \node[shape = circle, draw = black, below right=1.4cm and .5cm of 0]
+  (22) {$x_2$};
+
+  \node[shape = circle, draw = black, below right=0.4cm and .5cm of 21]
+  (3) {$x_3$};
+  
+  % leafs
+  \node[shape = rectangle, draw = black, below right=.4cm and .5cm of 3]
+  (sink_F) {$\bot$};
+
+  \node[shape = rectangle, draw = black, below left=.4cm and .5cm of 3]
+  (sink_T) {$\top$};
+  
+  % arcs
+  \draw[->, dashed]
+    (0)  edge (21)
+    (21) edge (sink_T)
+    (22) edge (3)
+    (3)  edge (sink_T)
+  ;
+
+  \draw[->]
+    (0)  edge (22)
+    (21) edge (3)
+    (22) edge (sink_F)
+    (3)  edge (sink_F)
+  ;
