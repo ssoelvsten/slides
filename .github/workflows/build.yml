@@ -15,12 +15,21 @@ jobs:
       with:
         submodules: 'recursive'
 
-    - name: 'compile *.tex files'
+    - name: 'compile ./*.tex files'
       uses: xu-cheng/latex-action@master
       with:
+        working_directory: ./
         root_file: | 
           ssmg-complexity.tex
-          adiar/adiar_core.tex
+          one_minute_madness.tex
+
+    - name: 'compile ./adiar/*.tex files'
+      uses: xu-cheng/latex-action@master
+      with:
+        working_directory: ./adiar/
+        root_file: | 
+          adiar_core.tex
+          adiar_core.conference.tex
 
     - name: 'remove external/*.pdf files'
       run: |
@@ -29,6 +38,7 @@ jobs:
     - name: 'mv *.pdf files'
       run: |
          mkdir out
+         mkdir out/adiar
          for f in **/*.pdf ; do mv $f out/$f; done
          for f in *.pdf ; do mv $f out/$f; done
 
