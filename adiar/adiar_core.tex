@@ -5,7 +5,6 @@
 % ---------------------------------------------------------------------------- %
 % Load base preamble
 % ---------------------------------------------------------------------------- %
-
 \usepackage{import}
 \subimport{../preamble/}{beamer.tex}
 
@@ -21,7 +20,7 @@
 
 
 \tikzstyle{plot_adiar}=[color=black, mark=o, mark size=1pt, line width=0.7pt]
-\tikzstyle{plot_buddy}=[color=red, mark=triangle, mark size=1pt, line width=0.7pt]
+\tikzstyle{plot_buddy}=[color=red, mark=o, mark size=1pt, line width=0.7pt]
 \tikzstyle{plot_cudd}=[color=blue, mark=diamond, mark size=1pt, line width=0.7pt]
 \tikzstyle{plot_sylvan}=[color=purple, mark=square, mark size=1pt, line width=0.7pt]
 
@@ -97,6 +96,8 @@
   \end{theorem}
 \end{frame}
 
+\blankframe
+
 \begin{frame}
   %Representation of functions $\B^n \rightarrow \B$ by Bryant '86.
 
@@ -142,8 +143,9 @@
       \begin{tikzpicture}[scale=0.9, every node/.style={transform shape}]
         \input{tikz/reduction_rule_1.tex}
       \end{tikzpicture}
-      
-      \caption{Rule 1: Remove redundant nodes}
+
+      \vspace{10pt}
+      {\small {\bf (1)} Remove redundant nodes}
     \end{subfigure}
     \begin{subfigure}[b]{0.59\linewidth}
       \centering
@@ -151,8 +153,9 @@
       \begin{tikzpicture}[scale=0.9, every node/.style={transform shape}]
         \input{tikz/reduction_rule_2.tex}
       \end{tikzpicture}
-      
-      \caption{Rule 2: Merge duplicate nodes}
+
+      \vspace{10pt}
+      {\small {\bf (2)} Merge duplicate nodes}
     \end{subfigure}
 
   \end{figure}
@@ -294,15 +297,16 @@
 \blankframe
 
 \begin{frame}
-  Let every node be uniquely identified by a tuple $(\mathit{label},
-  \mathit{id}) : \N \times \N$.
+  % Let every node be uniquely identified by a tuple $(\mathit{label},
+  % \mathit{id}) : \N \times \N$.
 
   \begin{center}
     \begin{tikzpicture}[scale=0.9, every node/.style={transform shape}]
       \input{tikz/node_remapping}
     \end{tikzpicture}
   \end{center}
-  Nodes are ordered based on their \emph{uid} as follows
+  % Nodes are ordered based on their \emph{uid} as follows
+  \vspace{20pt}\pause
   \begin{equation*}
     \label{eq:ordering}
     (i_1, \mathit{id}_1) < (i_2, \mathit{id}_2)
@@ -403,9 +407,7 @@
 \end{frame}
 
 \begin{frame}
-  \frametitle{Memory layout and efficient sorting}
-
-  The unique identifier of nodes and leafs can be represented in a single 64-bit
+  The unique identifier of nodes and leaves can be represented in a single 64-bit
   integer.
   
   \begin{figure}
@@ -604,8 +606,8 @@
       Min/Max SAT    & $\min/\max\{ x \ |\ f(x) \}$       & $O(L)$                       & $O(N/B)$
     \end{tabular}
 
-    \caption{I/O-complexity of depth-first algorithms compared to our
-      time-forwarded.}
+    %\caption{I/O-complexity of depth-first algorithms compared to our
+    %         time-forwarded.}
   \end{table}
   
 \end{frame}
