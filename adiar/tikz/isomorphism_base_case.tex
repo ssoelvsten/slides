@@ -1,0 +1,20 @@
+% f
+\node[shape = circle, black, draw = black] (f) {\scriptsize $(n, \_)$};
+
+\node[shape = rectangle, draw = black, below left=1cm and 0cm of f] (f1) {$\bot$};
+\node[shape = rectangle, draw = black, below right=1cm and 0cm of f] (f2) {$\top$};
+
+\draw[->, dashed] (f) edge[bend right=10] (f1);
+\draw[->] (f) edge[bend left=10] (f2);
+
+% less-than
+\node[shape = circle, black,right=2cm of f] {$<$};
+
+% g
+\node[shape = circle, black, draw = black, right=5cm of f] (g) {\scriptsize $(n, \_)$};
+
+\node[shape = rectangle, draw = black, below left=1cm and 0cm of g] (g1) {$\top$};
+\node[shape = rectangle, draw = black, below right=1cm and 0cm of g] (g2) {$\bot$};
+
+\draw[->, dashed] (g) edge[bend right=10] (g1);
+\draw[->] (g) edge[bend left=10] (g2);

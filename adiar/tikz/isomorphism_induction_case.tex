@@ -1,0 +1,117 @@
+% f
+\node[shape = circle, black, draw = black] (f1)
+{\tiny $(i, \_)$};
+
+\node[shape = circle, draw = black, below left=0.7cm and 0.2cm of f1] (f1_1) {};
+\node[shape = circle, draw = black, below right=0.7cm and 0.2cm of f1] (f1_2) {};
+
+\node[black, right =0.8cm of f1] (f1_less) {\small $<$};
+
+\node[shape = circle, black, draw = black, right =2cm of f1] (f2)
+{\tiny $(i, \_)$};
+
+\node[shape = circle, draw = black, below left=0.7cm and 0.2cm of f2] (f2_1) {};
+\node[shape = circle, draw = black, below right=0.7cm and 0.2cm of f2] (f2_2) {};
+
+\node[black, right =0.8cm of f2] (f2_less) {\small $<$};
+
+\node[shape = circle, black, draw = black, right =2cm of f2] (f3)
+{\tiny $(i, \_)$};
+
+\node[shape = circle, draw = black, below left=0.7cm and 0.2cm of f3] (f3_1) {};
+\node[shape = circle, draw = black, below right=0.7cm and 0.2cm of f3] (f3_2) {};
+
+\node[black, right =0.8cm of f3] (f3_less) {\small $<$};
+
+\node[right =1.5cm of f3] (f_dots) {$\dots$};
+
+\node[black, right =0.2cm of f_dots] (fdots_less) {\small $<$};
+
+\node[shape = circle, black, draw = black, right =2cm of f_dots] (fn)
+{\tiny $(i, \_)$};
+
+\node[shape = circle, draw = black, below left=0.7cm and 0.2cm of fn] (fn_1) {};
+\node[shape = circle, draw = black, below right=0.7cm and 0.2cm of fn] (fn_2) {};
+
+\draw[->, dashed]
+  (f1) edge (f1_1)
+  (f2) edge (f2_1)
+  (f3) edge (f3_1)
+  (fn) edge (fn_1)
+;
+\draw[->]
+  (f1) edge (f1_2)
+  (f2) edge (f2_2)
+  (f3) edge (f3_2)
+  (fn) edge (fn_2)
+;
+
+\node[black, left=of f1] (f_label) {$f$:};
+
+% g
+
+\node[shape = circle, black, draw = black, below=3cm of f1] (g1)
+{\tiny $(i, \_)$};
+
+\node[shape = circle, draw = black, below left=0.7cm and 0.2cm of g1] (g1_1) {};
+\node[shape = circle, draw = black, below right=0.7cm and 0.2cm of g1] (g1_2) {};
+
+\onslide<2->{
+  \node[black, right =0.8cm of g1] (g1_less) {\small $\stackrel{?}{<}$};
+}
+
+\node[shape = circle, black, draw = black, right =2cm of g1] (g2)
+{\tiny $(i, \_)$};
+
+\node[shape = circle, draw = black, below left=0.7cm and 0.2cm of g2] (g2_1) {};
+\node[shape = circle, draw = black, below right=0.7cm and 0.2cm of g2] (g2_2) {};
+
+\onslide<2->{
+  \node[black, right =0.8cm of g2] (g2_less) {\small $\stackrel{?}{<}$};
+}
+
+\node[shape = circle, black, draw = black, right =2cm of g2] (g3)
+{\tiny $(i, \_)$};
+
+\node[shape = circle, draw = black, below left=0.7cm and 0.2cm of g3] (g3_1) {};
+\node[shape = circle, draw = black, below right=0.7cm and 0.2cm of g3] (g3_2) {};
+
+\onslide<2->{
+  \node[black, right =0.8cm of g3] (g3_less) {\small $\stackrel{?}{<}$};
+}
+
+\node[right=1.5cm of g3] (g_dots) {$\stackrel{\tiny \phantom{?}}{\dots}$};
+
+\onslide<2->{
+  \node[black, right =0.2cm of g_dots] (fdots_less) {\small $\stackrel{?}{<}$};
+}
+
+\node[shape = circle, black, draw = black, right =2cm of g_dots] (gn)
+{\tiny $(i, \_)$};
+
+\node[shape = circle, draw = black, below left=0.7cm and 0.2cm of gn] (gn_1) {};
+\node[shape = circle, draw = black, below right=0.7cm and 0.2cm of gn] (gn_2) {};
+
+\draw[->, dashed]
+  (g1) edge (g1_1)
+  (g2) edge (g2_1)
+  (g3) edge (g3_1)
+  (gn) edge (gn_1)
+;
+\draw[->]
+  (g1) edge (g1_2)
+  (g2) edge (g2_2)
+  (g3) edge (g3_2)
+  (gn) edge (gn_2)
+;
+
+\node[black, left=of g1] (f_label) {$g$:};
+
+% isomorphism
+
+\draw[blue, dashed, thick]
+  (f1) edge (g1)
+  (f2) edge (g2)
+  (f3) edge (g3)
+  (fn) edge (gn)
+;

@@ -1,0 +1,43 @@
+% f
+\node[shape = circle, black, draw = black] (f1) {\tiny $x_i$};
+\node[shape = circle, black, draw = black, right =of f1] (f2) {\tiny $x_i$};
+\node[right =of f2] (f_dots) {$\dots$};
+\node[shape = circle, black, draw = black, right =of f_dots] (fn) {\tiny $x_i$};
+
+\draw [
+thick,
+decoration={
+  brace,
+  mirror,
+  raise=0.5cm
+},
+decorate
+] (-0.25,-0.1) -- ++(5.5,0)
+node [pos=0.5,anchor=north,yshift=-0.55cm] {$N_{f,i}$};
+
+% g
+
+\node[shape = circle, black, draw = black, right =2cm of fn] (g1) {\tiny $x_i$};
+\node[shape = circle, black, draw = black, right =of g1] (g2) {\tiny $x_i$};
+\node[right =of g2] (g_dots) {$\dots$};
+\node[shape = circle, black, draw = black, right =of g_dots] (gn) {\tiny $x_i$};
+
+\draw [
+thick,
+decoration={
+  brace,
+  mirror,
+  raise=0.5cm
+},
+decorate
+] (7.3,-0.1) -- ++(5.5,0)
+node [pos=0.5,anchor=north,yshift=-0.55cm] {$N_{g,i}$};
+
+% isomorphism
+\draw[blue, densely dashed]
+  (f1) edge[bend left=20] (g2)
+  (f2) edge[bend left=20] (g_dots)
+  (f_dots) edge[bend left=20] (g1)
+  (f_dots) edge[bend left=20] (gn)
+  (fn) edge[bend left=20] (g_dots)
+;
