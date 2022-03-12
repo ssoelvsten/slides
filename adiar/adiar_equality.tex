@@ -31,12 +31,10 @@
 % TITLEPAGE
 % ------------------------------------------------------------------------------
 \title{
-  Efficient Equality Checking\\for non-shared Binary Decision Diagrams
+  Efficient Equality Checking\\for Non-Shared Binary Decision Diagrams
 }
 
-\author{\textbf{Steffan Christ S\o lvsten},
-  Jaco van de Pol
-}
+\author{\textbf{Steffan Christ S\o lvsten}, Jaco van de Pol}
 
 \institute{\includegraphics[width=0.2\linewidth]{../external/aulogo_uk_var2_black.eps}}
 
@@ -127,8 +125,8 @@
   \texttt{IsIsomorphic($f$, $g$)}
   \begin{itemize}
   \item Check whether root $v_f$ of $f$ and root $v_g$ of $g$ have a local violation.
-  \item Check ``recursively'' whether $\mathit{low}(v_f) \sim \mathit{low}(v_g)$
-    and $\mathit{high}(v_f) \sim \mathit{high}(v_g)$.
+  \item Check $\mathit{low}(v_f) \sim \mathit{low}(v_g)$ and $\mathit{high}(v_f)
+    \sim \mathit{high}(v_g)$ ``recursively''.
   \end{itemize}
   Return \texttt{false} on first violation. If there are no violations then return \texttt{true}.
 
@@ -267,10 +265,10 @@
       \\
       $O(\sort(N))$                     & 0.058
       \\
-      $2 \cdot N/B$                     & 0.0006
+      $2 \cdot N/B$                     & 0.006
     \end{tabular}
 
-    \caption{Checking the (EPFL Benchmark) \emph{sin} circuit's single output
+    \caption{Checking the (EPFL Benchmark) \emph{voter} circuit's single output
       gate ($\abs{N_f} = \abs{N_g} = 5.76~\text{MiB}$).}
   \end{table}
   
