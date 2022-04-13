@@ -32,6 +32,7 @@ jobs:
           adiar_core.tex
           adiar_core.conference.tex
           adiar_equality.tex
+          adiar_relprod.tex
 
     - name: 'remove external/*.pdf files'
       run: |

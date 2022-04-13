@@ -1,0 +1,787 @@
+\documentclass[english, aspectratio=169]{beamer}
+% english is for the language used in standard texts (figures, tables etc)
+% aspectratio of 16:9 or set it for more old school to 4:3 (without the ':')
+
+% ---------------------------------------------------------------------------- %
+% Load base preamble
+% ---------------------------------------------------------------------------- %
+\usepackage{import}
+\subimport{../preamble/}{beamer.tex}
+
+% ---------------------------------------------------------------------------- %
+% Local settings
+% ---------------------------------------------------------------------------- %
+\newcommand{\B}[0]{\ensuremath{\mathbb{B}}}
+
+\newcommand{\sort}[0]{\text{sort}}
+
+\newcommand{\triple}[3]{\ensuremath{(#1, #2, #3)}}
+\renewcommand{\arc}[3]{\ensuremath{#1 \xrightarrow{_{#2}} #3}}
+
+
+\tikzstyle{plot_adiar}=[color=black, mark=o, mark size=1pt, line width=0.7pt]
+\tikzstyle{plot_buddy}=[color=red, mark=o, mark size=1pt, line width=0.7pt]
+\tikzstyle{plot_cudd}=[color=blue, mark=diamond, mark size=1pt, line width=0.7pt]
+\tikzstyle{plot_sylvan}=[color=purple, mark=square, mark size=1pt, line width=0.7pt]
+
+% Horizontal legends: https://tex.stackexchange.com/a/101578
+% argument #1: any options
+\makeatletter
+\newenvironment{customlegend}[1][]{%
+    \begingroup
+    % inits/clears the lists (which might be populated from previous
+    % axes):
+    \pgfplots@init@cleared@structures
+    \pgfplotsset{#1}%
+}{%
+    % draws the legend:
+    \pgfplots@createlegend
+    \endgroup
+}%
+
+% makes \addlegendimage available (typically only available within an
+% axis environment):
+\def\addlegendimage{\pgfplots@addlegendimage}
+\makeatother
+
+% ------------------------------------------------------------------------------
+%
+% ------------------------------------------------------------------------------
+% Opener: ...
+%
+% Key points:
+%   Existential
+%     Basics (single variable)
+%     Push
+%     Bounce
+%   Relabelling
+%     Bounce
+%
+% Take Home Message: How to do I/O-efficient "multi-recursion" (for RelProd)
+
+% ------------------------------------------------------------------------------
+% TITLEPAGE
+% ------------------------------------------------------------------------------
+\title{An External Memory Relational Product}
+
+\author{\textbf{Steffan Christ S\o lvsten}, Jaco van de Pol}
+
+\institute{\includegraphics[width=0.2\linewidth]{../external/aulogo_uk_var2_black.eps}}
+
+\date{\today}
+
+\begin{document}
+  \titleframe
+
+  \begin{frame}
+
+    \begin{center}
+      \LARGE
+
+      $\mathit{RelProd}(S,T)
+      \equiv
+        (
+        \ {\only<2>{\color{orange}} \exists \vec{x} .}\
+          S(\vec{x}) \wedge T(\vec{x}, \vec{x'})
+        \ ) [\vec{x'} / \vec{x}]$
+    \end{center}
+
+  \end{frame}
+
+  \begin{frame}
+    \frametitle{$\exists x_i .\ \phi \equiv \phi[x_i / \top] \vee \phi[x_i / \bot]$}
+
+    \begin{center}
+      \begin{tikzpicture}
+        % Sweepline
+        \onslide<2> { \draw[gray, thick, dashed] (-3, 0) -- (10, 0); }
+        \onslide<3> { \draw[gray, thick, dashed] (-3, -0.9) -- (10, -0.9); }
+        \onslide<4> { \draw[gray, thick, dashed] (-3, -1.85) -- (10, -1.85); }
+        \onslide<5> { \draw[gray, thick, dashed] (-3, -2.9) -- (10, -2.9); }
+        \onslide<6> { \draw[gray, thick, dashed] (-3, -3.9) -- (10, -3.9); }
+        \onslide<7> { \draw[gray, thick, dashed] (-3, -4.75) -- (10, -4.75); }
+
+        % INPUT
+        % TODO: Use shape from (push)?
+        \draw[black, thick] (0.1,0.1)  -- (1.8,-1.85)  -- (1.5,-3.9)  -- (0.81,-5.7)
+                            (-0.1,0.1) -- (-1.8,-1.8) -- (-1.5,-3.9) -- (-0.8,-5.7);
+
+        \node[shape = circle, draw = black, fill = white]
+        (i_root) {};
+
+        \onslide<2-> {
+          \node[shape = circle, draw = black, fill = white,
+                below right=0.65cm and 0.1cm of i_root]
+          (i_p1) {};
+
+          \draw[->] (i_root) edge (i_p1);
+        }
+
+        \onslide<3-> {
+          \node[shape = circle, draw = black, fill = white,
+                below left=0.65cm and 0.1cm of i_p1]
+          (i_p2) {};
+
+          \draw[->, dashed] (i_p1) edge (i_p2);
+        }
+
+        \onslide<4-> {
+          \node[shape = circle, draw = black, fill = white,
+                below right=0.7cm and 0.1cm of i_p2]
+          (i_quant) {\tiny $x_i$};
+
+          \draw[->] (i_p2) edge (i_quant);
+        }
+
+        \onslide<5-> {
+          \node[shape = circle, draw = black, fill = white,
+                below left =0.65cm and 0.1cm of i_quant]
+          (i_p3_1) {};
+
+          \node[shape = circle, draw = black, fill = white,
+                below right =0.65cm and 0.1cm of i_quant]
+          (i_p3_2) {};
+
+          \draw[->, dashed] (i_quant) edge (i_p3_1);
+
+          \draw[->] (i_quant) edge (i_p3_2);
+        }
+
+        \onslide<6-> {
+          \node[shape = circle, draw = black, fill = white,
+                below left =0.6cm and 0.2cm of i_p3_1]
+          (i_p4_1) {};
+
+          \draw[->, dashed] (i_p3_1) edge (i_p4_1);
+
+          \node[shape = circle, draw = black, fill = white,
+                below left =0.6cm and 0.2cm of i_p3_2]
+          (i_p4_2) {};
+
+          \draw[->, dashed] (i_p3_2) edge (i_p4_2);
+        }
+
+        \node[shape = rectangle, draw = black, fill = white,
+        below left=5.4cm and 0.2cm of i_root]
+        (i_p5_1) {};
+
+        \node[shape = rectangle, draw = black, fill = white,
+        below right=5.4cm and 0.2cm of i_root]
+        (i_p5_2) {};
+
+        \onslide<7-> {
+          \draw[->] (i_p4_1) edge (i_p5_1);
+          \draw[->] (i_p4_2) edge (i_p5_2);
+        }
+
+        % OUTPUT
+        \onslide<3-> {
+          \draw[blue, thick] (6.5,0.1)  -- (7.4,-0.9)
+                             (6.25,0.1) -- (5.35,-0.9);
+
+          \node[shape = circle, draw = black, fill = white,
+                right=6cm of i_root]
+          (o_root) {};
+
+          \node[shape = circle, draw = black, fill = white,
+                below right=0.65cm and 0.1cm of o_root]
+          (o_p1) {};
+
+          \draw[->, blue] (o_p1) edge (o_root);
+        }
+
+        \onslide<4-> {
+          \draw[blue, thick] (7.4,-0.9)  -- (8.2,-1.85)
+                             (5.35,-0.9) -- (4.55,-1.85);
+
+          \node[shape = circle, draw = black, fill = white,
+                below left=0.65cm and 0.1cm of o_p1]
+          (o_p2) {};
+
+          \draw[->, dashed, blue] (o_p2) edge (o_p1);
+        }
+
+        \onslide<5> {
+          \draw[blue, dotted, thick] (8.2,-1.85) -- (8.45, -2.9)
+                                     (4.55,-1.85) -- (4.27,-2.9);
+        }
+
+        \onslide<6-> {
+          \draw[blue, thick] (8.2,-1.85) -- (8.7, -3.9)
+                             (4.55,-1.85) -- (4,-3.9);
+
+          \node[shape = circle, draw = black, fill = white,
+                below right=1.78cm and 0.1cm of o_p2]
+           (o_p3) {};
+
+           \draw[->, blue] (o_p3) edge (o_p2);
+        }
+
+        \onslide<7-8> {
+          \draw[blue, thick] (8.7, -3.9) -- (8.6, -4.75)
+                             (4,-3.9) -- (4.2,-4.75);
+
+          \node[shape = circle, draw = black, fill = white,
+                below left =0.6cm and 0.1cm of o_p3]
+          (o_p4) {};
+
+          \draw[->, dashed, blue] (o_p4) edge (o_p3);
+
+          \node[shape = rectangle, draw = red, fill = white,
+                below =5.4cm of o_root]
+          (o_p5) {};
+
+          \draw[->, red] (o_p4) edge (o_p5);
+
+          \draw[red, thick] (8.6, -4.75) -- (8,-5.7)
+          (4.2,-4.75)  -- (4.8,-5.7);
+        }
+      \end{tikzpicture}
+    \end{center}
+  \end{frame}
+
+  \blankframe
+
+  \begin{frame}
+    \frametitle{$\exists \vec{x}.\ \phi(\dots)$ \quad (Push)}
+
+    \begin{center}
+      \begin{tikzpicture}
+        % Sweepline
+        \onslide<2> { \draw[gray, thick, dashed] (-3, 0) -- (10, 0); }
+        \onslide<3> { \draw[gray, thick, dashed] (-3, -0.9) -- (10, -0.9); }
+        \onslide<4> { \draw[gray, thick, dashed] (-3, -1.7) -- (10, -1.7); }
+        \onslide<5> { \draw[gray, thick, dashed] (-3, -2.5) -- (10, -2.5); }
+        \onslide<6> { \draw[gray, thick, dashed] (-3, -3.3) -- (10, -3.3); }
+        \onslide<7> { \draw[gray, thick, dashed] (-3, -4.2) -- (10, -4.2); }
+        \onslide<8> { \draw[gray, thick, dashed] (-3, -5.0) -- (10, -5.0); }
+
+        % INPUT
+        \draw[black, thick] (0.1,0.1)  -- (2,-1.7)  -- (1.8,-4.2)  -- (0.81,-5.7)
+                            (-0.1,0.1) -- (-2,-1.7) -- (-1.8,-4.2) -- (-0.8,-5.7);
+
+        \node[shape = circle, draw = black, fill = white]
+        (i_root) {};
+
+        \onslide<2->{
+          \node[shape = circle, draw = black, fill = white,
+                below right=0.55cm and 0.1cm of i_root]
+          (i_quant1) {\tiny $x_i$};
+
+          \draw[->] (i_root) edge (i_quant1);
+        }
+
+        \onslide<3->{
+          \node[shape = circle, draw = black, fill = white,
+                below left=0.5cm and 0.2cm of i_quant1]
+          (i_p1_1) {};
+
+          \draw[->, dashed] (i_quant1) edge (i_p1_1);
+
+          \node[shape = circle, draw = black, fill = white,
+                below right=0.5cm and 0.2cm of i_quant1]
+          (i_p1_2) {};
+
+          \draw[->] (i_quant1) edge (i_p1_2);
+        }
+
+        \onslide<4->{
+          \node[shape = circle, draw = black, fill = white,
+                below left=0.5cm and 0.3cm of i_p1_1]
+          (i_p2_1) {};
+
+          \node[shape = circle, draw = black, fill = white,
+                below left=0.5cm and 0.2cm of i_p1_2]
+          (i_p2_2) {};
+
+          \draw[->, dashed]
+            (i_p1_1) edge (i_p2_1)
+            (i_p1_2) edge (i_p2_2)
+          ;
+        }
+
+        \onslide<5->{
+          \node[shape = circle, draw = black, fill = white,
+                below right=0.5cm and 0.1cm of i_p2_1]
+          (i_quant2_1) {\tiny $x_j$};
+
+          \node[shape = circle, draw = black, fill = white,
+                below right=0.5cm and 0.1cm of i_p2_2]
+          (i_quant2_2) {\tiny $x_j$};
+
+          \draw[->]
+            (i_p2_1) edge (i_quant2_1)
+            (i_p2_2) edge (i_quant2_2)
+          ;
+        }
+
+        \onslide<6->{
+          \node[shape = circle, draw = black, fill = white,
+                below left=0.5cm and -0.1cm of i_quant2_1]
+          (i_p3_1_1) {};
+          \node[shape = circle, draw = black, fill = white,
+                below right=0.5cm and -0.1cm of i_quant2_1]
+          (i_p3_1_2) {};
+
+          \node[shape = circle, draw = black, fill = white,
+                below left=0.5cm and -0.1cm of i_quant2_2]
+          (i_p3_2_1) {};
+          \node[shape = circle, draw = black, fill = white,
+                below right=0.5cm and -0.1cm of i_quant2_2]
+          (i_p3_2_2) {};
+
+          \draw[->, dashed]
+            (i_quant2_1) edge (i_p3_1_1)
+            (i_quant2_2) edge (i_p3_2_1)
+          ;
+
+          \draw[->]
+            (i_quant2_1) edge (i_p3_1_2)
+            (i_quant2_2) edge (i_p3_2_2)
+          ;
+        }
+
+        \onslide<7->{
+          \node[shape = circle, draw = black, fill = white,
+                below left=0.5cm and 0.1cm of i_p3_1_1]
+          (i_p4_1_1) {};
+          \node[shape = circle, draw = black, fill = white,
+                below left=0.5cm and 0.1cm of i_p3_1_2]
+          (i_p4_1_2) {};
+
+          \node[shape = circle, draw = black, fill = white,
+                below left=0.5cm and 0.2cm of i_p3_2_1]
+          (i_p4_2_1) {};
+          \node[shape = circle, draw = black, fill = white,
+                below left=0.5cm and 0.2cm of i_p3_2_2]
+          (i_p4_2_2) {};
+
+          \draw[->, dashed]
+            (i_p3_1_1) edge (i_p4_1_1)
+            (i_p3_1_2) edge (i_p4_1_2)
+            (i_p3_2_1) edge (i_p4_2_1)
+            (i_p3_2_2) edge (i_p4_2_2)
+          ;
+        }
+
+        \node[shape = rectangle, draw = black, fill = white,
+              below left=5.4cm and 0.1cm of i_root]
+        (i_p5_1) {};
+
+        \node[shape = rectangle, draw = black, fill = white,
+              below right=5.4cm and 0.1cm of i_root]
+        (i_p5_2) {};
+
+        \onslide<8-> {
+          \draw[->]
+            (i_p4_1_1) edge (i_p5_1)
+            (i_p4_1_2) edge (i_p5_1)
+            (i_p4_2_1) edge (i_p5_2)
+            (i_p4_2_2) edge (i_p5_1)
+          ;
+        }
+
+        % OUTPUT
+        \onslide<3> {
+          \draw[blue, dotted, thick] (5.3,-0.9) -- (6.25,0.1) -- (6.45,0.1) -- (7.5,-0.9);
+        }
+
+        \onslide<4-> {
+          \draw[blue, thick] (6.25,0.1) -- (4.5,-1.7)
+                             (6.45,0.1) -- (8.3,-1.7);
+
+          \node[shape = circle, draw = black, fill = white,
+            right=6cm of i_root]
+          (o_root) {};
+
+          \node[shape = circle, draw = black, fill = white,
+                below right=1.4cm and 0.2cm of o_root]
+          (o_p1) {};
+
+          \draw[->, blue] (o_p1) edge (o_root);
+        }
+
+        \onslide<5-> {
+          \draw[blue, thick] (4.5,-1.7) -- (4.3,-2.5)
+                             (8.3,-1.7) -- (8.6,-2.5);
+
+          \node[shape = circle, draw = black, fill = white,
+                below left=0.55cm and 0.2cm of o_p1]
+          (o_p2) {};
+
+          \draw[->, dashed, blue] (o_p2) edge (o_p1);
+        }
+
+        \onslide<6-> {
+          \draw[blue, thick] (4.3,-2.5) -- (4.35, -3.3)
+                             (8.6,-2.5) -- (8.55, -3.3);
+
+          \node[shape = circle, draw = black, fill = white,
+            below right=0.5cm and 0.2cm of o_p2]
+          (o_quant2) {\tiny $\vee$};
+
+          \draw[->, blue] (o_quant2) edge (o_p2);
+        }
+
+        \onslide<7-> {
+          \draw[blue, thick] (4.35, -3.3) -- (3.7, -4.2)
+                             (8.55, -3.3) -- (9.4, -4.2);
+
+          \node[shape = circle, draw = black, fill = white,
+                below left=0.55cm and 0.2cm of o_quant2]
+          (o_p3_1) {};
+
+          \draw[->, blue, dashed] (o_p3_1) edge (o_quant2);
+
+          \node[shape = circle, draw = black, fill = white,
+                below right=0.55cm and 0.2cm of o_quant2]
+          (o_p3_2) {};
+
+          \draw[->, blue] (o_p3_2) edge (o_quant2);
+        }
+
+        \onslide<8-9> {
+          \draw[blue, thick] (3.7, -4.2) -- (3.9, -5.0)
+                             (9.4, -4.2) -- (9.2, -5.0);
+
+          \node[shape = circle, draw = black, fill = white,
+                below left=0.55cm and 0.2cm of o_p3_1]
+          (o_p4_1) {};
+
+          \node[shape = circle, draw = black, fill = white,
+                below left=0.55cm and 0.2cm of o_p3_2]
+          (o_p4_2) {};
+
+          \draw[->, blue, dashed]
+            (o_p4_1) edge (o_p3_1)
+            (o_p4_2) edge (o_p3_2)
+          ;
+
+          \draw[red, thick] (3.9, -5.0) -- (4.3, -5.7)
+                            (9.2, -5.0) -- (8.7, -5.7);
+
+          \node[shape = rectangle, draw = red, fill = white,
+                below right=5.4cm and -0.3cm of o_root]
+          (o_p5_1) {};
+
+          \node[shape = rectangle, draw = red, fill = white,
+                below right=5.4cm and 0.7cm of o_root]
+          (o_p5_2) {};
+
+          \draw[->, red]
+            (o_p4_1) edge (o_p5_1)
+            (o_p4_2) edge (o_p5_2)
+          ;
+        }
+      \end{tikzpicture}
+    \end{center}
+  \end{frame}
+
+  \blankframe
+
+  \begin{frame}
+    \frametitle{$\exists \vec{x}.\ \phi(\dots)$ \quad (Bounce)}
+
+    \begin{center}
+      \begin{tikzpicture}
+        % Sweepline
+        \onslide<2> { \draw[gray, thick, dashed] (-2.5, -5.0) -- (10, -5.0); }
+        \onslide<3> { \draw[gray, thick, dashed] (-2.5, -4.2) -- (10, -4.2); }
+        \onslide<4-9> { \draw[gray, thick, dashed] (-2.5, -3.2) -- (10, -3.2); }
+
+        \onslide<4>   { \draw[gray, thick, dashed] (2.5, -3.4) -- (9.7, -3.4); }
+        \onslide<5,9> { \draw[gray, thick, dashed] (2.5, -4.2) -- (9.7, -4.2); }
+        \onslide<6-8> { \draw[gray, thick, dashed] (2.5, -5.0) -- (9.7, -5.0); }
+
+        \onslide<10> { \draw[gray, thick, dashed] (-2.5, -2.5) -- (10, -2.5); }
+        \onslide<11> { \draw[gray, thick, dashed] (-2.5, -1.7) -- (10, -1.7); }
+        \onslide<12> { \draw[gray, thick, dashed] (-2.5, 0) -- (10, 0); }
+
+        % INPUT
+        \draw[blue, thick] (-1.8,-5.0) -- (-2.0,-4.2) -- (-1.4,-1.7) -- (-0.1,0.1)
+                        -- (0.1,0.1)  -- (1.4,-1.7)  -- (2.0,-4.2)  -- (1.8,-5.0);
+
+        \draw[red, thick] (-1.8,-5.0) -- (-1.6,-5.6)
+                          (1.8,-5.0) -- (1.6,-5.6);
+
+        \onslide<11-> {
+          \node[shape = circle, draw = black, fill = white]
+          (i_root) {};
+        }
+
+        \onslide<10-> {
+          \node[shape = circle, draw = black, fill = white,
+                below right=1.4cm and 0.2cm of i_root]
+          (i_p1) {};
+        }
+
+        \onslide<11-> {
+          \draw[->, blue] (i_p1) edge (i_root);
+        }
+
+        \onslide<3-> {
+          \node[shape = circle, draw = black, fill = white,
+                below left=0.55cm and 0.2cm of i_p1]
+          (i_p2) {};
+        }
+
+        \onslide<10-> {
+          \draw[->, dashed, blue] (i_p2) edge (i_p1);
+        }
+
+        \onslide<3-> {
+          \node[shape = circle, draw = black, fill = white,
+                below right=0.5cm and 0.2cm of i_p2]
+          (i_quant2) {\tiny $x_j$};
+        }
+
+        \onslide<4-> {
+          \draw[->, blue, thick] (i_quant2) edge (i_p2);
+        }
+
+        \onslide<2-> {
+          \node[shape = circle, draw = black, fill = white,
+                below left=0.55cm and 0.2cm of i_quant2]
+          (i_p3_1) {};
+
+          \node[shape = circle, draw = black, fill = white,
+                below right=0.55cm and 0.2cm of i_quant2]
+          (i_p3_2) {};
+        }
+
+        \onslide<3-> {
+          \draw[->, blue, thick, dashed] (i_p3_1) edge (i_p2);
+          \draw[->, blue, dashed] (i_p3_1) edge (i_quant2);
+          \draw[->, blue] (i_p3_2) edge (i_quant2);
+        }
+
+        \onslide<2-> {
+          \node[shape = circle, draw = black, fill = white,
+                below left=0.55cm and 0.2cm of i_p3_1]
+          (i_p4_1) {};
+
+          \node[shape = circle, draw = black, fill = white,
+                below left=0.55cm and 0.2cm of i_p3_2]
+          (i_p4_2) {};
+
+          \draw[->, blue, dashed]
+            (i_p4_1) edge (i_p3_1)
+            (i_p4_2) edge (i_p3_2)
+          ;
+        }
+
+        \node[shape = rectangle, draw = red, fill = white,
+          below right=5.4cm and -0.3cm of i_root]
+        (i_p5_1) {};
+
+        \node[shape = rectangle, draw = red, fill = white,
+          below right=5.4cm and 0.7cm of i_root]
+        (i_p5_2) {};
+
+        \onslide<2-> {
+          \draw[->, red]
+            (i_p4_1) edge (i_p5_1)
+            (i_p4_2) edge (i_p5_2)
+          ;
+        }
+
+        % REDUCED OUTPUT
+        \onslide<2-6,8-> {
+          \draw[thick] (3.0,-5.0) -- (3.2,-5.6)
+                       (5.3,-5.0) -- (5.1,-5.6)
+          ;
+          
+          \node[shape = rectangle, draw = black, fill = white,
+                right=3.5cm of i_p5_1]
+          (o1_p5_1) {};
+
+          \node[shape = rectangle, draw = black, fill = white,
+                right=3.5cm of i_p5_2]
+          (o1_p5_2) {};
+
+          \node[shape = circle, draw = black, fill = white,
+                right=3.5cm of i_p4_1]
+          (o1_p4_1) {};
+
+          \node[shape = circle, draw = black, fill = white,
+                right=3.5cm of i_p4_2]
+          (o1_p4_2) {};
+
+          \draw[->]
+            (o1_p4_1) edge (o1_p5_1)
+            (o1_p4_2) edge (o1_p5_2)
+          ;
+        }
+
+        \onslide<3-5,9-> {
+          \draw[thick] (2.9,-4.2) -- (3.0,-5.0)
+                       (5.5,-4.2) -- (5.3,-5.0)
+          ;
+
+          \node[shape = circle, draw = black, fill = white,
+                right=3.5cm of i_p3_1]
+          (o1_p3_1) {};
+
+          \node[shape = circle, draw = black, fill = white,
+                right=3.5cm of i_p3_2]
+          (o1_p3_2) {};
+
+          \draw[->, dashed]
+            (o1_p3_1) edge (o1_p4_1)
+            (o1_p3_2) edge (o1_p4_2)
+          ;
+        }
+
+        \onslide<4> {
+          \draw[thick, dotted] (3.2,-3.4) -- (2.9,-4.2)
+                               (5.1,-3.4) -- (5.5,-4.2)
+          ;
+        }
+
+        \onslide<10-> {
+          \draw[thick] (2.8,-2.5) -- (2.9,-4.2)
+                       (4.8,-2.5) -- (5.5,-4.2)
+          ;
+
+          \node[shape = circle, draw = black, fill = white,
+                right=3.5cm of i_p2_1]
+          (o1_p2_1) {};
+
+          \draw[->, dashed] (o1_p2_1) edge (o1_p3_1);
+          \draw[->] (o1_p2_1) edge (o1_p3_2);
+        }
+
+        \onslide<11-> {
+          \draw[thick] (2.9,-1.7) -- (2.8,-2.5)
+                       (4.6,-1.7) -- (4.8,-2.5)
+          ;
+
+          \node[shape = circle, draw = black, fill = white,
+                right=3.5cm of i_p1_1]
+          (o1_p1_1) {};
+
+          \draw[->, dashed] (o1_p1_1) edge (o1_p2_1);
+        }
+
+        \onslide<12-13> {
+          \draw[thick] (3.8,0) -- (2.9,-1.7)
+                       (4.0,0) -- (4.6,-1.7)
+          ;
+
+          \node[shape = circle, draw = black, fill = white,
+                right=3.5cm of i_root]
+          (o1_root) {};
+
+          \draw[->] (o1_root) edge (o1_p1_1);
+        }
+        
+        % SECOND SWEEP
+        \onslide<5-9> {
+          \draw[blue, thick, dotted] (6.95, -2.9) -- (6.9,-3.2)
+                                     (9.15, -2.9) -- (9.2,-3.2)
+          ;
+
+          \draw[blue, thick] (6.9,-3.2) -- (6.8, -4.2)
+                             (9.2,-3.2) -- (9.4, -4.2)
+          ;
+          
+          \node[shape = circle, draw = none, % dummy for crossing in-going arcs
+                right=3.5cm of o1_p2_1]
+          (o2_p2_1) {};
+
+          \node[shape = circle, draw = black, fill = white,
+                right=3.5cm of o1_p3_1]
+          (o2_p3_1) {};
+
+          \node[shape = circle, draw = black, fill = white,
+                right=3.5cm of o1_p3_2]
+          (o2_p3_2) {};
+
+          \draw[->, thick, blue, dashed] (o2_p3_1) edge (o2_p2_1);
+          \draw[->, thick, blue] (o2_p3_2) edge (o2_p2_1);
+        }
+
+        \onslide<6-8> {
+          \draw[blue, thick] (6.8, -4.2) -- (6.9, -5.0)
+                             (9.4, -4.2) -- (9.3, -5.0)
+          ;
+
+          \node[shape = circle, draw = black, fill = white,
+                right=3.5cm of o1_p4_1]
+          (o2_p4_1) {};
+
+          \node[shape = circle, draw = black, fill = white,
+                right=3.5cm of o1_p4_2]
+          (o2_p4_2) {};
+
+          \draw[->, blue, dashed]
+            (o2_p4_1) edge (o2_p3_1)
+            (o2_p4_2) edge (o2_p3_2)
+          ;
+
+          \draw[red, thick] (6.9, -5.0) -- (7.2, -5.6)
+                            (9.3, -5.0) -- (9.0, -5.6)
+          ;
+
+          \node[shape = rectangle, draw = red, fill = white,
+                right=3.5cm of o1_p5_1]
+          (o2_p5_1) {};
+
+          \node[shape = rectangle, draw = red, fill = white,
+                right=3.5cm of o1_p5_2]
+          (o2_p5_2) {};
+
+          \draw[->, red]
+            (o2_p4_1) edge (o2_p5_1)
+            (o2_p4_2) edge (o2_p5_2)
+          ;
+        }
+      \end{tikzpicture}
+    \end{center}
+  \end{frame}
+
+  \blankframe
+
+  \begin{frame}
+
+    \begin{center}
+      \LARGE
+
+      $\mathit{RelProd}(S,T)
+      \equiv
+      {\color{orange} (}
+      \ \exists \vec{x} .\
+      S(\vec{x}) \wedge T(\vec{x}, \vec{x'})
+      \ {\color{orange} ) [\vec{x'} / \vec{x}]}$
+    \end{center}
+
+  \end{frame}
+
+  \begin{frame}
+    \begin{definition}
+      A relabelling $\pi$ is monotonic if $x_i < x_j \implies \pi(x_i) < \pi(x_j)$
+    \end{definition}
+
+    \pause
+    {\bf If $\pi$ is monotonic}
+
+    \begin{itemize}
+    \item \emph{1-Var} / \emph{Push}:
+
+      Apply $\pi$ in $O(L_N)$ extra time during the final bottom-up Reduce
+      sweep.
+
+    \item \emph{Bounce}:
+
+      $x_i' < x_j' \implies x_i < x_j$: $\pi$ can be applied during the
+      outermost Reduce sweep.
+    \end{itemize}
+
+    \quad That is, applying $\pi$ can (essentially) be done for free.
+
+    \pause
+    {\bf If $\pi$ is not monotonic}
+
+    \quad to be continued...
+  \end{frame}
+\end{document}
