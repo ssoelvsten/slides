@@ -406,6 +406,48 @@
 
 \blankframe
 
+\begin{frame}
+  \begin{table}[ht!]
+    \scriptsize
+
+    \centering
+    \begin{tabular}{r l || c | c}
+      \multicolumn{2}{c||}{Algorithm} & Depth-first & Time-forwarded
+      \\ \hline \hline
+      Reduce         &                                    & $O(N)$                       & $O(\sort(N))$
+      \\ \hline \multicolumn{4}{c}{BDD Manipulation} \\ \hline
+      Apply          & $f \odot g$                        & $O(N_f \cdot N_g)$           & $O(\sort(N_f \cdot N_g))$
+      \\
+      If-Then-Else   & $f\ ?\ g\ :\ h$                    & $O(N_f \cdot N_g \cdot N_h)$ & $O(\sort (N_f \cdot N_g \cdot N_h))$
+      \\
+      Restrict       & $f|_{x_i = v}$                      & $O(N)$                       & $O(\sort(N))$
+      \\
+      Negation       & $\neg f$                           & $O(1)$                       & $O(1)$
+      \\
+      Quantification & $\exists/\forall v : f|_{x_i = v}$  & $O(N^2)$                     & $O(\sort(N^2))$
+      % \\
+      % \textcolor{gray}{Composition}
+      %   & \textcolor{gray}{$f|_{x_i = g}$}
+      %   & \textcolor{gray}{$O(N_f^2 \cdot N_g)$}
+      %   & \textcolor{gray}{$O(\sort(N_f^2 \cdot N_g))$}
+      \\ \hline \multicolumn{4}{c}{Counting} \\ \hline
+      Count Paths    & $\# $paths in $f$ to $\top$        & $O(N)$                       & $O(\sort(N))$
+      \\
+      Count SAT      & $\# x : f(x)$                      & $O(N)$                       & $O(\sort(N))$
+      \\ \hline \multicolumn{4}{c}{Other} \\ \hline
+      Equality       & $f \equiv g$                       & $O(1)$                       & $O(\sort(N))$
+      \\
+      Evaluate       & $f(x)$                             & $O(L)$                       & $O(N/B)$
+      \\
+      Min/Max SAT    & $\min/\max\{ x \ |\ f(x) \}$       & $O(L)$                       & $O(N/B)$
+    \end{tabular}
+
+    %\caption{I/O-complexity of depth-first algorithms compared to our
+    %         time-forwarded.}
+  \end{table}
+
+\end{frame}
+
 \begin{frame}[plain,noframenumbering]{} % like \blankframe until reveal
   \pause
 
@@ -539,48 +581,6 @@
 \end{frame}
 
 \blankframe
-
-\begin{frame}
-  \begin{table}[ht!]
-    \scriptsize
-    
-    \centering
-    \begin{tabular}{r l || c | c}
-      \multicolumn{2}{c||}{Algorithm} & Depth-first & Time-forwarded
-      \\ \hline \hline
-      Reduce         &                                    & $O(N)$                       & $O(\sort(N))$
-      \\ \hline \multicolumn{4}{c}{BDD Manipulation} \\ \hline
-      Apply          & $f \odot g$                        & $O(N_f \cdot N_g)$           & $O(\sort(N_f \cdot N_g))$
-      \\
-      If-Then-Else   & $f\ ?\ g\ :\ h$                    & $O(N_f \cdot N_g \cdot N_h)$ & $O(\sort (N_f \cdot N_g \cdot N_h))$
-      \\
-      Restrict       & $f|_{x_i = v}$                      & $O(N)$                       & $O(\sort(N))$
-      \\
-      Negation       & $\neg f$                           & $O(1)$                       & $O(1)$
-      \\
-      Quantification & $\exists/\forall v : f|_{x_i = v}$  & $O(N^2)$                     & $O(\sort(N^2))$
-      % \\
-      % \textcolor{gray}{Composition}
-      %   & \textcolor{gray}{$f|_{x_i = g}$}
-      %   & \textcolor{gray}{$O(N_f^2 \cdot N_g)$}
-      %   & \textcolor{gray}{$O(\sort(N_f^2 \cdot N_g))$}
-      \\ \hline \multicolumn{4}{c}{Counting} \\ \hline
-      Count Paths    & $\# $paths in $f$ to $\top$        & $O(N)$                       & $O(\sort(N))$
-      \\
-      Count SAT      & $\# x : f(x)$                      & $O(N)$                       & $O(\sort(N))$
-      \\ \hline \multicolumn{4}{c}{Other} \\ \hline
-      Equality       & $f \equiv g$                       & $O(1)$                       & $O(\sort(N))$
-      \\
-      Evaluate       & $f(x)$                             & $O(L)$                       & $O(N/B)$
-      \\
-      Min/Max SAT    & $\min/\max\{ x \ |\ f(x) \}$       & $O(L)$                       & $O(N/B)$
-    \end{tabular}
-
-    %\caption{I/O-complexity of depth-first algorithms compared to our
-    %         time-forwarded.}
-  \end{table}
-  
-\end{frame}
 
 \begin{frame}
 
