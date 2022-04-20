@@ -402,40 +402,6 @@
 
 \blankframe
 
-\begin{frame}
-  \input{anim/levelized_priority_queue.tex}
-\end{frame}
-
-\begin{frame}
-  The unique identifier of nodes and leaves can be represented in a single 64-bit
-  integer.
-  
-  \begin{figure}
-  \begin{subfigure}[b]{0.49\linewidth}
-    \centering
-
-    \begin{tikzpicture}
-      \input{tikz/uid_leaf.tex}
-    \end{tikzpicture}
-
-    \caption{Unique identifier of a leaf \texttt{v}}
-  \end{subfigure}
-  \begin{subfigure}[b]{0.49\linewidth}
-    \centering
-
-    \begin{tikzpicture}
-      \input{tikz/uid_node.tex}
-    \end{tikzpicture}
-    
-    \caption{Unique identifier of an internal node}
-  \end{subfigure}
-  \end{figure}
-
-  The \texttt{f} bit-flag is used to store the \emph{is\_high} boolean inside of
-  the \texttt{source} of an arc.
-  
-\end{frame}
-
 \begin{frame}[plain,noframenumbering]{} % like \blankframe until reveal
   \pause
 
