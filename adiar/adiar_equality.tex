@@ -173,13 +173,6 @@
   The output of \texttt{Reduce} has the following properties
 
   \begin{itemize}
-  \item Nodes on level $i$ have their identifiers \emph{consecutively} numbered
-    \begin{equation*}
-      \mathit{MAX} - N_{f,i} + 1,
-      \dots, \mathit{MAX-1}, \mathit{MAX}
-      \enspace .
-    \end{equation*}
-
   \item Nodes on level $i$ are output sorted by their children
     \begin{equation*}
       ((i_1, \mathit{id}_1), \mathit{low}_1, \mathit{high}_1)
@@ -194,8 +187,14 @@
       \footnote{Assuming the BDD is not negated. If that is the case then $(i,\mathit{id}) < \top < \bot$.}
       .
     \end{equation*}
+
+  \item Nodes on level $i$ have their identifiers \emph{consecutively} numbered
+    \begin{equation*}
+      \mathit{MAX} - N_{f,i} + 1,
+      \dots, \mathit{MAX-1}, \mathit{MAX}
+      \enspace .
+    \end{equation*}
   \end{itemize}
- 
 \end{frame}
 
 \begin{frame}
