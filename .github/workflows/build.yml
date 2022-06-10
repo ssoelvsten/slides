@@ -30,7 +30,7 @@ jobs:
         working_directory: ./adiar/
         root_file: | 
           adiar_core.tex
-          adiar_core.conference.tex
+          adiar_core.tacas22.tex
           adiar_core.movep22.tex
           adiar_equality.tex
           adiar_relprod.tex
