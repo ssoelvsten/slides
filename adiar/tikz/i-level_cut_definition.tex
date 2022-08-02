@@ -1,0 +1,85 @@
+% levels
+\node (Lcal) {\color{orange} $\mathcal{L}$};
+
+\node[below=0.5cm of Lcal] (Lj) {\color{orange} $j$};
+\node[below=0.5cm of Lj] (Lj1) {\color{orange} $j+1$};
+\node[below=0.5cm of Lj1] (Ldots) {\color{orange} $\vdots$};
+\node[below=0.6cm of Ldots] (Lji) {\color{orange} $j+i$};
+
+\draw[dashed, orange]
+  ($ (Lj) + (1,0) $) edge ($ (Lj) + (7,0) $)
+;
+
+\draw[dashed, orange]
+  ($ (Lji) + (1,0) $) edge ($ (Lji) + (7,0) $)
+;
+    
+% nodes
+\node[shape = circle, draw = black, fill=white, right=2cm of Lj] (j_1) {};
+\node[shape = circle, draw = black, fill=white, right=3cm of Lj] (j_2) {};
+\node[shape = circle, draw = black, fill=white, right=5cm of Lj] (j_3) {};
+
+\node[shape = circle, draw = black, fill=white, right=2.5cm of Lj1] (j1_1) {};
+\node[shape = circle, draw = black, fill=white, right=4cm of Lj1] (j1_2) {};
+
+\node[right=3.8cm of Ldots] (jdot_1) {$\cdot$};
+\node[right=5.3cm of Ldots] (jdot_2) {$\cdot$};
+    
+\node[shape = circle, draw = black, fill=white, right=1.5cm of Lji] (ji_1) {};
+\node[shape = circle, draw = black, fill=white, right=3cm of Lji] (ji_2) {};
+\node[shape = circle, draw = black, fill=white, right=5cm of Lji] (ji_3) {};
+    
+% arcs
+\draw[->]
+% to level j
+  ($ (j_1) + (-0.5,0.5) $) edge (j_1)
+  ($ (j_1) + (0.5,0.5) $) edge (j_1)
+
+  ($ (j_2) + (0,0.5) $) edge (j_2)
+
+  ($ (j_3) + (-0.5,0.5) $) edge (j_3)
+  ($ (j_3) + (0.5,0.5) $) edge (j_3)
+    
+% to level j+1
+  (j_1) edge (j1_1)
+  (j_2) edge (j1_1)
+  ($ (j_2) + (1,0.5) $) edge (j1_2)
+  (j_3) edge (j1_2)
+      
+% to levels in between
+  (j1_2) edge[bend right=10] (jdot_1)
+  (j1_2) edge[bend left=20] (jdot_2)
+  (j_3) edge[bend left=15] (jdot_2)
+  (j_3) edge[bend left=50] (jdot_2)
+      
+% to level j+i
+  ($ (j_1) + (-0.7,0.5) $) edge[bend right=10] (ji_1)
+  (j_1) edge[bend left=5] (ji_1)
+  (j_2) edge[bend left=5] (ji_2)
+  (jdot_1) edge[bend left=10] (ji_2)
+  (jdot_2) edge[bend left=20] (ji_3)
+  (jdot_2) edge[bend right=20] (ji_3)
+
+% past level j+i
+  (j1_1) edge[bend left=5] ($ (ji_1) + (0.7,-0.5) $)
+  (jdot_1) edge[bend right=10] ($ (ji_2) + (1,-0.5) $)
+  (ji_1) edge ($ (ji_1) + (-0.5,-0.5) $)
+  (ji_1) edge ($ (ji_1) + (0.5,-0.5) $)
+  (ji_2) edge ($ (ji_2) + (0,-0.5) $)
+  (ji_3) edge ($ (ji_3) + (-0.5,-0.5) $)
+  ($ (j_3) + (1,0.5) $) -> ($ (ji_3) + (1,-0.5) $)
+;
+
+% cut
+\draw[thick, dashed, red]
+  ($ (j_1) + (-1.2, -1.5) $) sin
+  ($ (j_2) + (-0.2, -0.5) $) cos
+  ($ (j_2) + (0.4, -2) $) sin
+  ($ (jdot_1) + (0.0, -0.5) $) cos
+  ($ (jdot_1) + (0.2, 0) $) --
+  ($ (j1_2) + (-0.3, 0) $) sin
+  ($ (j1_2) + (0, 0.5) $) cos
+  ($ (j1_2) + (0.4, 0) $) sin
+  ($ (j1_2) + (1.1, -1.8) $) --
+  ($ (j1_2) + (2.2, -1.8) $)
+;

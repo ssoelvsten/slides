@@ -27,6 +27,7 @@
 
 *.el
 *.tex~
+*.~undo-tree~
 
 # =======================
 # Build output

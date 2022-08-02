@@ -33,6 +33,7 @@ jobs:
           adiar_core.tacas22.tex
           adiar_core.movep22.tex
           adiar_equality.tex
+          adiar_MSc_thesis.tex
           adiar_relprod.tex
 
     - name: 'remove external/*.pdf files'
