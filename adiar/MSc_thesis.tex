@@ -354,6 +354,9 @@
 \begin{frame}
   \frametitle{Adiar v1.0 : BDD}
 
+  \setvalue{tandem_apply  = black}
+  \setvalue{tandem_reduce = black}
+
   \input{tikz/tandem.tex}
 \end{frame}
 
@@ -465,11 +468,11 @@
 
           \only<4>{
             \addplot+ [style=plot_adiar]
-            table {./data/queens_adiar_time_per_node__full.tex};            
+            table {./data/queens_adiar_time_per_node__full.tex};
           }
           \only<5>{
             \addplot+ [style=plot_adiar, dash pattern=on 4pt off 4pt]
-            table {./data/queens_adiar_time_per_node__full.tex};            
+            table {./data/queens_adiar_time_per_node__full.tex};
           }
 
           \only<5>{
@@ -834,7 +837,7 @@
             \\ \hline
             $O(NT)$ & $O(NT)$ & $O(NT)$
           \end{tabular}
-          
+
           \caption{Complexity of depth-first {\bf substitute}}
         \end{table}
 
@@ -847,7 +850,7 @@
               \\ \hline
               $O(N T \log T)$ & $O(N+T)$ & $O(N \cdot \sort(T))$
             \end{tabular}
-            
+
             \caption{Complexity of level-by-level {\bf substitute}}
           \end{table}
         }

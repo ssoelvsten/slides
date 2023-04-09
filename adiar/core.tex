@@ -8,9 +8,15 @@
 \usepackage{import}
 \subimport{../preamble/}{beamer.tex}
 
+\metroset{sectionpage=none}
+
 % ---------------------------------------------------------------------------- %
 % Local settings
 % ---------------------------------------------------------------------------- %
+% https://tex.stackexchange.com/a/20613
+\newcommand\hcancel[2][black]{\setbox0=\hbox{$#2$}%
+  \rlap{\raisebox{.35\ht0}{\textcolor{#1}{\rule{\wd0}{1pt}}}}#2}
+
 \newcommand{\B}[0]{\ensuremath{\mathbb{B}}}
 
 \newcommand{\sort}[0]{\text{sort}}
@@ -48,19 +54,20 @@
 % TITLEPAGE
 % ------------------------------------------------------------------------------
 \title{
-  Efficient External Memory Algorithms\\
-  for Binary Decision Diagram Manipulation
+  I/O-efficient Manipulation of Binary Decision Diagrams
+  \\
+  {\normalsize Steffan Christ S{\o}lvsten}
 }
 
-\author{\textbf{Steffan Christ S\o lvsten},
-  Jaco van de Pol,\\
-  Anna Blume Jakobsen,
-  and Mathias Weller Berg Thomasen
+\author{
+  S. C. S{\o}lvsten, J. van de Pol, A. B. Jakobsen, and M. W. B. Thomasen.
+  \\
+  \emph{Adiar: Binary Decision Diagrams in External Memory}. 2022
 }
 
 \institute{\includegraphics[width=0.2\linewidth]{../external/aulogo_uk_var2_black.eps}}
 
-\date{$25^{\text{th}}$ of April, 2021}
+\date{}%$25^{\text{th}}$ of April, 2021}
 
 \begin{document}
 
@@ -68,35 +75,17 @@
 
 \blankframe
 
-\begin{frame}
-  \begin{figure}
-    \centering
-
-    \input{tikz/io_model}
-
-    \caption{The I/O model by Aggarwal and Vitter '87}
-  \end{figure}
-
+\begin{frame}[plain,noframenumbering]{}
+  \frametitle{Contents}
+  \tableofcontents
 \end{frame}
 
-\begin{frame}
-  For any realistic values of $N$, $M$, and $B$ we have that
+\section{What are Binary Decision Diagrams?}
 
-  \begin{equation*}
-      N/B \quad < \quad \sort(N) \triangleq N/B \cdot \log_{M/B} N/B \quad \ll \quad N
-    \enspace ,
-  \end{equation*}
-
-  \begin{theorem}[Aggarwal and Vitter '87]
-    $N$ elements can be sorted in $\Theta(\sort(N))$ I/Os.
-  \end{theorem}
-  \begin{theorem}[Arge '95]
-    $N$ elements can be inserted in and extracted from a Priority Queue in
-    $\Theta(\sort(N))$ I/Os.
-  \end{theorem}
+\begin{frame}[plain,noframenumbering]{}
+  \frametitle{Contents}
+  \tableofcontents[currentsection]
 \end{frame}
-
-\blankframe
 
 \begin{frame}
   %Representation of functions $\B^n \rightarrow \B$ by Bryant '86.
@@ -120,7 +109,7 @@
         \input{tikz/bdd_example_b.tex}
       \end{tikzpicture}
 
-      \caption{$\neg (x_0 \ ?\ x_2 \vee x_3 \ :\ x_2 \wedge x_3)$}
+      \caption{$\neg(x_0\ ?\ x_2 \wedge x_3 : x_2 \wedge x_3)$}
     \end{subfigure}
 
     \caption{Examples of (Reduced Ordered) Binary Decision Diagrams.}
@@ -131,12 +120,12 @@
   \begin{theorem}[Bryant '86]
     For a fixed variable order, if one exhaustively applies the two rules below,
     then one obtains the Reduced OBDD, which is a unique canonical form of the
-    function.    
+    function.
   \end{theorem}
 
   \begin{figure}
     \centering
-    
+
     \begin{subfigure}[b]{0.40\linewidth}
       \centering
 
@@ -159,83 +148,67 @@
     \end{subfigure}
 
   \end{figure}
-  
+
 \end{frame}
 
-\blankframe
+\begin{frame}[fragile]
+  \begin{lstlisting}[numbers=none, language=sml]
+          bdd_apply($f$, $g$, $\otimes$):
+            if $f, g \in \{ \bot, \top \}$
+            then $f \otimes g$
+            else let $i$ = top($f.\mathit(var)$, $g.\mathit{var}$)
+                     $t$ = bdd_apply($f[x_i := \top]$, $g[x_i := \top]$, $\otimes$)
+                     $e$ = bdd_apply($f[x_i := \bot]$, $g[x_i := \bot]$, $\otimes$)
+                 in make_node($i$,$t$,$e$)
+  \end{lstlisting}
+
+  \pause
+  \begin{theorem}
+    \lstinline{bdd_apply} runs in $O(N_f \cdot N_g)$ time.
+  \end{theorem}
+  \begin{itemize}
+  \item Memoisation (\emph{Computation Cache}) ensures each recursion is
+    computed only once.
+
+  \item Reduction Rules can be maintained within
+    \lstinline{make_node($i$,$t$,$e$)} in $O(1)$ time.
+    \begin{enumerate}
+    \item Redundancy is resolved with an if-statement.
+    \item Duplication is avoided with a hash table (\emph{Unique Node Table}).
+    \end{enumerate}
+  \end{itemize}
+\end{frame}
 
 \begin{frame}
   \begin{figure}
     \centering
-    
-    \begin{subfigure}[b]{0.48\linewidth}
-      \centering
-
-      \begin{tikzpicture}
-        \begin{axis}[%
-          width=0.95\linewidth, height=0.7\linewidth,
-          every tick label/.append style={font=\scriptsize},
-          % x-axis
-          xlabel={number of BDD nodes},
-          xmajorgrids=true,
-          xmin=800000 ,
-          xmax=1200000000,
-          xmode = log,
-          % y-axis
-          ymin=0.1,
-          ymax=0.27,
-          ylabel={$\mu$s / BDD node},
-          ytick distance={0.05},
-          yminorgrids=false,
-          ymajorgrids=true,
-          grid style={dashed,black!20},
-          ]
-
-          \addplot [style=plot_buddy]
-          table {./data/cache_buddy_time_per_node.tex};
-        \end{axis}
-      \end{tikzpicture}
-    \end{subfigure}
-    \quad
-    \begin{subfigure}[b]{0.48\linewidth}
-      \centering
-
-      \begin{tikzpicture}
-        \begin{axis}[%
-          width=0.95\linewidth, height=0.7\linewidth,
-          every tick label/.append style={font=\scriptsize},
-          % x-axis
-          xlabel={number of BDD nodes},
-          xmin=800000 ,
-          xmax=1200000000,
-          xmode = log,
-          % y-axis
-          ymin=2,
-          ymax=5.95,
-          ylabel={misses / BDD node},
-          ytick distance={1},
-          yminorgrids=true,
-          ymajorgrids=true,
-          grid style={dashed,black!20},
-          ]
-          
-          \addplot+ [style=plot_buddy]
-          table {./data/cache_buddy_misses_per_node.tex};
-        \end{axis}
-      \end{tikzpicture}
-    \end{subfigure}
 
     \begin{tikzpicture}
-      \begin{customlegend}[
-        legend columns=-1,
-        legend style={draw=none,column sep=1ex},
-        legend entries={BuDDy}
+      \begin{axis}[%
+        width=0.69\linewidth, height=0.42\linewidth,
+        every tick label/.append style={font=\scriptsize},
+        % x-axis
+        xlabel={number of BDD nodes},
+        xmajorgrids=true,
+        xmin=800000 ,
+        xmax=1200000000,
+        xmode = log,
+        % y-axis
+        ymin=0.1,
+        ymax=0.27,
+        ylabel={$\mu$s / BDD node},
+        ytick distance={0.05},
+        yminorgrids=false,
+        ymajorgrids=true,
+        grid style={dashed,black!20},
         ]
-        \addlegendimage{style=plot_buddy}
-      \end{customlegend}
+
+        \addplot [style=plot_buddy]
+        table {./data/cache_buddy_time_per_node.tex};
+      \end{axis}
     \end{tikzpicture}
-    
-    \caption{Cache behaviour for the $N$-Queens problem.}
+
+    \caption{Running time of \emph{BuDDy} for the $N$-Queens problem.}
   \end{figure}
 
 \end{frame}
@@ -243,7 +216,7 @@
 \begin{frame}
   \begin{figure}
     \centering
-    
+
     \begin{tikzpicture}
       \begin{axis}[%
         width=0.69\linewidth, height=0.42\linewidth,
@@ -275,26 +248,84 @@
       \end{axis}
     \end{tikzpicture}
 
-    \begin{tikzpicture}
-      \begin{customlegend}[
-        legend columns=-1,
-        legend style={draw=none,column sep=1ex},
-        legend entries={BuDDy}
-        ]
-        \addlegendimage{style=plot_buddy}
-      \end{customlegend}
-    \end{tikzpicture}
-    
-    \caption{Running time for \emph{Tic-Tac-Toe} with $N=21$.}
+    \caption{Running time of \emph{BuDDy} for \emph{Tic-Tac-Toe} with $N=21$.}
   \end{figure}
 
 \end{frame}
 
+\section{Why do they break?}
+
+\begin{frame}[plain,noframenumbering]{}
+  \frametitle{Contents}
+  \tableofcontents[currentsection]
+\end{frame}
+
+\begin{frame}
+  \begin{figure}
+    \centering
+
+    \input{tikz/io_model}
+
+    \caption{The I/O model by Aggarwal and Vitter '87}
+  \end{figure}
+
+\end{frame}
+
+\begin{frame}
+  For any realistic values of $N$, $M$, and $B$ we have that
+
+  \begin{equation*}
+      N/B \quad < \quad \sort(N) \triangleq N/B \cdot \log_{M/B} N/B \quad \ll \quad N
+    \enspace ,
+  \end{equation*}
+
+  \begin{theorem}[Aggarwal and Vitter '87]
+    $N$ elements can be sorted in $\Theta(\sort(N))$ I/Os.
+  \end{theorem}
+  \begin{theorem}[Arge '95]
+    $N$ elements can be inserted in and extracted from a Priority Queue in
+    $\Theta(\sort(N))$ I/Os.
+  \end{theorem}
+\end{frame}
+
 \begin{frame}[fragile]
+  \frametitle{CountPaths : \emph{Example}}
+
   \input{anim/count_paths_rec.tex}
 \end{frame}
 
-\blankframe
+\begin{frame}
+  \begin{table}
+    \centering
+    \begin{tabular}{rl}
+      Algorithm                 & \only<1>{Time }\only<2>{I/O-}Complexity\only<2>{\hspace{7pt}}
+      \\ \hline \hline
+      \lstinline{bdd_pathcount} & $O(N_f)$
+      \\ \hline
+      \lstinline{bdd_not}       & $O(N_f)$
+      \\
+      \lstinline{bdd_restrict}  & $O(N_f)$
+      \\
+      \lstinline{bdd_apply}     & $O(N_f \cdot N_g)$
+      \\ \hline
+      \lstinline{bdd_equal}     & $O(1)$
+    \end{tabular}
+  \end{table}
+\end{frame}
+
+\section{How can we fix it?}
+
+\begin{frame}[plain,noframenumbering]{}
+  \frametitle{Contents}
+  \tableofcontents[currentsection]
+\end{frame}
+
+\subsection{CountPaths}
+
+\begin{frame}[plain,noframenumbering]{}
+  \frametitle{Contents}
+  \tableofcontents[currentsection, currentsubsection]
+\end{frame}
 
 \begin{frame}
   % Let every node be uniquely identified by a tuple $(\mathit{label},
@@ -306,9 +337,8 @@
     \end{tikzpicture}
   \end{center}
   % Nodes are ordered based on their \emph{uid} as follows
-  \vspace{20pt}\pause
+  \vspace{20pt}
   \begin{equation*}
-    \label{eq:ordering}
     (i_1, \mathit{id}_1) < (i_2, \mathit{id}_2)
     \equiv
     i_1 < i_2 \vee (i_1 = i_2 \wedge \mathit{id}_i < \mathit{id}_j)
@@ -339,9 +369,9 @@
             \\ \\
               & $\triple{(2,0)}{(3,0)}{(3,1)}$ & ,
             \\ \\
-              & $\triple{(3,0)}{\bot}{\top}$   & ,
+              & $\triple{(3,0)}{\top}{\bot}$   & ,
             \\ \\
-              & $\triple{(3,1)}{\top}{\bot}$   & ]
+              & $\triple{(3,1)}{\bot}{\top}$   & ]
           \end{tabular}
           \vspace{6pt}
         }
@@ -364,9 +394,9 @@
           \begin{tabular}{r c l}
             [ & $((0,0), (2,0), (2,1))$ & ,
             \\ \\
-              & $((2,0), \top, (3,0))$ & ,
+              & $((2,0), \bot, (3,0))$  & ,
             \\ \\
-              & $((2,1), (3,0), \bot)$   & ,
+              & $((2,1), (3,0), \top)$  & ,
             \\ \\
               & $((3,0), \top, \bot)$   & ]
           \end{tabular}
@@ -374,7 +404,7 @@
         }
       \end{subfigure}
 
-      \caption{$\neg (x_0 \ ?\ x_2 \vee x_3 \ :\ x_2 \wedge x_3)$}
+      \caption{$\neg(x_0\ ?\ x_2 \wedge x_3 : x_2 \wedge x_3)$}
     \end{subfigure}
 
     \caption{Node-based representation of prior shown BDDs}
@@ -383,204 +413,267 @@
 \end{frame}
 
 \begin{frame}
-  \frametitle{CountPaths Example}
+  \frametitle{CountPaths : \emph{Example}}
 
   \input{anim/count_paths_tfp.tex}
 \end{frame}
 
+\subsection{Apply}
+
+\begin{frame}[plain,noframenumbering]{}
+  \frametitle{Contents}
+  \tableofcontents[currentsection, currentsubsection]
+\end{frame}
+
 \begin{frame}
+  \frametitle{Apply}
+
+  \only<1>{
+    \setvalue{tandem_apply  = black}
+    \setvalue{tandem_reduce = black}
+  }
+  \only<2>{
+    \setvalue{tandem_apply  = black}
+    \setvalue{tandem_reduce = lightgray}
+  }
+
   \input{tikz/tandem.tex}
 \end{frame}
 
 \begin{frame}
-  \frametitle{Apply Example ($\wedge$)}
+  \frametitle{Apply : \emph{Example}}
+
+  % NOTE: The algorithm as presented here has a bug; for more information read
+  % the note within the animation file.
 
   \input{anim/apply_tfp.tex}
 \end{frame}
 
 \begin{frame}
-  \frametitle{Reduce Example}
+  \frametitle{Apply}
 
-  \input{anim/reduce_tfp.tex}  
+  \setvalue{tandem_apply  = lightgray}
+  \setvalue{tandem_reduce = black}
+
+  \input{tikz/tandem.tex}
 \end{frame}
 
-\blankframe
+\begin{frame}
+  \frametitle{Apply : \emph{Example {\tiny(Continued)}}}
+
+  \input{anim/reduce_tfp.tex}
+\end{frame}
 
 \begin{frame}
-  \begin{table}[ht!]
-    \scriptsize
-
+  \begin{table}
     \centering
-    \begin{tabular}{r l || c | c}
-      \multicolumn{2}{c||}{Algorithm} & Depth-first & Time-forwarded
+    \begin{tabular}{rl}
+      Algorithm                 & I/O-Complexity
       \\ \hline \hline
-      Reduce         &                                    & $O(N)$                       & $O(\sort(N))$
-      \\ \hline \multicolumn{4}{c}{BDD Manipulation} \\ \hline
-      Apply          & $f \odot g$                        & $O(N_f \cdot N_g)$           & $O(\sort(N_f \cdot N_g))$
+      \lstinline{bdd_pathcount} & $O(\sort(N_f))$
+      \\ \hline
+      \lstinline{bdd_not}       & $O(N_f / B)$
       \\
-      If-Then-Else   & $f\ ?\ g\ :\ h$                    & $O(N_f \cdot N_g \cdot N_h)$ & $O(\sort (N_f \cdot N_g \cdot N_h))$
+      \lstinline{bdd_restrict}  & $O(\sort(N_f))$
       \\
-      Restrict       & $f|_{x_i = v}$                      & $O(N)$                       & $O(\sort(N))$
-      \\
-      Negation       & $\neg f$                           & $O(1)$                       & $O(1)$
-      \\
-      Quantification & $\exists/\forall v : f|_{x_i = v}$  & $O(N^2)$                     & $O(\sort(N^2))$
-      % \\
-      % \textcolor{gray}{Composition}
-      %   & \textcolor{gray}{$f|_{x_i = g}$}
-      %   & \textcolor{gray}{$O(N_f^2 \cdot N_g)$}
-      %   & \textcolor{gray}{$O(\sort(N_f^2 \cdot N_g))$}
-      \\ \hline \multicolumn{4}{c}{Counting} \\ \hline
-      Count Paths    & $\# $paths in $f$ to $\top$        & $O(N)$                       & $O(\sort(N))$
-      \\
-      Count SAT      & $\# x : f(x)$                      & $O(N)$                       & $O(\sort(N))$
-      \\ \hline \multicolumn{4}{c}{Other} \\ \hline
-      Equality       & $f \equiv g$                       & $O(1)$                       & $O(\sort(N))$
-      \\
-      Evaluate       & $f(x)$                             & $O(L)$                       & $O(N/B)$
-      \\
-      Min/Max SAT    & $\min/\max\{ x \ |\ f(x) \}$       & $O(L)$                       & $O(N/B)$
+      \lstinline{bdd_apply}     & $O(\sort(N_f \cdot N_g))$
+      \pause
+      \\ \hline
+      \lstinline{bdd_equal}     & ?
     \end{tabular}
-
-    %\caption{I/O-complexity of depth-first algorithms compared to our
-    %         time-forwarded.}
   \end{table}
-
 \end{frame}
 
-\input{fram/reveal.tex}
+\subsection{Equality Checking}
+
+\begin{frame}[plain,noframenumbering]{}
+  \frametitle{Contents}
+  \tableofcontents[currentsection, currentsubsection]
+\end{frame}
 
 \begin{frame}
+  \frametitle{Equality Checking}
+
+  \vspace{30pt}
+  \begin{center}
+    {\huge $f \leftrightarrow g \equiv \top$}
+  \end{center}
+
+  \pause
+  \vspace{20pt}
+
+  \begin{equation*}
+    \underbrace{O(\sort(N^2))}_{\texttt{Apply}}
+    + \underbrace{O(\sort(N^2))}_{\texttt{Reduce}}
+    + \underbrace{O(1))}_{\text{check is } \top}
+    = O(\sort(N^2))
+  \end{equation*}
+\end{frame}
+
+\begin{frame}[t]
+  \frametitle{Equality Checking}
+
+  \begin{theorem}[Bryant '86]
+    Let $\pi$ be a variable order and $f : \B^n \rightarrow \B$ then there
+    exists a unique (up to isomorphism) Reduced Ordered Binary Decision
+    Diagram representing $f$ with ordering $\pi$.
+  \end{theorem}
+
+  \pause
+  {\bf Trivial cases: $f \not \equiv g$ if there is a mismatch in}
+
+  \begin{tabular}{c l l l}
+    {\tiny $\blacksquare$} & $N_f \neq N_g$       & Number of nodes            & $O(1)$ I/Os
+    \\
+    {\tiny $\blacksquare$} & $L_f \neq L_g$       & Number of levels           & $O(1)$ I/Os
+    \\
+    {\tiny $\blacksquare$} & $N_{f,i} \neq N_{g,i}$ & Number of nodes on a level & $O(L/B)$ I/Os
+    \\
+    {\tiny $\blacksquare$} & $L_{f,i} \neq L_{g,i}$ & Label of an $i$th level    & $O(L/B)$ I/Os
+  \end{tabular}
+\end{frame}
+
+\begin{frame}[t]
+  \frametitle{Equality Checking}
+
+  % TODO: code duplication
+  \begin{theorem}[Bryant '86]
+    Let $\pi$ be a variable order and $f : \B^n \rightarrow \B$ then there
+    exists a unique (up to isomorphism) Reduced Ordered Binary Decision
+    Diagram representing $f$ with ordering $\pi$.
+  \end{theorem}
+
   \begin{figure}
     \centering
-    
-    \begin{subfigure}[b]{0.48\linewidth}
-      \centering
 
-      \begin{tikzpicture}
-        \begin{axis}[%
-          width=0.95\linewidth, height=0.7\linewidth,
-          every tick label/.append style={font=\scriptsize},
-          % x-axis
-          xlabel={number of BDD nodes},
-          xmajorgrids=true,
-          xmin=51000000,
-          xmax=300000000000,
-          xmode = log,
-          % y-axis
-          ymin=1,
-          ymax=1000000,
-          ylabel={Time (seconds)},
-          ytick distance={10},
-          ymode=log,
-          yminorgrids=false,
-          ymajorgrids=true,
-          grid style={dashed,black!20},
-          ]
-          \only<5-> {
-            \addplot+ [style=plot_adiar]
-            table {./data/queens_adiar_time.tex};
-          }
-
-          \only<2-> {
-            \addplot+ [style=plot_buddy]
-            table {./data/queens_buddy_time.tex};
-          }
-
-          \only<3-> {
-            \addplot+ [style=plot_cudd]
-            table {./data/queens_cudd_time.tex};
-          }
-
-          \only<4-> {
-            \addplot+ [style=plot_sylvan]
-            table {./data/queens_sylvan_time.tex};
-          }
-        \end{axis}
-      \end{tikzpicture}
-
-      \label{fig:queens:time}
-    \end{subfigure}
-    \quad
-    \begin{subfigure}[b]{0.48\linewidth}
-      \centering
-
-      \begin{tikzpicture}
-        \begin{axis}[%
-          width=0.95\linewidth, height=0.7\linewidth,
-          every tick label/.append style={font=\scriptsize},
-          % x-axis
-          xlabel={number of BDD nodes},
-          xmajorgrids=true,
-          xmin=51000000,
-          xmax=300000000000,
-          xmode = log,
-          % y-axis
-          ymin=0,
-          ymax=2.2,
-          ytick distance={0.5},
-          ylabel={$\mu$s / BDD node},
-          yminorgrids=true,
-          ymajorgrids=true,
-          grid style={dashed,black!20},
-          ]
-
-          \only<2-> {
-            \addplot+ [style=plot_buddy]
-            table {./data/queens_buddy_time_per_node.tex};
-          }
-          
-          \only<3-> {
-            \addplot+ [style=plot_cudd]
-            table {./data/queens_cudd_time_per_node.tex};
-          }
-
-          \only<4-> {
-            \addplot+ [style=plot_sylvan]
-            table {./data/queens_sylvan_time_per_node.tex};
-          }
-          
-          \only<5-> {
-            \addplot+ [style=plot_adiar]
-            table {./data/queens_adiar_time_per_node.tex};
-          }
-        \end{axis}
-      \end{tikzpicture}
-
-      \label{fig:queens:time per node}
-    \end{subfigure}
-
-    \begin{tikzpicture}
-      \begin{customlegend}[
-        legend columns=-1,
-        legend style={draw=none,column sep=1ex},
-        legend entries={BuDDy, CUDD, Sylvan, Adiar}
-        ]
-        \addlegendimage{style=plot_buddy}
-        \addlegendimage{style=plot_cudd}
-        \addlegendimage{style=plot_sylvan}
-        \addlegendimage{style=plot_adiar}
-      \end{customlegend}
+    \begin{tikzpicture}[scale=1, every node/.style={transform shape}]
+      \input{anim/isomorphism_local_violation.tex}
     \end{tikzpicture}
-    
-    \caption{Minimum running times for the $N$-Queens problem.}
   \end{figure}
 
 \end{frame}
 
-\blankframe
+\begin{frame}[t]
+  \frametitle{Equality Checking}
 
-\begin{frame}
+  % TODO: code duplication
+  \begin{theorem}[Bryant '86]
+    Let $\pi$ be a variable order and $f : \B^n \rightarrow \B$ then there
+    exists a unique (up to isomorphism) Reduced Ordered Binary Decision
+    Diagram representing $f$ with ordering $\pi$.
+  \end{theorem}
 
-  \begin{center}
-    \begin{tikzpicture}[scale=0.7, every node/.style={transform shape}]
-      \input{tikz/octupus.tex}
-    \end{tikzpicture}
-  \end{center}
-  
+  \texttt{IsIsomorphic($f$, $g$)}
+  \begin{itemize}
+  \item Check whether root $v_f$ of $f$ and root $v_g$ of $g$ have a local violation.
+  \item Check $\mathit{low}(v_f) \sim \mathit{low}(v_g)$ and $\mathit{high}(v_f)
+    \sim \mathit{high}(v_g)$ ``recursively''.
+  \end{itemize}
+  Return \texttt{false} on first violation. If there are no violations then return \texttt{true}.
+  \pause
+  \begin{equation*}
+    \underbrace{O(\sort(N^2))}_{\texttt{Apply}'}
+    + \underbrace{\hcancel[gray]{O(\sort(N^2))}}_{\texttt{Reduce}}
+    + \underbrace{\hcancel[gray]{O(1))}}_{\text{check is } \top}
+    =
+    O(\sort(N^2))
+  \end{equation*}
 \end{frame}
 
-\input{fram/endslate.tex}
+\begin{frame}[t]
+  \frametitle{Equality Checking}
+
+  % TODO: code duplication
+  \begin{theorem}[Bryant '86]
+    Let $\pi$ be a variable order and $f : \B^n \rightarrow \B$ then there
+    exists a unique (up to isomorphism) Reduced Ordered Binary Decision
+    Diagram representing $f$ with ordering $\pi$.
+  \end{theorem}
+
+  \vspace{-10pt}
+  \begin{figure}
+    \centering
+
+    \begin{tikzpicture}[scale=0.9, every node/.style={transform shape}]
+      \input{tikz/isomorphism_level_fail.tex}
+    \end{tikzpicture}
+  \end{figure}
+  \pause
+  \vspace{-20pt}
+  Return \texttt{false} if more than $N_{f,i} = N_{g,i}$ pairs of nodes are checked on level $i$.
+  \begin{equation*}
+    \underbrace{O (\sort (\Sigma_{i}\ N_{f,i} ) )}_{\texttt{Apply}''}
+    =
+    O(\sort(N))
+  \end{equation*}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Equality Checking}
+
+  \input{anim/reduce_prop.tex}
+
+  {\bf Observation}
+
+  \vspace{-10pt}
+  Each level output by the \texttt{Reduce} algorithm has the following properties:
+  \begin{itemize}
+    \onslide<4->{
+    \item Nodes on level $i$ have their identifiers \emph{consecutively} numbered.
+    }
+    \onslide<6->{
+    \item Nodes on level $i$ are output sorted by their children.
+    }
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Equality Checking}
+
+  \begin{theorem}
+    If $G_f$ and $G_g$ are outputs of \lstinline{Reduce}.
+    \begin{center}
+      $G_f \sim G_g$ $\iff$ For all $i \in [0; N_f)$ the node $G_f[i]$ matches
+      $G_g[i]$ numerically.
+    \end{center}
+  \end{theorem}
+  \begin{proof}
+    $\Leftarrow$ : Must describe the exact same graph.
+
+    $\Rightarrow$ : Strong induction on BDD levels bottom-up.
+  \end{proof}
+
+  \pause
+  \begin{corollary}
+    If $G_f$ and $G_g$ are outputs of \lstinline{Reduce} then $f \equiv g$ is
+    computable using $2 \cdot N/B$ I/Os.
+  \end{corollary}
+\end{frame}
+
+\begin{frame}[plain,noframenumbering]{}
+  \frametitle{Contents}
+  \begin{columns}
+    \begin{column}{0.42\linewidth}
+      \tableofcontents
+    \end{column}
+    \begin{column}{0.57\linewidth}
+      \vspace{32pt}
+      \begin{table}
+        \centering
+        \begin{tabular}{cc}
+          \emph{Depth-First} & \emph{Time-Forwarded}
+          \\
+          $O(N_f)$           & $O(\sort(N_f))$
+          \\
+          $O(N_f \cdot N_g)$ & $O(\sort(N_f))$
+          \\
+          $O(1)$             & $2N / B$
+        \end{tabular}
+      \end{table}
+    \end{column}
+  \end{columns}
+\end{frame}
+
 
 \end{document}
 

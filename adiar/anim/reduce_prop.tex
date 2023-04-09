@@ -1,0 +1,60 @@
+\begin{center}
+  \begin{tikzpicture}
+    % i, max
+    \onslide<2->{
+      \node[shape = rectangle, draw = black, minimum width=84, rounded corners=5]
+      (0) {\small $i$, $\text{max}$};
+
+      \node[shape = circle, draw = black, minimum width=24, below left =1 and -1 of 0]
+      (00) {$\beta$};
+      \draw[->,dashed] (0) edge[bend right=15] (00);
+
+      \node[shape = circle, draw = black, minimum width=24, below right=1 and -1 of 0]
+      (01) {$\alpha$};
+      \draw[->] (0) edge[bend left=15] (01);
+    }
+
+    % i, max-1
+    \onslide<3->{
+      \node[shape = rectangle, draw = black, minimum width=84, rounded corners=5, left =of 0]
+      (1) {\small $i$, $\text{max}-1$};
+
+      \node[shape = circle, draw = black, minimum width=24, below left =1 and -1 of 1]
+      (10) {$\delta$};
+      \draw[->,dashed] (1) edge[bend right=15] (10);
+
+      \node[shape = circle, draw = black, minimum width=24, below right=1 and -1 of 1]
+      (11) {$\gamma$};
+      \draw[->] (1) edge[bend left=15] (11);
+    }
+
+    % ...
+    \onslide<3->{
+      \node[left =of 1] (dots1) { \dots};
+    }
+
+    % i, max-N+1
+    \onslide<4->{
+      \node[shape = rectangle, draw = black, minimum width=84, rounded corners=5, left =of dots1]
+      (n) {\small $i$, $\text{max}-N_{f,i}+1$};
+
+      \node[shape = circle, draw = black, minimum width=24, below left =1 and -1 of n]
+      (n0) {$\zeta$};
+      \draw[->,dashed] (n) edge[bend right=15] (n0);
+
+      \node[shape = circle, draw = black, minimum width=24, below right=1 and -1 of n]
+      (n1) {$\epsilon$};
+      \draw[->] (n) edge[bend left=15] (n1);
+    }
+
+    % < ... < <
+    \onslide<5->{
+      \node[below left= 1.05 and 0.3 of 0] (comp0)     {{\bf <}};
+    }
+    \onslide<6->{
+      \node[below left= 1.05 and 0.3 of 1]  (comp1)    {{\bf <}};
+      \node[below left =1.20 and 1.0 of 1]  (compdots) {\dots};
+      \node[below right=1.05 and 0.22 of n] (compn)    {{\bf <}};
+    }
+  \end{tikzpicture}
+\end{center}

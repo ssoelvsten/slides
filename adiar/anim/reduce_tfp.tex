@@ -1,7 +1,7 @@
 \begin{columns}
   \begin{column}{0.25\linewidth}
     \centering
-    
+
     \begin{tikzpicture}[scale=0.7, every node/.style={transform shape}]
       % level: 0
       % (0,0), (0,0)    1
@@ -34,7 +34,7 @@
       % (3,0), true     2
       \node[shape = circle, draw = black, below= .6cm of 21]
       (31) {\tiny $(3,1)$};
-      
+
       % (3,1), (3,0)    3
       \node[shape = circle, draw = black, below= .6cm of 22]
       (32) {\tiny $(3,2)$};
@@ -60,9 +60,9 @@
       (31) edge[bend left=10] (sink_F)
       (32) edge[bend left=10] (sink_F)
       ;
-      
+
       % internal arcs
-      \draw[->, blue, dashed] 
+      \draw[->, blue, dashed]
       (20) edge (00)
       (21) edge (10)
       (30) edge (21)
@@ -117,7 +117,7 @@
       \onslide<20>{
         \draw[->, purple, thick] (10) edge (00);
       }
-    \end{tikzpicture}      
+    \end{tikzpicture}
 
     \begin{center}
       {\bf \footnotesize (c)} ~ $(a) \land (b)$
@@ -127,12 +127,12 @@
     \centering
 
     \onslide<7->{ \tiny Priority Queue: $Q_{\mathit{red}}$:
-      
+
       \begin{tabular}{rll}
         [ & \onslide<7-9>{$\arc{(2,2)}{\bot}{\bot}$      & ,}
         \\
           & \onslide<9-10>{$\arc{(2,1)}{\bot}{(3,\max)}$ & ,}
-        \\ 
+        \\
           & \onslide<7-11>{$\arc{(2,0)}{\top}{\bot}$     & ,}
         \\
           & \onslide<8-11>{$\arc{(2,0)}{\bot}{(3,\max)}$ & ,}
@@ -148,7 +148,7 @@
     }
 
     \vspace{10pt}
-    
+
     \only<2-9>{ \tiny Level: $3$
 
       \only<2->{
@@ -227,7 +227,7 @@
       \end{tabular}
       \vspace{8pt}
     }
-    
+
   \end{column}
   \begin{column}{0.25\linewidth}
     \centering
@@ -249,7 +249,7 @@
       }%
     }
     \vspace{10pt}
-    
+
     \begin{tikzpicture}[scale=0.7, every node/.style={transform shape}]
       % nodes
       \onslide<22->{
@@ -279,7 +279,7 @@
 
       \onslide<5->{
         \node[shape = rectangle, draw = black, below left=.5cm and .5cm of 3]
-        (sink_T) {$\top$};          
+        (sink_T) {$\top$};
       }
 
       \onslide<5->{\draw[->, dashed] (3) edge (sink_T);}
@@ -290,7 +290,7 @@
       \onslide<5->{\draw[->] (3) edge (sink_F);}
       \onslide<13->{\draw[->] (2) edge[bend left=6] (sink_F);}
       \onslide<19->{\draw[->] (1) edge (sink_F);}
-      \onslide<22->{\draw[->] (0) edge (1);}        
+      \onslide<22->{\draw[->] (0) edge (1);}
     \end{tikzpicture}
 
     \begin{center}

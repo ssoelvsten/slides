@@ -61,7 +61,7 @@
 
   \pause
   \vspace{20pt}
-  
+
   \begin{equation*}
     \underbrace{O(\sort(N^2))}_{\texttt{Apply}}
     + \underbrace{O(\sort(N^2))}_{\texttt{Reduce}}
@@ -101,7 +101,7 @@
     \\
     {\tiny $\blacksquare$} & $L_{f,i} \neq L_{g,i}$ & Label of an $i$th level    & $O(L/B)$ I/Os
   \end{tabular}
-    
+
 \end{frame}
 
 % O(sort(N)):
@@ -117,7 +117,7 @@
       \input{anim/isomorphism_local_violation.tex}
     \end{tikzpicture}
   \end{figure}
-  
+
 \end{frame}
 
 \begin{frame}
@@ -137,7 +137,7 @@
     + \underbrace{\hcancel[gray]{O(1))}}_{\text{check is } \top}
     = O(\sort(N^2))
   \end{equation*}
-  
+
 \end{frame}
 
 \begin{frame}
@@ -156,7 +156,7 @@
   \begin{equation*}
     O(\sort(N))
   \end{equation*}
-  
+
 \end{frame}
 
 % 2 N/B:
@@ -208,7 +208,7 @@
   \end{theorem}
   \begin{proof}
     $\Leftarrow$ : Must describe the exact same graph.
-    
+
     $\Rightarrow$ : Strong induction on BDD levels bottom-up \dots
   \end{proof}
 
@@ -218,7 +218,7 @@
     computable using $2 \cdot N/B$ I/Os.%
     \footnote<2->{Assuming they are both unnegated (or both negated).}
   \end{corollary}
-  
+
 \end{frame}
 
 \begin{frame}
@@ -232,11 +232,11 @@
 
     \caption{Base case: $n$}
   \end{figure}
-  
+
 \end{frame}
 
 \begin{frame}
-  
+
   \begin{figure}
     \centering
 
@@ -246,7 +246,7 @@
 
     \caption{Induction case: $i < n$}
   \end{figure}
-  
+
 \end{frame}
 
 % Algoritms in practice
@@ -270,7 +270,7 @@
     \caption{Checking the (EPFL Benchmark) \emph{voter} circuit's single output
       gate ($\abs{N_f} = \abs{N_g} = 5.76~\text{MiB}$).}
   \end{table}
-  
+
 \end{frame}
 
 \end{document}
