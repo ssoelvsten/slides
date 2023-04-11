@@ -24,7 +24,6 @@
 \newcommand{\triple}[3]{\ensuremath{(#1, #2, #3)}}
 \renewcommand{\arc}[3]{\ensuremath{#1 \xrightarrow{_{#2}} #3}}
 
-
 \tikzstyle{plot_adiar}=[color=black, mark=o, mark size=1pt, line width=0.7pt]
 \tikzstyle{plot_buddy}=[color=red, mark=o, mark size=1pt, line width=0.7pt]
 \tikzstyle{plot_cudd}=[color=blue, mark=diamond, mark size=1pt, line width=0.7pt]
@@ -477,11 +476,70 @@
       \lstinline{bdd_restrict}  & $O(\sort(N_f))$
       \\
       \lstinline{bdd_apply}     & $O(\sort(N_f \cdot N_g))$
-      \pause
-      \\ \hline
-      \lstinline{bdd_equal}     & ?
     \end{tabular}
   \end{table}
+\end{frame}
+
+\begin{frame}
+  \begin{figure}
+    \centering
+
+    \begin{tikzpicture}
+      \begin{axis}[%
+        width=0.70\linewidth, height=0.42\linewidth,
+        every tick label/.append style={font=\scriptsize},
+        % x-axis
+        xlabel={number of BDD nodes},
+        xmajorgrids=true,
+        xmin=51000000,
+        xmax=300000000000,
+        xmode = log,
+        % y-axis
+        ymin=0,
+        ymax=2.2,
+        ytick distance={0.5},
+        ylabel={$\mu$s / BDD node},
+        yminorgrids=true,
+        ymajorgrids=true,
+        grid style={dashed,black!20},
+        ]
+
+        \only<1-> {
+          \addplot+ [style=plot_buddy]
+          table {./data/queens_buddy_time_per_node.tex};
+        }
+        \only<1-> {
+          \addplot+ [style=plot_cudd]
+          table {./data/queens_cudd_time_per_node.tex};
+        }
+        \only<1-> {
+          \addplot+ [style=plot_sylvan]
+          table {./data/queens_sylvan_time_per_node.tex};
+        }
+
+        \only<2-> {
+          \addplot+ [style=plot_adiar]
+          table {./data/queens_adiar_time_per_node.tex};
+        }
+      \end{axis}
+
+    \end{tikzpicture}
+
+    \begin{tikzpicture}
+      \begin{customlegend}[
+        legend columns=-1,
+        legend style={draw=none,column sep=1ex},
+        legend entries={Adiar, BuDDy, CUDD, Sylvan}
+        ]
+        \addlegendimage{style=plot_adiar}
+        \addlegendimage{style=plot_buddy}
+        \addlegendimage{style=plot_cudd}
+        \addlegendimage{style=plot_sylvan}
+      \end{customlegend}
+    \end{tikzpicture}
+
+    \caption{Running time for the \emph{N-Queens} problems.}
+  \end{figure}
 \end{frame}
 
 \subsection{Equality Checking}
@@ -489,6 +547,26 @@
 \begin{frame}[plain,noframenumbering]{}
   \frametitle{Contents}
   \tableofcontents[currentsection, currentsubsection]
+\end{frame}
+
+\begin{frame}
+  \begin{table}
+    \centering
+    \begin{tabular}{rl}
+      Algorithm                 & I/O-Complexity
+      \\ \hline \hline
+      \lstinline{bdd_pathcount} & $O(\sort(N_f))$
+      \\ \hline
+      \lstinline{bdd_not}       & $O(N_f / B)$
+      \\
+      \lstinline{bdd_restrict}  & $O(\sort(N_f))$
+      \\
+      \lstinline{bdd_apply}     & $O(\sort(N_f \cdot N_g))$
+                                  \pause
+      \\ \hline
+      \lstinline{bdd_equal}     & ?
+    \end{tabular}
+  \end{table}
 \end{frame}
 
 \begin{frame}
@@ -649,6 +727,29 @@
     computable using $2 \cdot N/B$ I/Os.
   \end{corollary}
 \end{frame}
+
+
+\begin{frame}
+  \frametitle{Equality Checking}
+
+  \begin{table}
+    \centering
+    \begin{tabular}{r | l}
+      Algorithm                         & Time (s)
+      \\ \hline
+      $f \leftrightarrow g \equiv \top$ & 0.38
+      \\ \onslide<2->{
+      $O(\sort(N))$                     & 0.058}
+      \\ \onslide<3->{
+      $2N/B$                            & 0.006}
+    \end{tabular}
+
+    \caption{Checking the (EPFL Benchmark) \emph{voter} circuit's single output
+      gate ($\abs{N_f} = \abs{N_g} = 5.76~\text{MiB}$).}
+  \end{table}
+\end{frame}
+
+\blankframe
 
 \begin{frame}[plain,noframenumbering]{}
   \frametitle{Contents}
