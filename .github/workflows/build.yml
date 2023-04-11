@@ -19,7 +19,7 @@ jobs:
       uses: xu-cheng/latex-action@master
       with:
         working_directory: ./
-        root_file: | 
+        root_file: |
           mlightdp.tex
           ssmg-complexity.tex
           one_minute_madness.tex
@@ -28,11 +28,10 @@ jobs:
       uses: xu-cheng/latex-action@master
       with:
         working_directory: ./adiar/
-        root_file: | 
+        root_file: |
           core.tex
           core.tacas22.tex
           core.movep22.tex
-          equality.tex
           MSc_thesis.tex
           nested_sweeping.tex
 
@@ -53,4 +52,3 @@ jobs:
         ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
         BRANCH: out
         FOLDER: out
-  
