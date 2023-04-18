@@ -1,0 +1,57 @@
+% <adiar>
+\draw[densely dotted, color=\getvalue{arch_adiar}] (0,0) rectangle ++(11.5,6);
+\node[anchor=west, color=\getvalue{arch_adiar}] at (0,5.8) {\footnotesize \emph{\texttt{<adiar>}}};
+
+\node[color=\getvalue{arch_adiar}] at (5.7,5.5) {$\dots$};
+
+% <adiar/internal>
+\draw[densely dotted, color=\getvalue{arch_internal}] (0.2,0.2) rectangle ++(11.1,1.7);
+\node[anchor=west, color=\getvalue{arch_internal}] at (0.2,1.7) {\footnotesize \emph{\texttt{<adiar/internal>}}};
+
+\node[draw, rectangle split, rectangle split parts=2, color=\getvalue{arch_internal}]
+at (5.7, 1) (internal_prod2)
+{ \footnotesize \texttt{prod2.h} \nodepart{two}
+  \footnotesize \texttt{prod2<$\dots$>($\dots$)}
+};
+
+\node[color=\getvalue{arch_internal}] at (8,1) {$\dots$};
+
+% <adiar/bdd>
+\draw[densely dotted, color=\getvalue{arch_bdd}] (0.2,2.4) rectangle ++(5.2,2.5);
+\node[anchor=west, color=\getvalue{arch_bdd}] at (0.2,4.7) {\footnotesize \emph{\texttt{<adiar/bdd>}}};
+
+\node[draw, rectangle split, rectangle split parts=2, color=\getvalue{arch_bdd}]
+at (3.4,3.5) (bdd_apply)
+{ \footnotesize \texttt{bdd\_apply.cpp} \nodepart{two}
+  \footnotesize
+  \begin{tabular}{l}
+    \texttt{bdd\_prod2\_policy}
+    \\
+    \texttt{bdd\_apply($\dots$)}
+  \end{tabular}
+};
+
+\node[color=\getvalue{arch_bdd}] at (0.9,3.5) {$\dots$};
+
+\draw[->, rounded corners, line width = 0.7pt, dashed, color=\getvalue{arch_bdd}]
+  (internal_prod2) -- ($(internal_prod2)+(0,1.1)$) -| (bdd_apply);
+
+% <adiar/zdd>
+\draw[densely dotted, color=\getvalue{arch_zdd}] (6,2.4) rectangle ++(5.2,2.5);
+\node[anchor=west, color=\getvalue{arch_zdd}] at (6,4.7) {\footnotesize \emph{\texttt{<adiar/zdd>}}};
+
+\node[draw, rectangle split, rectangle split parts=2, color=\getvalue{arch_zdd}]
+at (8,3.5) (zdd_binop)
+{ \footnotesize \texttt{zdd\_binop.cpp} \nodepart{two}
+  \footnotesize
+  \begin{tabular}{l}
+    \texttt{zdd\_prod2\_policy}
+    \\
+    \texttt{zdd\_binop($\dots$)}
+  \end{tabular}
+};
+
+\node[color=\getvalue{arch_zdd}] at (10.5,3.5) {$\dots$};
+
+\draw[->, rounded corners, line width = 0.7pt, dashed, color=\getvalue{arch_zdd}]
+  (internal_prod2) -- ($(internal_prod2)+(0,1.1)$) -| (zdd_binop);

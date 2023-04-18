@@ -1,0 +1,437 @@
+\documentclass[english, aspectratio=169]{beamer}
+% english is for the language used in standard texts (figures, tables etc)
+% aspectratio of 16:9 or set it for more old school to 4:3 (without the ':')
+
+% ---------------------------------------------------------------------------- %
+% Load base preamble
+% ---------------------------------------------------------------------------- %
+\usepackage{import}
+\subimport{../preamble/}{beamer.tex}
+
+% ---------------------------------------------------------------------------- %
+% Local settings
+% ---------------------------------------------------------------------------- %
+% https://tex.stackexchange.com/a/20613
+\newcommand\hcancel[2][black]{\setbox0=\hbox{$#2$}%
+  \rlap{\raisebox{.35\ht0}{\textcolor{#1}{\rule{\wd0}{1pt}}}}#2}
+
+\newcommand{\B}[0]{\ensuremath{\mathbb{B}}}
+\newcommand{\pow}[0]{\ensuremath{\mathcal{P}}}
+
+\newcommand{\sort}[0]{\text{sort}}
+
+\newcommand{\triple}[3]{\ensuremath{(#1, #2, #3)}}
+\renewcommand{\arc}[3]{\ensuremath{#1 \xrightarrow{_{#2}} #3}}
+
+\tikzstyle{plot_adiar}=[color=blue, mark=o, mark size=1.5pt, line width=1pt]
+\tikzstyle{plot_cudd}=[color=red, mark=diamond, mark size=1.5pt, line width=1pt]
+
+% Horizontal legends: https://tex.stackexchange.com/a/101578
+% argument #1: any options
+\makeatletter
+\newenvironment{customlegend}[1][]{%
+    \begingroup
+    % inits/clears the lists (which might be populated from previous
+    % axes):
+    \pgfplots@init@cleared@structures
+    \pgfplotsset{#1}%
+}{%
+    % draws the legend:
+    \pgfplots@createlegend
+    \endgroup
+}%
+
+% makes \addlegendimage available (typically only available within an
+% axis environment):
+\def\addlegendimage{\pgfplots@addlegendimage}
+\makeatother
+
+% ------------------------------------------------------------------------------
+% TITLEPAGE
+% ------------------------------------------------------------------------------
+\title{
+  Adiar 1.1 : Zero-suppressed Decision Diagrams\\\hspace{80pt}in External Memory
+}
+
+\author{{\bf Steffan Christ S{\o}lvsten} and Jaco van de Pol}
+
+\institute{\includegraphics[width=0.2\linewidth]{../external/aulogo_uk_var2_black.eps}}
+
+\date{$18^{\text{th}}$ of May, 2023}
+
+\begin{document}
+
+\titleframe
+
+\begin{frame}[b,plain,noframenumbering]{}
+  \pause
+
+  \begin{center}
+    {\Huge \textbf{Adiar}}
+
+    {\large
+      \only<-2>{%
+        Binary%
+      }%
+      \only<3>{%
+        {\textbf{Multi-terminal}}%
+      }%
+      \only<4>{%
+        {\textbf{Quantum Multi-valued}}%
+      }%
+      \only<5>{%
+        {\textbf{Zero-suppressed}}%
+      }
+      Decision Diagrams
+
+      \vspace{-5pt}
+      in External Memory
+    }
+
+    \vspace{12pt}
+
+    \textcolor{gray}{\small
+      \href{http://github.com/ssoelvsten/adiar}{github.com/ssoelvsten/adiar}
+    }
+
+    \vspace{80pt}
+  \end{center}
+\end{frame}
+
+\begin{frame}
+  \begin{figure}
+    \centering
+
+    \begin{tikzpicture}[every node/.style={transform shape}]
+      % nodes
+      \node[shape = circle, draw = black]
+      (0) {$x_0$};
+
+      \node[shape = circle, draw = black, below left=1.4cm and .5cm of 0]
+      (21) {$x_2$};
+
+      \node[shape = circle, draw = black, below right=1.4cm and .5cm of 0]
+      (22) {$x_2$};
+
+      \node[shape = circle, draw = black, below right=0.4cm and .5cm of 21]
+      (3) {$x_3$};
+
+      % leafs
+      \node[shape = rectangle, draw = black, below left=.4cm and .5cm of 3]
+      (sink_F) {$0$};
+
+      \node[shape = rectangle, draw = black, below right=.4cm and .5cm of 3]
+      (sink_T) {$1$};
+
+      % arcs
+      \draw[->, dashed]
+      (0)  edge (21)
+      (21) edge (sink_F)
+      (22) edge (3)
+      (3)  edge (sink_F)
+      ;
+
+      \draw[->]
+        (0)  edge (22)
+        (21) edge (3)
+        (22) edge (sink_T)
+        (3)  edge (sink_T)
+      ;
+
+      % semantics
+      \onslide<2>{
+        \node[below right=0.1cm and 0.4cm of 0] {$x_0 = 1$};
+        \node[below left=0.1cm and 0.4cm of 0]  {$x_0 = 0$};
+      }
+    \end{tikzpicture}
+  \end{figure}
+\end{frame}
+
+\begin{frame}
+  \begin{figure}
+    \centering
+
+    \begin{subfigure}[b]{0.32\linewidth}
+      \centering
+
+      \begin{tikzpicture}[every node/.style={transform shape}]
+        \input{tikz/reduction_rule_bdd.tex}
+      \end{tikzpicture}
+
+      \vspace{10pt}
+      {\small {\bf BDD: } $f : \B^n \rightarrow \B$}
+    \end{subfigure}
+    \qquad\pause
+    \begin{subfigure}[b]{0.32\linewidth}
+      \centering
+
+      \begin{tikzpicture}[every node/.style={transform shape}]
+        \input{tikz/reduction_rule_zdd.tex}
+      \end{tikzpicture}
+
+      \vspace{10pt}
+      {\small {\bf ZDD: } $A \subseteq \pow(\B^n)$}
+    \end{subfigure}
+  \end{figure}
+\end{frame}
+
+\begin{frame}
+  \begin{figure}
+    \centering
+
+    \begin{tikzpicture}
+      \node[shape=circle, draw=black] at (1,0) (prod2) {};
+      \node[above=0.4 of prod2] (bdd_apply) {\texttt{bdd\_apply}};
+      \node[below=0.4 of prod2] (zdd_binop) {\texttt{zdd\_binop}};
+
+      \draw[->, rounded corners, line width = 1.2pt]
+        (prod2) edge (zdd_binop)
+        (prod2) edge (bdd_apply)
+      ;
+
+      \onslide<2-> {
+        \node[shape=circle, draw=black] at (5,0) (substitute) {};
+        \node[below=0.4 of substitute] (zdd_onset)    {\texttt{zdd\_onset}};
+        \node[right=0.4 of substitute] (bdd_restrict) {\texttt{bdd\_restrict}};
+        \node[above=0.4 of substitute] (zdd_offset)   {\texttt{zdd\_offset}};
+
+        \draw[->, rounded corners, line width = 1.2pt]
+          (substitute) edge (zdd_onset)
+          (substitute) edge (bdd_restrict)
+          (substitute) edge (zdd_offset)
+        ;
+      }
+
+      \onslide<2-> {
+        \node[shape=circle, draw=black] at (-3,0) (count) {};
+        \node[above=0.4 of count] (bdd_pathcount) {\texttt{bdd\_pathcount}};
+        \node[below=0.4 of count] (zdd_size)      {\texttt{zdd\_size}};
+
+        \draw[->, rounded corners, line width = 1.2pt]
+          (count) edge (bdd_pathcount)
+          (count) edge (zdd_size)
+        ;
+      }
+
+      \onslide<2-> {
+        \node[shape=circle, draw=black] at (-1.8,-3) (pred) {};
+        \node[left=0.4  of pred] (zdd_equal)    {\texttt{zdd\_equal}};
+        \node[below=0.4 of pred] (zdd_subseteq) {\texttt{zdd\_subseteq}};
+        \node[right=0.4 of pred] (bdd_equal)    {\texttt{bdd\_equal}};
+        \node[above=0.4 of pred] (zdd_disjoint) {\texttt{zdd\_disjoint}};
+
+        \draw[->, rounded corners, line width = 1.2pt]
+          (pred) edge (zdd_equal)
+          (pred) edge (zdd_subseteq)
+          (pred) edge (bdd_equal)
+          (pred) edge (zdd_disjoint)
+        ;
+      }
+
+      \onslide<4> {
+        \node[shape=circle, draw=black] at (4.8,-3) (intercut) {};
+      }
+      \onslide<3-> {
+        \node[left=0.4  of intercut] (zdd_change)             {\texttt{zdd\_change}};
+        \node[below=0.4 of intercut] (zdd_complement)         {\texttt{zdd\_complement}};
+        \node[right=0.4 of intercut] (zdd_expand)             {\texttt{zdd\_expand}};
+        \node[above right=0.4 and 0.6 of intercut] (zdd_from) {\texttt{zdd\_from\_bdd}};
+        \node[above left =0.4 and 0.6 of intercut] (bdd_from) {\texttt{bdd\_from\_zdd}};
+      }
+
+      \onslide<4> {
+        \draw[->, rounded corners, line width = 1.2pt]
+          (intercut) edge (zdd_change)
+          (intercut) edge (zdd_complement)
+          (intercut) edge (zdd_expand)
+        ;
+        \draw[->, rounded corners, line width = 1.2pt]
+          (intercut) |- (zdd_from)
+        ;
+        \draw[->, rounded corners, line width = 1.2pt]
+          (intercut) |- (bdd_from)
+        ;
+      }
+    \end{tikzpicture}
+
+  \end{figure}
+\end{frame}
+
+\begin{frame}[plain,noframenumbering]{}
+  \Large
+
+  \only<1->{\texttt{zdd\_binop($A$, $B$, $\otimes$) =}}
+  \only<1>{\texttt{prod2($A$, $B$, $\otimes$, zdd\_strategy)}}%
+  \only<2>{\texttt{prod2<zdd\_policy>($A$, $B$, $\otimes$)}}
+\end{frame}
+
+\begin{frame}
+  \begin{figure}
+    \centering
+
+    \setvalue{arch_adiar = gray}
+    \setvalue{arch_internal = gray}
+    \setvalue{arch_bdd = gray}
+    \setvalue{arch_zdd = gray}
+
+    \only<1> {
+      \setvalue{arch_bdd = white}
+      \setvalue{arch_zdd = white}
+      \setvalue{arch_internal = black}
+    }
+
+    \only<2> {
+      \setvalue{arch_bdd = black}
+      \setvalue{arch_zdd = black}
+    }
+
+    \only<3> {
+      \setvalue{arch_internal = black}
+    }
+
+    \begin{tikzpicture}
+      \input{tikz/zdd_architecture.tex}
+    \end{tikzpicture}
+  \end{figure}
+\end{frame}
+
+\blankframe
+
+\begin{frame}
+  \begin{figure}
+    \centering
+
+    \begin{tikzpicture}
+      \begin{axis}[%
+        width=0.80\linewidth, height=0.42\linewidth,
+        every tick label/.append style={font=\scriptsize},
+        % x-axis
+        xlabel={Number of ZDD nodes},
+        xmajorgrids=true,
+        xmin=10000000,
+        xmax=1000000000000,
+        xmode = log,
+        % y-axis
+        ymin=0,
+        ymax=4,
+        ytick distance={0.5},
+        ylabel={$\mu$s / ZDD node},
+        yminorgrids=true,
+        ymajorgrids=true,
+        grid style={dashed,black!20},
+        ]
+
+        \only<2-> {
+          \addplot+ [style=plot_cudd]
+          table {./data/tic_tac_toe_zdd_cudd_time_per_node.tex};
+        }
+        \only<2-> {
+          \addplot+ [style=plot_adiar]
+          table {./data/tic_tac_toe_zdd_adiar_v1-1-0_time_per_node.tex};
+        }
+      \end{axis}
+      \only<2-> {
+        \node[color=black] at (6.5, 1.35) {\footnotesize $16.9$~GiB};
+      }
+      \only<3-> {
+        \node[color=black] at (8.4, 1.9)  {\footnotesize $130.8$~GiB};
+        \node[color=black] at (8.8, 3.95) {\footnotesize $838.9$~GiB};
+      }
+    \end{tikzpicture}
+
+    \begin{tikzpicture}
+      \begin{customlegend}[
+        legend columns=-1,
+        legend style={draw=none,column sep=1ex},
+        legend entries={Adiar, CUDD}
+        ]
+        \addlegendimage{style=plot_adiar}
+        \addlegendimage{style=plot_cudd}
+      \end{customlegend}
+    \end{tikzpicture}
+
+    \caption{Running time for \emph{Tic-Tac-Toe} with $300$~GiB of RAM.}
+  \end{figure}
+\end{frame}
+
+\blankframe
+
+\begin{frame}
+  \begin{figure}
+    \centering
+
+    \begin{tikzpicture}
+      % Done(ish) [2]
+      \node at (0,-2) (bdd) {BDD};
+      \node[right=1 of bdd] (zdd) {ZDD};
+
+      \onslide<2-> {
+        \node[left=1 of bdd] (fdd) {FDD};
+      }
+
+      \onslide<3-> {
+        \node[shape=rectangle, draw=black] at (0,0)
+          (ptr_t) {\texttt{ptr\_t}};
+
+        % Multi-terminal BDD
+        \node[right=3 of ptr_t] (mtbdd) {MTBDD};
+        \draw[->, rounded corners, line width = 1.2pt]
+          (ptr_t) edge node[above] {\em + terminal type} (mtbdd);
+      }
+
+      \onslide<4-> {
+        % Tagged BDD
+        \node[below left=0.5 and 1.4 of ptr_t] (tbdd) {TBDD};
+        \draw[->, rounded corners, line width = 1.2pt]
+          (ptr_t) -- node[above left=-0.1 and 0] {\em + weight}  ($(ptr_t)+(-1,0)$) -| (tbdd);
+        }
+
+      \onslide<5-> {
+        \node[below left=-0.56 and -0.3 of fdd] (kfdd) {(K)};
+
+        \draw[->, rounded corners, line width = 1.2pt]
+          (tbdd) -- (kfdd);
+      }
+
+      \onslide<6-> {
+        \node[shape=rectangle, draw=black] at (0,2.5)
+          (node_t) {\texttt{node\_t}};
+
+        % LDD and Chained BDD
+        \node[above right=0.3 and 0.8 of node_t] (ldd) {\qquad\quad LDD (MDD)};
+        \node[below right=0.3 and 1.2 of node_t] (chained) {Chained BDDs};
+
+        \draw[->, rounded corners, line width = 1.2pt]
+          (node_t) -- node[above right=-0.1 and 0] {\em + weight}  ($(node_t)+(1,0)$) -| (ldd);
+        \draw[->, rounded corners, line width = 1.2pt]
+          (node_t) -- ($(node_t)+(1,0)$) -| (chained);
+      }
+
+      \onslide<7-> {
+        % QMDD
+        \node[below left=0.75 and 1.9 of node_t] (qmdd) {QMDD};
+
+        \draw[->, rounded corners, line width = 1.2pt]
+          (node_t) -- node[above left=-0.1 and 0] {\em + out-degree}  ($(node_t)+(-1,0)$) -| (qmdd);
+        \draw[->, rounded corners, line width = 1.2pt]
+          (ptr_t) -- ($(ptr_t)+(-1,0)$) -| (qmdd);
+      }
+    \end{tikzpicture}
+  \end{figure}
+\end{frame}
+
+\input{fram/endslate.tex}
+
+\begin{frame}
+  \input{anim/count_paths_tfp.tex}
+\end{frame}
+
+\input{fram/endslate.tex}
+
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

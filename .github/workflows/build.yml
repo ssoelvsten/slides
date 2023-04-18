@@ -33,6 +33,7 @@ jobs:
           core.tacas22.tex
           core.movep22.tex
           MSc_thesis.tex
+          zdd.tex
           nested_sweeping.tex
 
     - name: 'remove external/*.pdf files'
