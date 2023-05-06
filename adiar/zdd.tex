@@ -23,8 +23,9 @@
 \newcommand{\triple}[3]{\ensuremath{(#1, #2, #3)}}
 \renewcommand{\arc}[3]{\ensuremath{#1 \xrightarrow{_{#2}} #3}}
 
-\tikzstyle{plot_adiar}=[color=blue, mark=o, mark size=1.5pt, line width=1pt]
-\tikzstyle{plot_cudd}=[color=red, mark=diamond, mark size=1.5pt, line width=1pt]
+\tikzstyle{plot_instance}=[color=gray, mark=none, line width=0.7pt, densely dotted]
+\tikzstyle{plot_adiar}=[color=blue, mark=o, mark size=1.5pt, line width=1pt, solid]
+\tikzstyle{plot_cudd}=[color=red, mark=diamond, mark size=1.5pt, line width=1pt, solid]
 
 % Horizontal legends: https://tex.stackexchange.com/a/101578
 % argument #1: any options
@@ -63,38 +64,128 @@
 
 \titleframe
 
-\begin{frame}[b,plain,noframenumbering]{}
-  \pause
+\blankframe
 
+\begin{frame}
+  \begin{figure}
+    \centering
+
+    \begin{tikzpicture}
+      % Numbers from:
+      % - Intel® 64 and IA-32 Architectures Optimization Reference Manual
+      %   + Cache: Table 2-7/2-14
+      %   + RAM:   3.6.10 Locality Enhancement
+      % - www.lighterra.com/papers/modernmicroprocessors/
+      %   + SSD: Extrapolation from the 2.000.000 to fit Intel's Manual.
+      % - imada.sdu.dk/u/rolf/Edu/DM79/E04/Slides/IOModel.pdf
+      %   + HDD: Extrapolation from the 2.000.000 to fit Intel's Manual.
+
+      % ALU
+      \node[
+        draw,
+        trapezium,
+        shape border rotate=180,
+        text width=0.8cm,
+        align=center,
+      ] at (0,0) (cpu) {CPU};
+
+      % Cache
+      \draw[draw=gray, rounded corners=3pt, densely dotted, line width = 0.6pt]
+      (-1.3,2.3) rectangle ++(2.6,-1.6);
+
+      \node[
+        draw,
+        rectangle,
+        text width=0.3cm,
+        align=center,
+      ] at (0,1) (l1) {\tiny L1};
+
+      \node[
+      draw,
+      rectangle,
+      text width=0.8cm,
+      align=center,
+      ] at (0,1.45) (l2) {\tiny L2};
+
+      \node[
+        draw,
+        rectangle,
+        text width=2cm,
+        align=center,
+      ] at (0,1.95) (l3) {\footnotesize L3};
+
+      \path[->]
+        (cpu) edge[bend left=25] (l1)
+        (l1) edge[bend left=25] (cpu)
+      ;
+      \onslide<3->{\node at (2.8,0.5) {$\sim$ 4 -- 50 CPU Cycles};}
+
+      % Main memory
+      \node[
+        draw,
+        rectangle,
+        text width=4cm,
+        align=center,
+      ] at (0,3.5) (ram) {RAM};
+
+      \path[->]
+        (l3) edge[bend left=40] (ram)
+        (ram) edge[bend left=40] (l3)
+      ;
+      \onslide<3->{\node at (2.6,2.7) {$\sim$ 200 CPU Cycles};}
+
+      % Disk
+      \only<2-3> {
+        \node[
+          draw,
+          cylinder,
+          minimum width=8cm,
+          aspect=0.3,
+          align=center,
+          shape border rotate=90
+        ] at (0,5.5) (disk) {SSD};
+      }
+      \onslide<4> {
+        \node[
+        draw,
+        cylinder,
+        minimum width=12cm,
+        aspect=0.26,
+        align=center,
+        shape border rotate=90
+        ] at (0,5.5) (disk) {HDD};
+      }
+
+      \only<2->{
+        \path[->]
+          (disk) edge[bend left=40] (ram)
+          (ram)  edge[bend left=40] (disk)
+        ;
+      }
+      \only<3>{\node at (3,4.5) {$\sim$ 200.000+ CPU Cycles};}
+      \onslide<4->{\node at (3.25,4.5) {$\sim$ 20.000.000+ CPU Cycles};}
+    \end{tikzpicture}
+  \end{figure}
+\end{frame}
+
+\begin{frame}[plain,noframenumbering]{}
   \begin{center}
-    {\Huge \textbf{Adiar}}
-
-    {\large
-      \only<-2>{%
+    {\LARGE
+      \only<1>{%
         Binary%
       }%
-      \only<3>{%
+      \only<2>{%
         {\textbf{Multi-terminal}}%
       }%
-      \only<4>{%
+      \only<3>{%
         {\textbf{Quantum Multi-valued}}%
       }%
-      \only<5>{%
+      \only<4>{%
         {\textbf{Zero-suppressed}}%
-      }
+      }%
+
       Decision Diagrams
-
-      \vspace{-5pt}
-      in External Memory
     }
-
-    \vspace{12pt}
-
-    \textcolor{gray}{\small
-      \href{http://github.com/ssoelvsten/adiar}{github.com/ssoelvsten/adiar}
-    }
-
-    \vspace{80pt}
   \end{center}
 \end{frame}
 
@@ -170,129 +261,79 @@
       \end{tikzpicture}
 
       \vspace{10pt}
-      {\small {\bf ZDD: } $A \subseteq \pow(\B^n)$}
+      {\small {\bf ZDD: } $A \subseteq \B^n$}
     \end{subfigure}
   \end{figure}
 \end{frame}
 
 \begin{frame}
-  \begin{figure}
-    \centering
-
-    \begin{tikzpicture}
-      \node[shape=circle, draw=black] at (1,0) (prod2) {};
-      \node[above=0.4 of prod2] (bdd_apply) {\texttt{bdd\_apply}};
-      \node[below=0.4 of prod2] (zdd_binop) {\texttt{zdd\_binop}};
-
-      \draw[->, rounded corners, line width = 1.2pt]
-        (prod2) edge (zdd_binop)
-        (prod2) edge (bdd_apply)
-      ;
-
-      \onslide<2-> {
-        \node[shape=circle, draw=black] at (5,0) (substitute) {};
-        \node[below=0.4 of substitute] (zdd_onset)    {\texttt{zdd\_onset}};
-        \node[right=0.4 of substitute] (bdd_restrict) {\texttt{bdd\_restrict}};
-        \node[above=0.4 of substitute] (zdd_offset)   {\texttt{zdd\_offset}};
-
-        \draw[->, rounded corners, line width = 1.2pt]
-          (substitute) edge (zdd_onset)
-          (substitute) edge (bdd_restrict)
-          (substitute) edge (zdd_offset)
-        ;
-      }
-
-      \onslide<2-> {
-        \node[shape=circle, draw=black] at (-3,0) (count) {};
-        \node[above=0.4 of count] (bdd_pathcount) {\texttt{bdd\_pathcount}};
-        \node[below=0.4 of count] (zdd_size)      {\texttt{zdd\_size}};
-
-        \draw[->, rounded corners, line width = 1.2pt]
-          (count) edge (bdd_pathcount)
-          (count) edge (zdd_size)
-        ;
-      }
-
-      \onslide<2-> {
-        \node[shape=circle, draw=black] at (-1.8,-3) (pred) {};
-        \node[left=0.4  of pred] (zdd_equal)    {\texttt{zdd\_equal}};
-        \node[below=0.4 of pred] (zdd_subseteq) {\texttt{zdd\_subseteq}};
-        \node[right=0.4 of pred] (bdd_equal)    {\texttt{bdd\_equal}};
-        \node[above=0.4 of pred] (zdd_disjoint) {\texttt{zdd\_disjoint}};
-
-        \draw[->, rounded corners, line width = 1.2pt]
-          (pred) edge (zdd_equal)
-          (pred) edge (zdd_subseteq)
-          (pred) edge (bdd_equal)
-          (pred) edge (zdd_disjoint)
-        ;
-      }
-
-      \onslide<4> {
-        \node[shape=circle, draw=black] at (4.8,-3) (intercut) {};
-      }
-      \onslide<3-> {
-        \node[left=0.4  of intercut] (zdd_change)             {\texttt{zdd\_change}};
-        \node[below=0.4 of intercut] (zdd_complement)         {\texttt{zdd\_complement}};
-        \node[right=0.4 of intercut] (zdd_expand)             {\texttt{zdd\_expand}};
-        \node[above right=0.4 and 0.6 of intercut] (zdd_from) {\texttt{zdd\_from\_bdd}};
-        \node[above left =0.4 and 0.6 of intercut] (bdd_from) {\texttt{bdd\_from\_zdd}};
-      }
-
-      \onslide<4> {
-        \draw[->, rounded corners, line width = 1.2pt]
-          (intercut) edge (zdd_change)
-          (intercut) edge (zdd_complement)
-          (intercut) edge (zdd_expand)
-        ;
-        \draw[->, rounded corners, line width = 1.2pt]
-          (intercut) |- (zdd_from)
-        ;
-        \draw[->, rounded corners, line width = 1.2pt]
-          (intercut) |- (bdd_from)
-        ;
-      }
-    \end{tikzpicture}
-
-  \end{figure}
-\end{frame}
-
-\begin{frame}[plain,noframenumbering]{}
   \Large
 
-  \only<1->{\texttt{zdd\_binop($A$, $B$, $\otimes$) =}}
-  \only<1>{\texttt{prod2($A$, $B$, $\otimes$, zdd\_strategy)}}%
-  \only<2>{\texttt{prod2<zdd\_policy>($A$, $B$, $\otimes$)}}
-\end{frame}
+  \setvalue{type_color = orange}
+  \setvalue{keyword_color = blue}
+  \setvalue{other_color = black}
 
-\begin{frame}
-  \begin{figure}
-    \centering
+  \only<5> {
+    \setvalue{type_color = orange!30!white}
+    \setvalue{keyword_color = blue!30!white}
+    \setvalue{other_color = black!30!white}
+  }
 
-    \setvalue{arch_adiar = gray}
-    \setvalue{arch_internal = gray}
-    \setvalue{arch_bdd = gray}
-    \setvalue{arch_zdd = gray}
+  \texttt{%
+    {\color{\getvalue{type_color}} bdd}
+    {\color{\getvalue{other_color}} bdd\_apply(}%
+    {\color{\getvalue{type_color}} bdd}
+    {\color{\getvalue{other_color}} f,}
+    {\color{\getvalue{type_color}} bdd}
+    {\color{\getvalue{other_color}} g,}
+    {\color{\getvalue{type_color}} bool\_op}
+    {\color{\getvalue{other_color}} o)}
+  } %
+  \onslide<3-> {
+    \texttt{{\color{\getvalue{other_color}} \{}}
 
-    \only<1> {
-      \setvalue{arch_bdd = white}
-      \setvalue{arch_zdd = white}
-      \setvalue{arch_internal = black}
+    \qquad
+    \texttt{{\color{\getvalue{keyword_color}} return}}
+    \only<3>{\texttt{prod2(f, g, o, bdd\_strategy)}}%
+    \only<4-5>{\texttt{%
+        prod2%
+        {\color{\getvalue{other_color}}<}%
+        bdd\_policy%
+        {\color{\getvalue{other_color}}>(f, g, o)}
+      }}
+
+    \texttt{{\color{\getvalue{other_color}} \}}}
+  }
+
+  \vspace{20pt}
+
+  \onslide<2-> {
+    \texttt{%
+      {\color{\getvalue{type_color}} zdd}
+      {\color{\getvalue{other_color}} zdd\_binop(}%
+      {\color{\getvalue{type_color}} zdd}
+      {\color{\getvalue{other_color}} A,}
+      {\color{\getvalue{type_color}} zdd}
+      {\color{\getvalue{other_color}} B,}
+      {\color{\getvalue{type_color}} bool\_op}
+      {\color{\getvalue{other_color}} o)}
+    } %
+    \onslide<3->{
+      \texttt{{\color{\getvalue{other_color}} \{}}
+
+      \qquad
+      \texttt{{\color{\getvalue{keyword_color}} return}}
+      \only<3>{\texttt{prod2(A, B, o, zdd\_strategy)}}%
+      \only<4-5>{\texttt{%
+          prod2%
+          {\color{\getvalue{other_color}}<}%
+          zdd\_policy%
+          {\color{\getvalue{other_color}}>(A, B, o)}
+        }}
+
+      \texttt{{\color{\getvalue{other_color}} \}}}
     }
-
-    \only<2> {
-      \setvalue{arch_bdd = black}
-      \setvalue{arch_zdd = black}
-    }
-
-    \only<3> {
-      \setvalue{arch_internal = black}
-    }
-
-    \begin{tikzpicture}
-      \input{tikz/zdd_architecture.tex}
-    \end{tikzpicture}
-  \end{figure}
+  }
 \end{frame}
 
 \blankframe
@@ -306,7 +347,7 @@
         width=0.80\linewidth, height=0.42\linewidth,
         every tick label/.append style={font=\scriptsize},
         % x-axis
-        xlabel={Number of ZDD nodes},
+        xlabel={Total Number of Processed ZDD nodes},
         xmajorgrids=true,
         xmin=10000000,
         xmax=1000000000000,
@@ -316,11 +357,22 @@
         ymax=4,
         ytick distance={0.5},
         ylabel={$\mu$s / ZDD node},
-        yminorgrids=true,
-        ymajorgrids=true,
-        grid style={dashed,black!20},
+        grid style={white},
         ]
 
+        % instances
+        \addplot+ [style=plot_instance] coordinates {(18679829, 4)     (18679829, 0)};
+        \addplot+ [style=plot_instance] coordinates {(107049143, 4)    (107049143, 0)};
+        \addplot+ [style=plot_instance] coordinates {(547744025, 4)    (547744025, 0)};
+        \addplot+ [style=plot_instance] coordinates {(2432184913, 4)   (2432184913, 0)};
+        \addplot+ [style=plot_instance] coordinates {(9027403989, 4)   (9027403989, 0)};
+        \addplot+ [style=plot_instance] coordinates {(27218067556, 4)  (27218067556, 0)};
+        \addplot+ [style=plot_instance] coordinates {(66195685798, 4)  (66195685798, 0)};
+        \addplot+ [style=plot_instance] coordinates {(131317735734, 4) (131317735734, 0)};
+        \addplot+ [style=plot_instance] coordinates {(217091693733, 4) (217091693733, 0)};
+        \addplot+ [style=plot_instance] coordinates {(307091612637, 4) (307091612637, 0)};
+
+        % data
         \only<2-> {
           \addplot+ [style=plot_cudd]
           table {./data/tic_tac_toe_zdd_cudd_time_per_node.tex};
@@ -330,12 +382,25 @@
           table {./data/tic_tac_toe_zdd_adiar_v1-1-0_time_per_node.tex};
         }
       \end{axis}
-      \only<2-> {
-        \node[color=black] at (6.5, 1.35) {\footnotesize $16.9$~GiB};
-      }
+
+      % instances
+      \node[color=black] at (0.5, 4.5) {\scriptsize 20};
+      \node[color=black] at (2.0, 4.5) {\scriptsize 21};
+      \node[color=black] at (3.3, 4.5) {\scriptsize 22};
+      \node[color=black] at (4.6, 4.5) {\scriptsize 23};
+      \node[color=black] at (5.7, 4.5) {\scriptsize 24};
+      \node[color=black] at (6.6, 4.5) {\scriptsize 25};
+      \node[color=black] at (7.4, 4.5) {\scriptsize 26};
+      \node[color=black] at (7.9, 4.5) {\scriptsize 27};
+      \node[color=black] at (8.3, 4.5) {\scriptsize 28};
+      \node[color=black] at (8.7, 4.5) {\scriptsize 29};
+
+      % instance size
       \only<3-> {
-        \node[color=black] at (8.4, 1.9)  {\footnotesize $130.8$~GiB};
-        \node[color=black] at (8.8, 3.95) {\footnotesize $838.9$~GiB};
+        \node[color=black, fill=white] at (6.2, 1.0)  {\footnotesize $16.9$~GiB};
+        \node[color=black, fill=white] at (6.6, 2.3)  {\footnotesize $49.2$~GiB};
+        \node[color=black, fill=white] at (8.25, 1.7) {\footnotesize $130.8$~GiB};
+        \node[color=black, fill=white] at (8.8, 3.95) {\footnotesize $838.9$~GiB};
       }
     \end{tikzpicture}
 
@@ -350,7 +415,7 @@
       \end{customlegend}
     \end{tikzpicture}
 
-    \caption{Running time for \emph{Tic-Tac-Toe} with $300$~GiB of RAM.}
+    \caption{Running time for \emph{3D Tic-Tac-Toe} with $300$~GiB of RAM.}
   \end{figure}
 \end{frame}
 
@@ -359,68 +424,65 @@
 \begin{frame}
   \begin{figure}
     \centering
+    \Large
 
     \begin{tikzpicture}
-      % Done(ish) [2]
-      \node at (0,-2) (bdd) {BDD};
-      \node[right=1 of bdd] (zdd) {ZDD};
+      % Done
+      \draw[draw=black, rounded corners=10pt, densely dotted, line width = 0.6pt]
+        (-0.5,0.5) rectangle ++(3.1,-1.7);
 
+      \node at (0.2,0.1)  {\emph{Done}};
+
+      \node at (0.5,-0.7) {\texttt{BDD}};
+      \node at (1.7,-0.7) {\texttt{ZDD}};
+
+      % Doable
       \onslide<2-> {
-        \node[left=1 of bdd] (fdd) {FDD};
+        \draw[draw=black, rounded corners=10pt, densely dotted, line width = 0.6pt]
+        (-1.3,2.2) rectangle ++(6.4,-4.7);
+
+        \node at (-0.45,1.75)  {\emph{Doable}};
+
+        \node at (3.7,-0.7) {\texttt{(K)FDD}};
+        \node at (0.3,1.15) {\texttt{MTBDD}};
+        \node at (2.1,-1.9) {\texttt{Tagged/Chained BDD}};
+%        \node at (1,-1.6) {\texttt{Tagged BDD}};
+%        \node at (0.9,-2.2) {\texttt{Chained BDD}};
+
+        \node at (1.7,1.15) {\texttt{LDD}};
+
+        \node at (3.9,1.15) {\texttt{QMDD}};
       }
 
+      % Open
       \onslide<3-> {
-        \node[shape=rectangle, draw=black] at (0,0)
-          (ptr_t) {\texttt{ptr\_t}};
+        \draw[draw=black, rounded corners=10pt, densely dotted, line width = 0.6pt]
+        (-4.4,2.8) rectangle ++(10,-5.8);
 
-        % Multi-terminal BDD
-        \node[right=3 of ptr_t] (mtbdd) {MTBDD};
-        \draw[->, rounded corners, line width = 1.2pt]
-          (ptr_t) edge node[above] {\em + terminal type} (mtbdd);
-      }
+        \node at (-3.7,2.3)  {\emph{Open}};
 
-      \onslide<4-> {
-        % Tagged BDD
-        \node[below left=0.5 and 1.4 of ptr_t] (tbdd) {TBDD};
-        \draw[->, rounded corners, line width = 1.2pt]
-          (ptr_t) -- node[above left=-0.1 and 0] {\em + weight}  ($(ptr_t)+(-1,0)$) -| (tbdd);
-        }
-
-      \onslide<5-> {
-        \node[below left=-0.56 and -0.3 of fdd] (kfdd) {(K)};
-
-        \draw[->, rounded corners, line width = 1.2pt]
-          (tbdd) -- (kfdd);
-      }
-
-      \onslide<6-> {
-        \node[shape=rectangle, draw=black] at (0,2.5)
-          (node_t) {\texttt{node\_t}};
-
-        % LDD and Chained BDD
-        \node[above right=0.3 and 0.8 of node_t] (ldd) {\qquad\quad LDD (MDD)};
-        \node[below right=0.3 and 1.2 of node_t] (chained) {Chained BDDs};
-
-        \draw[->, rounded corners, line width = 1.2pt]
-          (node_t) -- node[above right=-0.1 and 0] {\em + weight}  ($(node_t)+(1,0)$) -| (ldd);
-        \draw[->, rounded corners, line width = 1.2pt]
-          (node_t) -- ($(node_t)+(1,0)$) -| (chained);
-      }
-
-      \onslide<7-> {
-        % QMDD
-        \node[below left=0.75 and 1.9 of node_t] (qmdd) {QMDD};
-
-        \draw[->, rounded corners, line width = 1.2pt]
-          (node_t) -- node[above left=-0.1 and 0] {\em + out-degree}  ($(node_t)+(-1,0)$) -| (qmdd);
-        \draw[->, rounded corners, line width = 1.2pt]
-          (ptr_t) -- ($(ptr_t)+(-1,0)$) -| (qmdd);
+        \node at (-2.2,-0.7) {\texttt{MDD}};
+        \node at (-2.9,1.15) {\texttt{Clock DD}};
       }
     \end{tikzpicture}
   \end{figure}
 \end{frame}
 
 \input{fram/endslate.tex}
+
+\begin{frame}
+  \begin{figure}
+    \centering
+
+    \setvalue{timeline_c0 = black}
+    \setvalue{timeline_c1 = black}
+    \setvalue{timeline_c2 = black}
+
+    \begin{tikzpicture}
+      \input{tikz/timeline.tex}
+    \end{tikzpicture}
+  \end{figure}
+\end{frame}
 
 \begin{frame}
   \input{anim/count_paths_tfp.tex}
