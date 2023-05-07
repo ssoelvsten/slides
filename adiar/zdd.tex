@@ -118,7 +118,7 @@
         (cpu) edge[bend left=25] (l1)
         (l1) edge[bend left=25] (cpu)
       ;
-      \onslide<3->{\node at (2.8,0.5) {$\sim$ 4 -- 50 CPU Cycles};}
+      \onslide<2->{\node at (2.8,0.5) {$\sim$ 4 -- 50 CPU Cycles};}
 
       % Main memory
       \node[
@@ -132,10 +132,10 @@
         (l3) edge[bend left=40] (ram)
         (ram) edge[bend left=40] (l3)
       ;
-      \onslide<3->{\node at (2.6,2.7) {$\sim$ 200 CPU Cycles};}
+      \onslide<2->{\node at (2.6,2.7) {$\sim$ 200 CPU Cycles};}
 
       % Disk
-      \only<2-3> {
+      \only<-2> {
         \node[
           draw,
           cylinder,
@@ -145,7 +145,7 @@
           shape border rotate=90
         ] at (0,5.5) (disk) {SSD};
       }
-      \onslide<4> {
+      \onslide<3> {
         \node[
         draw,
         cylinder,
@@ -156,18 +156,50 @@
         ] at (0,5.5) (disk) {HDD};
       }
 
-      \only<2->{
-        \path[->]
-          (disk) edge[bend left=40] (ram)
-          (ram)  edge[bend left=40] (disk)
-        ;
-      }
-      \only<3>{\node at (3,4.5) {$\sim$ 200.000+ CPU Cycles};}
-      \onslide<4->{\node at (3.25,4.5) {$\sim$ 20.000.000+ CPU Cycles};}
+      \path[->]
+        (disk) edge[bend left=40] (ram)
+        (ram)  edge[bend left=40] (disk)
+      ;
+      \only<2>{\node at (3,4.5) {$\sim$ 200.000+ CPU Cycles};}
+      \onslide<3->{\node at (3.25,4.5) {$\sim$ 20.000.000+ CPU Cycles};}
     \end{tikzpicture}
   \end{figure}
 \end{frame}
 
+\begin{frame}[b,plain,noframenumbering]{}
+  \begin{center}
+    {\Huge \textbf{Adiar}}
+
+    {\Large
+      \only<1>{%
+        Binary%
+      }%
+      \only<2>{%
+        {\textbf{Multi-terminal}}%
+      }%
+      \only<3>{%
+        {\textbf{Quantum Multi-valued}}%
+      }%
+      \only<4>{%
+        {\textbf{Zero-suppressed}}%
+      }
+      Decision Diagrams
+
+      \vspace{-5pt}
+      in External Memory
+    }
+
+    \vspace{12pt}
+
+    \textcolor{gray}{
+      \href{http://github.com/ssoelvsten/adiar}{\texttt{github.com/ssoelvsten/adiar}}
+    }
+
+    \vspace{80pt}
+  \end{center}
+\end{frame}
+
+\iffalse % Very plain
 \begin{frame}[plain,noframenumbering]{}
   \begin{center}
     {\LARGE
@@ -188,6 +220,7 @@
     }
   \end{center}
 \end{frame}
+\fi
 
 \begin{frame}
   \begin{figure}
@@ -252,7 +285,7 @@
       \vspace{10pt}
       {\small {\bf BDD: } $f : \B^n \rightarrow \B$}
     \end{subfigure}
-    \qquad\pause
+    \qquad
     \begin{subfigure}[b]{0.32\linewidth}
       \centering
 
@@ -273,7 +306,7 @@
   \setvalue{keyword_color = blue}
   \setvalue{other_color = black}
 
-  \only<5> {
+  \only<4> {
     \setvalue{type_color = orange!30!white}
     \setvalue{keyword_color = blue!30!white}
     \setvalue{other_color = black!30!white}
@@ -293,14 +326,12 @@
     \texttt{{\color{\getvalue{other_color}} \{}}
 
     \qquad
-    \texttt{{\color{\getvalue{keyword_color}} return}}
-    \only<3>{\texttt{prod2(f, g, o, bdd\_strategy)}}%
-    \only<4-5>{\texttt{%
-        prod2%
-        {\color{\getvalue{other_color}}<}%
-        bdd\_policy%
-        {\color{\getvalue{other_color}}>(f, g, o)}
-      }}
+    \texttt{{\color{\getvalue{keyword_color}} return}
+      prod2%
+      {\color{\getvalue{other_color}}<}%
+      bdd\_policy%
+      {\color{\getvalue{other_color}}>(f, g, o)}
+    }
 
     \texttt{{\color{\getvalue{other_color}} \}}}
   }
@@ -322,21 +353,17 @@
       \texttt{{\color{\getvalue{other_color}} \{}}
 
       \qquad
-      \texttt{{\color{\getvalue{keyword_color}} return}}
-      \only<3>{\texttt{prod2(A, B, o, zdd\_strategy)}}%
-      \only<4-5>{\texttt{%
-          prod2%
-          {\color{\getvalue{other_color}}<}%
-          zdd\_policy%
-          {\color{\getvalue{other_color}}>(A, B, o)}
-        }}
+      \texttt{{\color{\getvalue{keyword_color}} return}
+        prod2%
+        {\color{\getvalue{other_color}}<}%
+        zdd\_policy%
+        {\color{\getvalue{other_color}}>(A, B, o)}
+      }
 
       \texttt{{\color{\getvalue{other_color}} \}}}
     }
   }
 \end{frame}
-
-\blankframe
 
 \begin{frame}
   \begin{figure}
@@ -467,6 +494,8 @@
     \end{tikzpicture}
   \end{figure}
 \end{frame}
+
+\blankframe
 
 \input{fram/endslate.tex}
 
