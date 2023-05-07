@@ -155,7 +155,7 @@
           bdd_apply($f$, $g$, $\otimes$):
             if $f, g \in \{ \bot, \top \}$
             then $f \otimes g$
-            else let $i$ = top($f.\mathit(var)$, $g.\mathit{var}$)
+            else let $i$ = top($f.\mathit{var}$, $g.\mathit{var}$)
                      $t$ = bdd_apply($f[x_i := \top]$, $g[x_i := \top]$, $\otimes$)
                      $e$ = bdd_apply($f[x_i := \bot]$, $g[x_i := \bot]$, $\otimes$)
                  in make_node($i$,$t$,$e$)
@@ -766,7 +766,7 @@
           \\
           $O(N_f)$           & $O(\sort(N_f))$
           \\
-          $O(N_f \cdot N_g)$ & $O(\sort(N_f))$
+          $O(N_f \cdot N_g)$ & $O(\sort(N_f \cdot N_g))$
           \\
           $O(1)$             & $2N / B$
         \end{tabular}
