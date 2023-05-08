@@ -1,0 +1,58 @@
+% Numbers from:
+% - Intel® 64 and IA-32 Architectures Optimization Reference Manual
+%   + Cache: Table 2-7/2-14
+%   + RAM:   3.6.10 Locality Enhancement
+% - www.lighterra.com/papers/modernmicroprocessors/
+%   + SSD: Extrapolation from the 2.000.000 to fit Intel's Manual.
+% - imada.sdu.dk/u/rolf/Edu/DM79/E04/Slides/IOModel.pdf
+%   + HDD: Extrapolation from the 2.000.000 to fit Intel's Manual.
+
+\begin{center}
+  \begin{tikzpicture}
+    % ALU
+    \node[draw, trapezium, shape border rotate=180, text width=0.8cm, align=center] at (0,0) (cpu) {CPU};
+
+    % Cache
+    \draw[draw=gray, rounded corners=3pt, densely dotted, line width = 0.6pt]
+    (-1.3,2.3) rectangle ++(2.6,-1.6);
+
+    \node[ draw, rectangle, text width=0.3cm, align=center] at (0,1)    (l1) {\tiny L1};
+    \node[ draw, rectangle, text width=0.8cm, align=center] at (0,1.45) (l2) {\tiny L2};
+    \node[ draw, rectangle, text width=2cm, align=center]   at (0,1.95) (l3) {\footnotesize L3};
+
+    \path[->]
+    (cpu) edge[bend left=25] (l1)
+    (l1) edge[bend left=25] (cpu) ;
+    \onslide<2->{\node at (2.8,0.5) {$\sim$ 4 -- 50 CPU Cycles};}
+
+    % Main memory
+    \node[draw, rectangle, text width=4cm, align=center] at (0,3.5) (ram) {RAM};
+
+    \path[->]
+      (l3) edge[bend left=40] (ram)
+      (ram) edge[bend left=40] (l3)
+    ;
+    \onslide<2->{
+      \node at (2.6,2.7) {$\sim$ 200 CPU Cycles};
+    }
+
+    % Disk
+    \only<-2> { \node[ draw, cylinder, minimum width=8cm, aspect=0.3,
+      align=center, shape border rotate=90 ] at (0,5.5) (disk) {SSD};
+    }
+    \onslide<3> { \node[ draw, cylinder, minimum width=12cm, aspect=0.26,
+      align=center, shape border rotate=90 ] at (0,5.5) (disk) {HDD};
+    }
+
+    \path[->]
+      (disk) edge[bend left=40] (ram)
+      (ram) edge[bend left=40] (disk)
+    ;
+    \only<2>{
+      \node at (3,4.5) {$\sim$ 200.000+ CPU Cycles};
+    }
+    \onslide<3->{
+      \node at (3.25,4.5) {$\sim$ 20.000.000+ CPU Cycles};
+    }
+  \end{tikzpicture}
+\end{center}
