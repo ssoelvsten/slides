@@ -16,7 +16,12 @@
   \rlap{\raisebox{.35\ht0}{\textcolor{#1}{\rule{\wd0}{1pt}}}}#2}
 
 \newcommand{\B}[0]{\ensuremath{\mathbb{B}}}
+\newcommand{\U}[0]{\ensuremath{\mathcal{U}}}
 \newcommand{\pow}[0]{\ensuremath{\mathcal{P}}}
+
+\newcommand{\var}[0]{\ensuremath{\mathit{var}}}
+\newcommand{\vars}[0]{\ensuremath{\mathit{vars}}}
+\newcommand{\dom}[0]{\ensuremath{\mathit{dom}}}
 
 \newcommand{\sort}[0]{\text{sort}}
 
@@ -234,7 +239,7 @@
       prod2%
       {\color{\getvalue{other_color}}<}%
       bdd\_policy%
-      {\color{\getvalue{other_color}}>(f, g, o)}
+      {\color{\getvalue{other_color}}>(f, g, o);}
     }
 
     \texttt{{\color{\getvalue{other_color}} \}}}
@@ -261,7 +266,7 @@
         prod2%
         {\color{\getvalue{other_color}}<}%
         zdd\_policy%
-        {\color{\getvalue{other_color}}>(A, B, o)}
+        {\color{\getvalue{other_color}}>(A, B, o);}
       }
 
       \texttt{{\color{\getvalue{other_color}} \}}}
@@ -328,10 +333,10 @@
 
       % instance size
       \only<3-> {
-        \node[color=black, fill=white] at (6.2, 1.0)  {\footnotesize $16.9$~GiB};
-        \node[color=black, fill=white] at (6.6, 2.3)  {\footnotesize $49.2$~GiB};
-        \node[color=black, fill=white] at (8.25, 1.7) {\footnotesize $130.8$~GiB};
-        \node[color=black, fill=white] at (8.8, 3.95) {\footnotesize $838.9$~GiB};
+        \node[color=black, fill=white] at (6.25, 0.95) {\footnotesize $16.9$~GiB};
+        \node[color=black, fill=white] at (6.6, 2.3)   {\footnotesize $49.2$~GiB};
+        \node[color=black, fill=white] at (8.25, 1.7)  {\footnotesize $130.8$~GiB};
+        \node[color=black, fill=white] at (8.8, 3.95)  {\footnotesize $838.9$~GiB};
       }
     \end{tikzpicture}
 
@@ -404,12 +409,143 @@
 \input{fram/endslate.tex}
 
 \begin{frame}
+  \begin{table}
+    \centering
+    \tiny
+
+    \begin{tabular}[t]{l | c}
+      Function
+      & Operation Semantics
+      \\ \hline \hline
+      \multicolumn{2}{c}{ZDD Constructors}
+      \\ \hline
+      \texttt{zdd\_empty()}
+      & $\emptyset$
+      \\
+      \texttt{zdd\_null()}
+      & $\{ \emptyset \}$
+      \\
+      \texttt{zdd\_singleton(var)}
+      & $\{ x_{\var} \}$
+      \\
+      \texttt{zdd\_vars(vars)}
+      & $\{ \bigcup_{i \in \vars} \{ x_i \} \}$
+      \\
+      \texttt{zdd\_singletons(vars)}
+      & $\{ \{ x_{i} \} \mid i \in \vars \}$
+      \\
+      \texttt{zdd\_powerset(vars)}
+      & $\pow(\vars)$
+      \\
+      \texttt{zdd\_sized\_set(vars,$k$,$\odot$)}
+      & $\{ s \in \pow(\vars) \mid \abs{s} \odot k \}$
+     \\ \hline
+      \multicolumn{2}{c}{ZDD Manipulation}
+      \\ \hline
+      \texttt{zdd\_binop($A$,$B$,$\otimes$)}
+      & $\{ x \mid x \in A \otimes x \in B \}$
+      % \\
+      % \quad\texttt{zdd\_union($A$,$B$)}
+      % & $A \cup B$
+      % \\
+      % \quad\texttt{zdd\_intsec($A$,$B$)}
+      % & $A \cap B$
+      % \\
+      % \quad\texttt{zdd\_diff($A$,$B$)}
+      % & $A \setminus B$
+      \\
+      \texttt{zdd\_change($A$, vars)}
+      & $\{ (a \setminus \mathit{vars}) \cup (\mathit{vars} \setminus a) \mid a \in A \}$
+      \\
+      \texttt{zdd\_complement($A$, dom)}
+      & $\pow(\dom) \setminus A$
+      \\
+      \texttt{zdd\_expand($A$, vars)}
+      & $\bigcup_{a \in A} \{ a \cup v \mid v \in \pow(\vars) \}$
+      \\
+      \texttt{zdd\_offset($A$, vars)}
+      & $\{ a \in A \mid \vars \cap a = \emptyset \}$
+      \\
+      \texttt{zdd\_onset($A$, vars)}
+      & $\{ a \in A \mid \vars \subseteq a \}$
+      \\
+      \texttt{zdd\_project($A$, vars)}
+      & $\bigcup_{a \in A} \{ a \cap \vars \}$
+    \end{tabular}
+    \quad
+    \begin{tabular}[t]{l | c}
+      Function
+      & Operation Semantics
+      \\ \hline \hline
+      \multicolumn{2}{c}{Counting}
+      \\ \hline
+      \texttt{zdd\_size($A$)}
+      & $\abs{A}$
+      \\
+      \texttt{zdd\_nodecount($A$)}
+      & \# ZDD Nodes in $A$
+      \\
+      \texttt{zdd\_varcount($A$)}
+      & \# Non-empty Levels in $A$
+      \\ \hline
+      \multicolumn{2}{c}{Predicates}
+      \\ \hline
+      \texttt{zdd\_equal($A$, $B$)}
+      & $A = B$
+      \\
+      \texttt{zdd\_unequal($A$, $B$)}
+      & $A \neq B$
+      \\
+      \texttt{zdd\_subseteq($A$, $B$)}
+      & $A \subseteq B$
+      % \\
+      % \texttt{zdd\_subset($A$, $B$)}
+      % & $A \subset B$
+      \\
+      \texttt{zdd\_disjoint($A$, $B$)}
+      & $A \cap B = \emptyset$
+      \\ \hline
+      \multicolumn{2}{c}{Set elements}
+      \\ \hline
+      \texttt{zdd\_contains($A$, $a$)}
+      & $a \in A$
+      \\
+      \texttt{zdd\_minelem($A$)}
+      & $a \in A \text{ s.t.}  \forall a'\in A\ .\ a \leq a'$
+      \\
+      \texttt{zdd\_maxelem($A$)}
+      & $a \in A \text{ s.t.}  \forall a'\in A\ .\ a' \leq a$
+      \\ \hline
+      \multicolumn{2}{c}{Conversion}
+      \\ \hline
+      \texttt{zdd\_from($f$, dom)}
+      & $\{ x \in \pow(\dom) \mid f(x) = \top \}$
+      \\
+      \texttt{bdd\_from($A$, dom)}
+      & $\vec{x} : \pow(\dom) \mapsto \vec{x} \in A$
+    \end{tabular}
+
+    \caption{Operations provided by Adiar in \texttt{<adiar/zdd.h>}.}
+  \end{table}
+\end{frame}
+
+\begin{frame}
   \begin{figure}
     \centering
 
-    \setvalue{timeline_c0 = black}
-    \setvalue{timeline_c1 = black}
-    \setvalue{timeline_c2 = black}
+    \setvalue{arch_bdd = black}
+    \setvalue{arch_zdd = black}
+    \setvalue{arch_internal = black}
+
+  \begin{tikzpicture}
+    \input{tikz/zdd_architecture.tex}
+  \end{tikzpicture}
+\end{figure}
+\end{frame}
+
+\begin{frame}
+  \begin{figure}
+    \centering
 
     \begin{tikzpicture}
       \input{tikz/timeline.tex}
