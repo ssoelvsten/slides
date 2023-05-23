@@ -13,7 +13,7 @@
 \draw[dashed, orange]
   ($ (Lji) + (1,0) $) edge ($ (Lji) + (7,0) $)
 ;
-    
+
 % nodes
 \node[shape = circle, draw = black, fill=white, right=2cm of Lj] (j_1) {};
 \node[shape = circle, draw = black, fill=white, right=3cm of Lj] (j_2) {};
@@ -24,11 +24,11 @@
 
 \node[right=3.8cm of Ldots] (jdot_1) {$\cdot$};
 \node[right=5.3cm of Ldots] (jdot_2) {$\cdot$};
-    
+
 \node[shape = circle, draw = black, fill=white, right=1.5cm of Lji] (ji_1) {};
 \node[shape = circle, draw = black, fill=white, right=3cm of Lji] (ji_2) {};
 \node[shape = circle, draw = black, fill=white, right=5cm of Lji] (ji_3) {};
-    
+
 % arcs
 \draw[->]
 % to level j
@@ -39,19 +39,19 @@
 
   ($ (j_3) + (-0.5,0.5) $) edge (j_3)
   ($ (j_3) + (0.5,0.5) $) edge (j_3)
-    
+
 % to level j+1
   (j_1) edge (j1_1)
   (j_2) edge (j1_1)
   ($ (j_2) + (1,0.5) $) edge (j1_2)
   (j_3) edge (j1_2)
-      
+
 % to levels in between
   (j1_2) edge[bend right=10] (jdot_1)
   (j1_2) edge[bend left=20] (jdot_2)
   (j_3) edge[bend left=15] (jdot_2)
   (j_3) edge[bend left=50] (jdot_2)
-      
+
 % to level j+i
   ($ (j_1) + (-0.7,0.5) $) edge[bend right=10] (ji_1)
   (j_1) edge[bend left=5] (ji_1)

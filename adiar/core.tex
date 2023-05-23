@@ -150,32 +150,119 @@
 
 \end{frame}
 
-\begin{frame}[fragile]
-  \begin{lstlisting}[numbers=none, language=sml]
-          bdd_apply($f$, $g$, $\otimes$):
-            if $f, g \in \{ \bot, \top \}$
-            then $f \otimes g$
-            else let $i$ = top($f.\mathit{var}$, $g.\mathit{var}$)
-                     $t$ = bdd_apply($f[x_i := \top]$, $g[x_i := \top]$, $\otimes$)
-                     $e$ = bdd_apply($f[x_i := \bot]$, $g[x_i := \bot]$, $\otimes$)
-                 in make_node($i$,$t$,$e$)
-  \end{lstlisting}
+\begin{frame}[t]
+  \frametitle{\texttt{bdd\_apply(f,g,$\odot$)}}
 
-  \pause
+  \textbf{Base Case ($f,g \in \B$):}
+  \begin{figure}
+    \centering
+
+    \begin{tikzpicture}
+      % 'f'
+      \node at (0,0) (f) {$\alpha$};
+
+      \node at (0,1) (fp) {};
+      \draw[->] (fp) edge (f);
+
+      % 'odot'
+      \node at (1,0) {$\odot$};
+
+      % 'g'
+      \node at (2,0) (g) {$\beta$};
+
+      \node at (2,1) (gp) {};
+      \draw[->] (gp) edge (g);
+
+      \node at (3.4,0) {$\mapsto$};
+
+      % 'f \odot g'
+      \node at (5.25,0) (fg) {$\alpha \odot \beta$};
+
+      \node at (5.25,1) (fgp) {};
+      \draw[->] (fgp) edge (fg);
+    \end{tikzpicture}
+  \end{figure}
+
+  \textbf{Inductive Case:}
+  \begin{figure}
+    \centering
+
+    \begin{tikzpicture}
+      % 'f'
+      \node[shape = circle, draw = black] at (0,0) (f) {$x_i$};
+
+      \node at (-0.5,-1) (f0) {$\alpha$};
+      \node at (0.5,-1) (f1) {$\beta$};
+
+      \draw[->, dashed] (f) edge (f0);
+      \draw[->]         (f) edge (f1);
+
+      \node at (0,1) (fp) {};
+      \draw[->] (fp) edge (f);
+
+      % 'odot'
+      \node at (1,0) {$\odot$};
+
+      % 'g'
+      \only<1>{
+        \node[shape = circle, draw = black] at (2,0) (g) {$x_i$};
+
+        \node at (1.5,-1) (g0) {$\gamma$};
+        \node at (2.5,-1) (g1) {$\delta$};
+
+        \draw[->, dashed] (g) edge (g0);
+        \draw[->]         (g) edge (g1);
+      }
+      \only<2->{
+        \node at (2,-1) (g) {$\mu$};
+      }
+
+      \node at (2,1) (gp) {};
+      \draw[->] (gp) edge (g);
+
+      \node at (3.4,0) {$\mapsto$};
+
+      % 'f \odot g'
+      \node[shape = circle, draw = black] at (5.25,0) (fg) {$x_i$};
+
+      \node at (4.5,-1) (fg0) {$\alpha \odot \only<1>{\gamma}\only<2->{\mu}$};
+      \node at (6,-1) (fg1) {$\beta \odot \only<1>{\delta}\only<2->{\mu}$};
+
+      \draw[->, dashed] (fg) edge (fg0);
+      \draw[->]         (fg) edge (fg1);
+
+      \node at (5.25,1) (fgp) {};
+      \draw[->] (fgp) edge (fg);
+    \end{tikzpicture}
+  \end{figure}
+\end{frame}
+
+\begin{frame}
+  \frametitle{\texttt{bdd\_apply(f,g,$\odot$)}}
+
+  Let $N_f$, $N_g$ be the size of the BDDs for $f$ and $g$.
+
+  Let $T$ be the $O(N_f \cdot N_g)$ size of the BDD for $f \odot g$.
+
   \begin{theorem}
-    \lstinline{bdd_apply} runs in $O(N_f \cdot N_g)$ time.
+    \lstinline{bdd_apply(f,g,}$\odot$\lstinline{)} runs in $O(N_f + N_g + T)$
+    time
   \end{theorem}
   \begin{itemize}
-  \item Memoisation (\emph{Computation Cache}) ensures each recursion is
-    computed only once.
+  \item Memoisation (\emph{Computation Cache}) ensures each $(t_f,t_g)$ is
+    only computed once.
 
-  \item Reduction Rules can be maintained within
-    \lstinline{make_node($i$,$t$,$e$)} in $O(1)$ time.
+  \item Reduction Rules can be maintained with a
+    \texttt{make\_node($i$,$t$,$e$)} in $O(1)$ time.
     \begin{enumerate}
     \item Redundancy is resolved with an if-statement.
     \item Duplication is avoided with a hash table (\emph{Unique Node Table}).
     \end{enumerate}
   \end{itemize}
+
+  \begin{corollary}
+    \lstinline{bdd_apply(f,g,}$\odot$\lstinline{)} runs in $O(1)$ time per BDD node.
+  \end{corollary}
 \end{frame}
 
 \begin{frame}
@@ -187,7 +274,7 @@
         width=0.69\linewidth, height=0.42\linewidth,
         every tick label/.append style={font=\scriptsize},
         % x-axis
-        xlabel={number of BDD nodes},
+        xlabel={Number of BDD Nodes},
         xmajorgrids=true,
         xmin=800000 ,
         xmax=1200000000,
@@ -195,7 +282,7 @@
         % y-axis
         ymin=0.1,
         ymax=0.27,
-        ylabel={$\mu$s / BDD node},
+        ylabel={$\mu$s / BDD Node},
         ytick distance={0.05},
         yminorgrids=false,
         ymajorgrids=true,
@@ -209,7 +296,6 @@
 
     \caption{Running time of \emph{BuDDy} for the $N$-Queens problem.}
   \end{figure}
-
 \end{frame}
 
 \begin{frame}
@@ -247,9 +333,8 @@
       \end{axis}
     \end{tikzpicture}
 
-    \caption{Running time of \emph{BuDDy} for \emph{Tic-Tac-Toe} with $N=21$.}
+    \caption{Running time of \emph{BuDDy} for \emph{3D Tic-Tac-Toe} with $N=21$.}
   \end{figure}
-
 \end{frame}
 
 \section{Why do they break?}
@@ -271,7 +356,6 @@
 
     \caption{The I/O model by Aggarwal and Vitter '87}
   \end{figure}
-
 \end{frame}
 
 \begin{frame}
@@ -286,8 +370,8 @@
     $N$ elements can be sorted in $\Theta(\sort(N))$ I/Os.
   \end{theorem}
   \begin{theorem}[Arge '95]
-    $N$ elements can be inserted in and extracted from a Priority Queue in
-    $\Theta(\sort(N))$ I/Os.
+    A Priority Queue can do $N$ insertions and extractions in $\Theta(\sort(N))$
+    I/Os.
   \end{theorem}
 \end{frame}
 
@@ -397,9 +481,9 @@
           \begin{tabular}{r c l}
             [ & $((0,0), (2,0), (2,1))$ & ,
             \\ \\
-              & $((2,0), \bot, (3,0))$  & ,
+              & $((2,0), \top, (3,0))$  & ,
             \\ \\
-              & $((2,1), (3,0), \top)$  & ,
+              & $((2,1), (3,0), \bot)$  & ,
             \\ \\
               & $((3,0), \top, \bot)$   & ]
           \end{tabular}
@@ -413,6 +497,58 @@
     \caption{Node-based representation of prior shown BDDs}
   \end{figure}
 
+\end{frame}
+
+\begin{frame}[t]
+  \frametitle{CountPaths}
+
+  \begin{figure}
+    \centering
+
+    \begin{tikzpicture}[scale=0.9, every node/.style={transform shape}]
+      % nodes
+      \node[shape = circle, draw = black] (n) {\small $(i,\texttt{id})$};
+
+      \node[below left  = 1 and 1 of n]  (low) {$\alpha$};
+      \node[below right = 1 and 1 of n] (high) {$\beta$};
+
+      % parent dummies
+
+      \node[above left  = 0.5 and 1 of n]  (p1) {$n_1$};
+      \node[above       = 0.5 of n] (p2) {$n_2$};
+      \node[above right = 0.5 and 1 of n] (p3) {$n_3$};
+
+      % arcs
+      \draw[->, dashed] (n) edge node[above left]{$\sum_i n_i$} (low);
+      \draw[->]         (n) edge node[above right]{$\sum_i n_i$} (high);
+
+      \draw[->, dotted, thick]
+        (p1) edge[bend left] (n)
+        (p2) edge (n)
+        (p3) edge[bend right] (n)
+      ;
+    \end{tikzpicture}
+  \end{figure}
+
+  \only<1>{
+    \begin{center}
+      {\Large \textbf{Idea}}
+
+      {\large Count the number of in-going paths to each node.}
+    \end{center}
+  }
+
+  \only<2->{
+    \begin{center}
+      {\Large \textbf{Time-Forward Processing}}
+
+      Defer work with $Q_{\mathit{count}}$ : \texttt{PriorityQueue}$\langle (\arc{s}{}{t}, \quad
+      \N) \rangle$ sorted on $t$ in ascending order.
+
+      $(\arc{(i,\texttt{id})}{\bot}{\alpha}, \quad \sum_i n_i)$, \qquad
+      $(\arc{(i,\texttt{id})}{\top}{\beta}, \quad \sum_i n_i)$
+    \end{center}
+  }
 \end{frame}
 
 \begin{frame}
@@ -444,6 +580,211 @@
 \end{frame}
 
 \begin{frame}
+  \frametitle{Apply}
+
+  \begin{figure}
+    \centering
+
+    \begin{tikzpicture}
+      % 'f'
+      \node[shape = circle, draw = black] at (0,0) (f) {$t_f$};
+
+      \node at (-0.5,-1) (f0) {$\alpha$};
+      \node at (0.5,-1) (f1) {$\beta$};
+
+      \draw[->, dashed] (f) edge (f0);
+      \draw[->]         (f) edge (f1);
+
+      \node at (0,1) (fp) {};
+      \draw[->] (fp) edge (f);
+
+      % 'odot'
+      \node at (1,0) {$\odot$};
+
+      % 'g'
+      \node[shape = circle, draw = black] at (2,0) (g) {$t_g$};
+
+      \node at (1.5,-1) (g0) {$\gamma$};
+      \node at (2.5,-1) (g1) {$\delta$};
+
+      \draw[->, dashed] (g) edge (g0);
+      \draw[->]         (g) edge (g1);
+
+      \node at (1.5,1) (gp0) {};
+      \node at (2.5,1) (gp1) {};
+      \draw[->] (gp0) edge (g);
+      \draw[->, dashed] (gp1) edge (g);
+
+      \node at (3.4,0) {$\mapsto$};
+
+      % 'f \odot g' (before)
+      \node at (4.5,1) (fgp0) {$s_{\odot}\phantom{'}$};
+      \node at (6.0,1) (fgp1) {$s_{\odot}'$};
+
+      \onslide<1>{
+        \node at (5.25,0) (fg) {$(t_f,t_g)$};
+
+        \draw[->, dotted, thick] (fgp0) edge (fg);
+        \draw[->, dotted, thick] (fgp1) edge (fg);
+      }
+
+      % 'f \odot g' (after)
+      \onslide<2->{
+        \node[shape = circle, draw = black] at (5.25,0) (fg) {$t_{\odot}$};
+
+        \draw[blue, ->]         (fg) edge (fgp0);
+        \draw[blue, ->, dashed] (fg) edge (fgp1);
+      }
+      \onslide<3->{
+        \node at (6,-1) (fg1) {$\beta \odot \delta$};
+        \draw[->, dotted, thick] (fg) edge (fg1);
+      }
+      \onslide<3>{
+        \node at (4.5,-1) (fg0) {$\alpha \odot \gamma$};
+        \draw[->, dotted, thick] (fg) edge (fg0);
+      }
+      \onslide<4>{
+        \node[shape=rectangle, draw=black] at (4.5,-1) (fg0) {$\B$};
+        \draw[->, red, dashed] (fg) edge (fg0);
+      }
+    \end{tikzpicture}
+  \end{figure}
+
+  \onslide<2->{{\bf Observation (semi-tranposition)}}
+  \begin{itemize}
+    \onslide<2->{
+    \item[{\color{blue} $\leftarrow$} :]{\color{blue} $\arc{s}{}{t}$}\hspace{3pt}
+      (Internal Arcs) are output at time $t$ and hence sorted by $t$.
+    }
+
+    \onslide<4->{
+    \item[{\color{red} $\rightarrow$} :] {\color{red} $\arc{s}{}{\B}$} (Terminal
+      Arcs) are output at time $s$.
+    }
+  \end{itemize}
+
+  \begin{center}
+    {\Large \textbf{Time-Forward Processing}}
+
+    Defer resolving products with $Q_{\mathit{app}:1}$, $Q_{\mathit{app}:2}$ :
+    \texttt{PriorityQueue}$\langle (\arc{s}{}{(t_f,t_g)}, ...) \rangle$.
+  \end{center}
+\end{frame}
+
+\begin{frame}[t]
+  \frametitle{Apply}
+
+  % priority queues
+  \begin{columns}
+    \begin{column}{0.46\linewidth}
+      $Q_{\mathit{app}:1}$: \texttt{PriorityQueue}$\langle
+      (\arc{s}{}{(t_f, t_g)}) \rangle$ sorted on $\min(t_f, t_g)$ in ascending
+      order.
+    \end{column}
+    \begin{column}{0.54\linewidth}
+      \onslide<3>{%
+        $Q_{\mathit{app}:2}$: \texttt{PriorityQueue}$\langle (\arc{s}{}{(t_f,
+          t_g)}, (\alpha, \beta)) \rangle$ sorted on $\max(t_f, t_g)$ in
+        ascending order.
+      }
+    \end{column}
+  \end{columns}
+
+  \vspace{10pt}
+
+  % cases
+  \begin{columns}[T]
+    \begin{column}{0.46\linewidth}
+      \textbf{Case 1\phantom{(a)}:}
+
+      $t_f.\mathit{var}() \neq t_g.\mathit{var}()$
+
+      \vspace{10pt}
+
+      \begin{figure}
+        \centering
+
+        \begin{tikzpicture}[scale=0.8]
+          \node[shape = circle, draw = black] (tf) {$t_f$};
+
+          \node[below left  = 0.5 and 0.2 of tf] (alpha) {$\alpha$};
+          \node[below right = 0.5 and 0.2 of tf] (beta)  {$\beta$};
+
+          \node[shape = circle, draw = black, below right=0 and 2.7 of tf] (tg) {$t_g$};
+
+          \node[below left  = 0.5 and 0.2 of tg] (gamma) {$\gamma$};
+          \node[below right = 0.5 and 0.2 of tg] (delta) {$\delta$};
+
+          \node[left=2 of tf] (p) {};
+
+          \draw[->, dashed]
+            (tf) edge (alpha)
+            (tg) edge (gamma)
+          ;
+          \draw[->]
+            (tf) edge (beta)
+            (tg) edge (delta)
+          ;
+
+          \draw[->, densely dotted, thick]
+            (p) edge[bend left] node[above] {$Q_{\mathit{app}:1}$} (tf)
+          ;
+        \end{tikzpicture}
+      \end{figure}
+    \end{column}
+    \begin{column}{0.54\linewidth}
+      \onslide<2->{%
+        \textbf{Case 2(a):}
+
+        $t_f.\mathit{var}() = t_g.\mathit{var}() \wedge t_f.\mathit{id}() =
+        t_g.\mathit{id}()$
+      }
+
+      \vspace{5pt}
+
+      \onslide<3>{%
+        \textbf{Case 2(b):}
+
+        $t_f.\mathit{var}() = t_g.\mathit{var}() \wedge t_f.\mathit{id}() \neq
+        t_g.\mathit{id}()$
+
+        \begin{figure}
+          \centering
+
+          \begin{tikzpicture}[scale=0.8]
+            \node[shape = circle, draw = black] (tf) {$t_f$};
+
+            \node[below left  = 0.5 and 0.2 of tf] (alpha) {$\alpha$};
+            \node[below right = 0.5 and 0.2 of tf] (beta)  {$\beta$};
+
+            \node[shape = circle, draw = black, right= 2 of tf] (tg) {$t_g$};
+
+            \node[below left  = 0.5 and 0.2 of tg] (gamma) {$\gamma$};
+            \node[below right = 0.5 and 0.2 of tg] (delta) {$\delta$};
+
+            \node[left=2 of tf] (p) {};
+
+            \draw[->, dashed]
+              (tf) edge (alpha)
+              (tg) edge (gamma)
+            ;
+            \draw[->]
+              (tf) edge (beta)
+              (tg) edge (delta)
+            ;
+
+            \draw[->, densely dotted, thick]
+              (p) edge[bend left] node[above] {$Q_{\mathit{app}:1}$} (tf)
+              (tf) edge[bend left] node[above] {$Q_{\mathit{app}:2}$} (tg)
+            ;
+          \end{tikzpicture}
+        \end{figure}
+      }
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}
   \frametitle{Apply : \emph{Example}}
 
   % NOTE: The algorithm as presented here has a bug; for more information read
@@ -462,7 +803,83 @@
 \end{frame}
 
 \begin{frame}
-  \frametitle{Apply : \emph{Example {\tiny(Continued)}}}
+  \frametitle{Apply (Reduce)}
+
+  \begin{figure}
+    \centering
+
+    \begin{tikzpicture}[scale=0.9]
+      \node[shape = circle, draw = black] at (0,0) (t) {$t\onslide<2->{'}$};
+
+      \node at (-1.5,-1) (t0) {$\alpha'$};
+      \node at ( 1.5,-1) (t1) {$\beta'$};
+
+      \node at ( 0, 1.5) (s) {$s$};
+
+      \onslide<1>{
+        \draw[->, dotted, thick]
+          (t0) edge (t)
+          (t1) edge (t)
+        ;
+      }
+      \onslide<1-2>{
+        \draw[blue, ->] (t) edge (s);
+      }
+      \onslide<2->{
+        \draw[->, dashed] (t) edge (t0);
+        \draw[->]         (t) edge (t1);
+      }
+      \onslide<3->{
+        \draw[->, dotted, thick] (t) edge (s);
+      }
+    \end{tikzpicture}
+  \end{figure}
+
+  \begin{center}
+    {\Large \textbf{Time-Forward Processing}}
+
+    Send reduction $t'$ with $Q_{\mathit{red}}$ : \texttt{PriorityQueue}$\langle
+    (\arc{s}{}{t'}) \rangle$ descending on parent $s$.
+  \end{center}
+
+  \onslide<2->{{\bf Observation (semi-tranposition)}}
+  \begin{itemize}
+    \onslide<2->{
+    \item[{\color{blue} $\leftarrow$} :]{\color{blue} $\arc{s}{}{t}$}\hspace{3pt}
+      (Internal Arcs) provide parents of unreduced node $t$.
+    }
+
+    \onslide<4->{
+    \item[{\color{red} $\rightarrow$} :] {\color{red} $\arc{s}{}{\B}$} (Terminal
+      Arcs) are reduced and already sorted as per $Q_{\mathit{red}}$.
+    }
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Apply (Reduce)}
+
+  \input{anim/reduce_level.tex}
+
+  \textbf{Reduce Level $i$}:
+  \begin{enumerate}
+    \onslide<1->{%
+    \item Obtain nodes from $Q_{\mathit{red}}$ and {\color{red} terminal
+        arcs}. Filter and {\color{purple} remember} redundant nodes.
+    }%
+    \onslide<4->{%
+    \item Sort remaining nodes by children, output unique nodes, and
+      {\color{purple} remember} duplications.
+    }%
+    \onslide<6->{%
+    \item Sort back to match {\color{blue} internal arcs} and forward to parents
+      with $Q_{\mathit{red}}$.
+    }%
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Apply (Reduce) : \emph{Example}}
 
   \input{anim/reduce_tfp.tex}
 \end{frame}
@@ -475,7 +892,7 @@
       \\ \hline \hline
       \lstinline{bdd_pathcount} & $O(\sort(N_f))$
       \\ \hline
-      \lstinline{bdd_not}       & $O(N_f / B)$
+      \lstinline{bdd_not}       & $2 N_f / B$
       \\
       \lstinline{bdd_restrict}  & $O(\sort(N_f))$
       \\
@@ -561,7 +978,7 @@
       \\ \hline \hline
       \lstinline{bdd_pathcount} & $O(\sort(N_f))$
       \\ \hline
-      \lstinline{bdd_not}       & $O(N_f / B)$
+      \lstinline{bdd_not}       & $2 N_f / B$
       \\
       \lstinline{bdd_restrict}  & $O(\sort(N_f))$
       \\
@@ -755,30 +1172,59 @@
 
 \blankframe
 
-\begin{frame}[plain,noframenumbering]{}
-  \frametitle{Contents}
+\begin{frame}[plain,noframenumbering]
+  % custom copy of fram/endslate.tex
+  {\Large \textbf{Steffan Christ Sølvsten}}
   \begin{columns}
-    \begin{column}{0.42\linewidth}
-      \tableofcontents
+    \begin{column}{0.4\linewidth}
+      \vspace{1pt} {\hrule width\linewidth}
+
+      \vspace{5pt}
+
+      \begin{itemize}
+      \item[\faIcon{envelope}] \mailto{soelvsten@cs.au.dk}
+      \item[\faIcon{twitter}] \href{https://www.twitter.com/ssoelvsten}{@ssoelvsten}
+      \end{itemize}
+
+      \vspace{10pt}
+
+      {\Large \textbf{Adiar}}
+      \vspace{1pt} {\hrule width\linewidth}
+
+      \vspace{5pt}
+
+      \begin{itemize}
+      \item[\faIcon{code}]
+        \href{http://github.com/ssoelvsten/adiar}{github.com/ssoelvsten/adiar}
+      \item[\faIcon{book}\hspace{2pt}]
+        \href{http://ssoelvsten.github.io/adiar}{ssoelvsten.github.io/adiar}
+      \end{itemize}
+
+      \vspace{10pt}
+
+      \includegraphics[width=0.5\linewidth]{../external/aulogo_uk_var2_black.eps}
     \end{column}
-    \begin{column}{0.57\linewidth}
-      \vspace{32pt}
+    \begin{column}{0.6\linewidth}
       \begin{table}
         \centering
-        \begin{tabular}{cc}
-          \emph{Depth-First} & \emph{Time-Forwarded}
+        \begin{tabular}{rll}
+          Algorithm                 & Depth-First  & Time-Forwared
+          \\ \hline \hline
+          \lstinline{bdd_pathcount} & $O(N_f)$     & $O(\sort(N_f))$
+          \\ \hline
+          \lstinline{bdd_not}       & $O(N_f)$     & $2 N_f / B$
           \\
-          $O(N_f)$           & $O(\sort(N_f))$
+          \lstinline{bdd_restrict}  & $O(N_f)$     & $O(\sort(N_f))$
           \\
-          $O(N_f \cdot N_g)$ & $O(\sort(N_f \cdot N_g))$
-          \\
-          $O(1)$             & $2N / B$
+          \lstinline{bdd_apply}     & $O(N_f N_g)$ & $O(\sort(N_f  N_g))$
+          \\ \hline
+          \lstinline{bdd_equal}     & $O(1)$       & $2 N/B$
         \end{tabular}
       \end{table}
     \end{column}
   \end{columns}
-\end{frame}
 
+\end{frame}
 
 \end{document}
 
