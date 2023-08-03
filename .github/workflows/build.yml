@@ -25,6 +25,7 @@ jobs:
           adiar_core.movep22.tex
           adiar_nested_sweeping.tex
           adiar_zdd.tex
+          io_efficient_computation.tex
           mlightdp.tex
           MSc_thesis.tex
           one_minute_madness.tex

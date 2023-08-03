@@ -1,0 +1,91 @@
+      % Root Level
+      \node[draw = black, shape = circle] at (0,0)
+      (r) {};
+
+      % Children level 1
+      \node[draw = black, shape = circle] at (-3,-1)
+      (l1c1) {};
+
+      \node[draw = black, shape = circle] at (0,-1)
+      (l1c2) {};
+
+      \node[draw = black, shape = circle] at (3,-1)
+      (l1c3) {};
+
+      % Children level 2
+      \node[draw = black, shape = circle] at (-4,-2)
+      (l2c1) {};
+      \node[draw = black, shape = circle] at (-3,-2)
+      (l2c2) {};
+      \node[draw = black, shape = circle] at (-2,-2)
+      (l2c3) {};
+
+      \node[draw = black, shape = circle] at (-0.7,-2)
+      (l2c4) {};
+      \node[draw = black, shape = circle] at (0.7,-2)
+      (l2c5) {};
+
+      \node[draw = black, shape = circle] at (2.3,-2)
+      (l2c6) {};
+      \node[draw = black, shape = circle] at (3.7,-2)
+      (l2c7) {};
+
+      % Leaf level
+      \node[draw = black, shape = rectangle] at (-4.2,-3)
+      (l3c1) {};
+      \node[draw = black, shape = rectangle] at (-3.8,-3)
+      (l3c2) {};
+
+      \node[draw = black, shape = rectangle] at (-3.2,-3)
+      (l3c3) {};
+      \node[draw = black, shape = rectangle] at (-2.8,-3)
+      (l3c4) {};
+
+      \node[draw = black, shape = rectangle] at (-2.2,-3)
+      (l3c5) {};
+      \node[draw = black, shape = rectangle] at (-1.8,-3)
+      (l3c6) {};
+
+      \node[draw = black, shape = rectangle] at (-1.1,-3)
+      (l3c7) {};
+      \node[draw = black, shape = rectangle] at (-0.7,-3)
+      (l3c8) {};
+      \node[draw = black, shape = rectangle] at (-0.3,-3)
+      (l3c9) {};
+
+      \node[draw = black, shape = rectangle] at (0.5,-3)
+      (l3c10) {};
+      \node[draw = black, shape = rectangle] at (0.9,-3)
+      (l3c11) {};
+
+      \node[draw = black, shape = rectangle] at (1.9,-3)
+      (l3c12) {};
+      \node[draw = black, shape = rectangle] at (2.3,-3)
+      (l3c13) {};
+      \node[draw = black, shape = rectangle] at (2.7,-3)
+      (l3c14) {};
+
+      \node[draw = black, shape = rectangle] at (3.3,-3)
+      (l3c15) {};
+      \node[draw = black, shape = rectangle] at (3.7,-3)
+      (l3c16) {};
+      \node[draw = black, shape = rectangle] at (4.1,-3)
+      (l3c17) {};
+
+      % Edges
+      \draw[-]
+        % Root - L1
+        (r) edge (l1c1) edge (l1c2) edge (l1c3)
+        % L1 - L2
+        (l1c1) edge (l2c1) edge (l2c2) edge (l2c3)
+        (l1c2) edge (l2c4) edge (l2c5)
+        (l1c3) edge (l2c6) edge (l2c7)
+        % L2 - L3
+        (l2c1) edge (l3c1) edge (l3c2)
+        (l2c2) edge (l3c3) edge (l3c4)
+        (l2c3) edge (l3c5) edge (l3c6)
+        (l2c4) edge (l3c7) edge (l3c8) edge (l3c9)
+        (l2c5) edge (l3c10) edge (l3c11)
+        (l2c6) edge (l3c12) edge (l3c13) edge (l3c14)
+        (l2c7) edge (l3c15) edge (l3c16) edge (l3c17)
+      ;

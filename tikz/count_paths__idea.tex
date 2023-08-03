@@ -1,0 +1,21 @@
+% nodes
+\node[shape = circle, draw = black] (n) {\small $(i,\texttt{id})$};
+
+\node[below left  = 1 and 1 of n]  (low) {$\alpha$};
+\node[below right = 1 and 1 of n] (high) {$\beta$};
+
+% parent dummies
+
+\node[above left  = 0.5 and 1 of n]  (p1) {$n_1$};
+\node[above       = 0.5 of n] (p2) {$n_2$};
+\node[above right = 0.5 and 1 of n] (p3) {$n_3$};
+
+% arcs
+\draw[->, dashed] (n) edge node[above left]{$\sum_i n_i$} (low);
+\draw[->]         (n) edge node[above right]{$\sum_i n_i$} (high);
+
+\draw[->, dotted, thick]
+(p1) edge[bend left] (n)
+(p2) edge (n)
+(p3) edge[bend right] (n)
+;

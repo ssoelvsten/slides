@@ -1,0 +1,780 @@
+% ---------------------------------------------------------------------------- %
+%                                  !! TODO  !!
+%
+% Create version for non-CMU that covers more and has better flow:
+% - Add TerraFlow algorithm
+% - Change Time-forward Processing to be solving the exact same problem.
+% ---------------------------------------------------------------------------- %
+
+\documentclass[english, aspectratio=169]{beamer}
+
+% ---------------------------------------------------------------------------- %
+% Load base preamble
+% ---------------------------------------------------------------------------- %
+\usepackage{import}
+\subimport{./preamble/}{beamer.tex}
+
+\usepackage{tipa}
+\usepackage{mathdots}
+\usepackage[normalem]{ulem}
+
+\metroset{sectionpage=none}
+
+% ---------------------------------------------------------------------------- %
+% Local macros
+% ---------------------------------------------------------------------------- %
+
+% types
+\newcommand{\B}[0]{\ensuremath{\mathbb{B}}}
+
+% I/O efficient
+\newcommand{\scan}[0]{\text{scan}}
+\newcommand{\sort}[0]{\text{sort}}
+
+% Adiar
+\newcommand{\triple}[3]{\ensuremath{(#1, #2, #3)}}
+\renewcommand{\arc}[3]{\ensuremath{#1 \xrightarrow{_{#2}} #3}}
+
+% Tikz plots
+\tikzstyle{plot_cache_1}=[color=red, mark=none, line width=1pt]
+\tikzstyle{plot_cache_500}=[color=purple, mark=none, line width=1pt]
+\tikzstyle{plot_cache_1000}=[color=blue, mark=none, line width=1pt]
+
+\tikzstyle{plot_adiar}=[color=red, mark=o, mark size=1pt, line width=0.9pt]
+\tikzstyle{plot_other}=[color=blue, mark=diamond, mark size=1pt, line width=0.9pt]
+
+% Horizontal legends: https://tex.stackexchange.com/a/101578
+% argument #1: any options
+\makeatletter
+\newenvironment{customlegend}[1][]{%
+  \begingroup
+  % inits/clears the lists (which might be populated from previous
+  % axes):
+  \pgfplots@init@cleared@structures
+  \pgfplotsset{#1}%
+}{%
+  % draws the legend:
+  \pgfplots@createlegend
+  \endgroup
+}%
+
+% makes \addlegendimage available (typically only available within an
+% axis environment):
+\def\addlegendimage{\pgfplots@addlegendimage}
+\makeatother
+
+% ---------------------------------------------------------------------------- %
+% TITLEPAGE
+% ---------------------------------------------------------------------------- %
+\title{I/O-Efficient Algorithms and Data Structures}
+
+\author{\textbf{Steffan Christ S\o lvsten}}
+
+\date{$8^{\text{th}}$ of September, 2023}
+
+\institute{\includegraphics[width=0.2\linewidth]{./external/aulogo_uk_var2_black.eps}}
+
+% ---------------------------------------------------------------------------- %
+% Content
+% ---------------------------------------------------------------------------- %
+\begin{document}
+
+\titleframe
+
+\section{I/O-model}
+
+\begin{frame}
+  \input{anim/cache_crusher.tex}
+\end{frame}
+
+\begin{frame}
+  \begin{figure}
+    \centering
+
+    \begin{tikzpicture}
+      \begin{axis}[%
+        width=0.90\linewidth, height=0.42\linewidth,
+        every tick label/.append style={font=\scriptsize},
+        % x-axis
+        xlabel={Vector size ($N$)},
+        xmajorgrids=true,
+        xmin=-1900000,
+        xmax=18000000,
+        % y-axis
+        ymin=100,
+        ymax=700,
+        %ytick distance={0.5},
+        ylabel={Time (ms)},
+        yminorgrids=true,
+        ymajorgrids=true,
+        grid style={dashed,black!20},
+        ]
+
+        \only<3-> {
+          \addplot+ [style=plot_cache_1000]
+          table {./data/cache_crusher_i=1000.tex};
+        }
+        %\only<3-> {
+        %  \addplot+ [style=plot_cache_500]
+        %  table {./data/cache_crusher_i=500.tex};
+        %}
+        \only<2-> {
+          \addplot+ [style=plot_cache_1]
+          table {./data/cache_crusher_i=1.tex};
+        }
+      \end{axis}
+
+    \end{tikzpicture}
+
+    \begin{tikzpicture}
+      \begin{customlegend}[
+        legend columns=-1,
+        legend style={draw=none,column sep=1ex},
+        legend entries={
+          $i=1$,
+%          $i=500$,
+          $i=1000$
+        }
+        ]
+        \addlegendimage{style=plot_cache_1}
+%        \addlegendimage{style=plot_cache_500}
+        \addlegendimage{style=plot_cache_1000}
+      \end{customlegend}
+    \end{tikzpicture}
+
+  \end{figure}
+\end{frame}
+
+\blankframe
+
+\begin{frame}
+  \input{anim/io_model__motivation.tex}
+\end{frame}
+
+\begin{frame}
+  \frametitle{I/O Model\\Aggarwal and Vitter '87}
+
+  \begin{figure}
+    \centering
+    % TODO: Colour internal memory?
+    \input{tikz/io_model.tex}
+  \end{figure}
+\end{frame}
+
+\section{Files and Sorting}
+
+\begin{frame}
+  \frametitle{I/O Model : Sequential Access\\Aggarwal and Vitter '87}
+
+  \input{anim/io_model__read_write.tex}
+
+  \onslide<11-> {
+    \begin{table}
+      \begin{tabular}{rcl}
+        Time   & : & $N$
+        \\
+        I/O    & : & $N/B$
+        \\
+        Memory & : & $B$
+      \end{tabular}
+    \end{table}
+  }
+\end{frame}
+
+\begin{frame}
+  \frametitle{I/O Model : Stack\\\phantom{Aggarwal and Vitter '87}}
+
+  \input{anim/io_model__stack.tex}
+
+  \onslide<25-> {
+    \begin{table}
+      \begin{tabular}{rcl}
+        Time   & : & $O(N)$
+        \\
+        I/O    & : & $O(N/B)$
+        \\
+        Memory & : & $2B$
+      \end{tabular}
+    \end{table}
+  }
+\end{frame}
+
+\begin{frame}
+  \frametitle{I/O Model : M/B-way Mergesort\\Aggarwal and Vitter '87}
+
+  \input{anim/io_model__merge.tex}
+\end{frame}
+
+\begin{frame}
+  \frametitle{I/O Model : M/B-way Mergesort\\Aggarwal and Vitter '87}
+
+  \input{anim/io_model__mergesort.tex}
+\end{frame}
+
+\begin{frame}
+  \frametitle{I/O Model : M/B-way Mergesort\\Aggarwal and Vitter '87}
+
+  { \Large%
+    \begin{theorem}
+      $N$ elements can be sorted in $\Theta(N/B \cdot \log_{M/B}(N/B))$ I/Os.
+    \end{theorem}
+  }
+\end{frame}
+
+\section{Graham Scan}
+
+\blankframe
+
+\begin{frame}
+  \frametitle{Convex Hull : Graham Scan\\Graham '72}
+
+  \textbf{Convex Hull}
+
+  Compute the \emph{convex hull} for $N$ points in the plane.
+
+  \begin{figure}
+    \centering
+
+    \begin{tikzpicture}[scale=1.6]
+      \input{tikz/convex_hull.input.tex}
+    \end{tikzpicture}
+  \end{figure}
+
+  \begin{theorem}
+    Convex Hull can be computed in $O(N/B \cdot \log_{M/B}(N/B))$ I/Os.
+  \end{theorem}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Convex Hull : Graham Scan\\Graham '72}
+
+  \begin{columns}
+    \begin{column}{0.6\linewidth}
+      Upper Hull:
+      \begin{itemize}
+        \onslide<2-> {
+        \item Sort input points by $x$-axis
+        }
+        \onslide<3-> {
+        \item Initialize stack $S = [p_0, p_1]$
+        }
+        \onslide<4-> {
+        \item For remaining points $p_i \in p_2, p_3, \dots, p_{N-1}$:
+          \begin{enumerate}
+          \item\label{graham scan: let}
+            Let $p_s$, $p_t$ be the two top-most points of $S$
+
+          \item While $p_s - p_t - p_i$ is a ``left-turn'':
+            \begin{itemize}
+            \item Pop $p_t$ and go-to \ref{graham scan: let}
+            \end{itemize}
+
+          \item Push $p_i$ onto $S$
+          \end{enumerate}
+        }
+      \end{itemize}
+
+      \onslide<13-> {
+        Lower Hull:
+        \begin{itemize}
+        \item Symmetric...
+        \end{itemize}
+      }
+    \end{column}
+    \begin{column}{0.4\linewidth}
+      \begin{figure}
+        \centering
+        \begin{tikzpicture}[scale=1.4]
+          \input{tikz/convex_hull.input.tex}
+          \onslide<13-> {
+            \draw[very thick, densely dotted]
+              (p7) edge (p5)
+              (p5) edge (p0)
+            ;
+          }
+
+          \onslide<2-> {
+            \input{tikz/convex_hull.sorted.tex}
+          }
+
+          % edges
+          \onslide<3->  { \draw[very thick, densely dotted] (p0) edge (p1); }
+          \onslide<4->  { \draw[very thick, densely dotted] (p1) edge (p2); }
+          \onslide<5->  { \draw[very thick, densely dotted] (p2) edge (p3); }
+          \onslide<6-8> { \draw[very thick, densely dotted] (p3) edge (p4); }
+          \onslide<7>   { \draw[very thick, densely dotted] (p4) edge (p5); }
+          \onslide<10>  { \draw[very thick, densely dotted] (p3) edge (p6); }
+          \onslide<12-> { \draw[very thick, densely dotted] (p3) edge (p7); }
+        \end{tikzpicture}
+      \end{figure}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\section{Trees & Priority Queues}
+
+\blankframe
+
+\begin{frame}
+  \frametitle{\only<1>{a--b}\only<2->{Buffer} Tree \\%
+    \only<1>{Huddleston and Mehlhorn '82}%
+    \only<2->{Arge '95}%
+  }
+
+  \begin{figure}
+    \centering
+
+    \begin{tikzpicture}
+      \input{tikz/a-b_tree.tex}
+
+      % Vertical
+      \onslide<2-> {
+        \draw[-|] (-4.7,-3.2) edge
+          node[pos=0.5, left, rotate=90, above=] {$O(\log_{M/B}(N/B))$}
+          ++(0,3.5)
+        ;
+      }
+
+      % Buffers
+      \onslide<3-> {
+        \draw[] (0.3,0.1) rectangle ++(0.4,0.2);
+
+        \draw[] (-2.6,-1.2) rectangle ++(0.4,0.2);
+        \draw[] ( 0.3,-1.2) rectangle ++(0.4,0.2);
+        \draw[] ( 3.3,-1.2) rectangle ++(0.4,0.2);
+
+        \draw[] (-3.7,-2.2) rectangle ++(0.4,0.2);
+        \draw[] (-2.7,-2.2) rectangle ++(0.4,0.2);
+        \draw[] (-1.7,-2.2) rectangle ++(0.4,0.2);
+
+        \draw[] (-0.4,-2.2) rectangle ++(0.4,0.2);
+        \draw[] ( 1.0,-2.2) rectangle ++(0.4,0.2);
+
+        \draw[] ( 2.6,-2.2) rectangle ++(0.4,0.2);
+        \draw[] ( 4.0,-2.2) rectangle ++(0.4,0.2);
+      }
+    \end{tikzpicture}
+  \end{figure}
+
+  \onslide<2-> {
+    \begin{equation*}
+      \qquad a = \frac{1}{4} M/B , \qquad b = M/B, \qquad \text{Leaf Size} = B
+    \end{equation*}
+  }
+\end{frame}
+
+\begin{frame}
+  \frametitle{Buffer Tree \\ Arge '95}
+
+  \input{anim/buffer_tree__split.tex}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Buffer Tree \\ Arge '95}
+
+  \begin{theorem}
+    A \emph{Buffer Tree} can resolve $N$ \texttt{insert}s and \texttt{delete}s
+    in $\Theta(N/B \cdot \log_{M/B}(N/B))$ I/Os.
+  \end{theorem}
+
+  \pause
+  \begin{theorem}
+    A \emph{Buffer Tree} with $N$ requests can empty all its buffers, and output
+    all remaining sorted elements, in $\Theta(N/B)$ I/Os.
+  \end{theorem}
+
+  \pause
+  \vspace{10pt}
+
+  \begin{corollary}
+    An I/O-efficient \emph{Priority Queue} can resolve $N$ \texttt{push} and
+    \texttt{deletemin} operations in $\Theta(N/B \cdot \log_{M/B}(N/B))$ I/Os.
+  \end{corollary}
+  \begin{proof}
+    \small
+
+    Use an $M/2$ sized internal memory priority queue, \texttt{pq}. If
+    \texttt{pq} overflows, move $M/4$ the largest elements to a Buffer Tree,
+    \texttt{t}. If \texttt{pq} underflows, obtain the $M/4$ smallest elements
+    from \texttt{t}.
+  \end{proof}
+\end{frame}
+
+\section{Time-forward Processing}
+
+\blankframe
+
+\begin{frame}
+  \frametitle{Binary Decision Diagrams \\ Arge '96, S{\o}lvsten '22}
+
+  \begin{columns}
+    \begin{column}{0.5\linewidth}
+      \textbf{\#Paths}
+
+      Given a Binary Decision Diagram of $N$ nodes, compute the number of paths
+      from the root to the $\top$ terminal.
+
+      \vspace{20pt}
+      \begin{theorem}
+        \emph{\#Paths} can be computed in $O(N/B \cdot \log_{M/B}(N/B))$ I/Os.
+      \end{theorem}
+
+    \end{column}
+    \begin{column}{0.5\linewidth}
+      \begin{figure}
+        \centering
+
+        \begin{tikzpicture}[scale=0.8, every node/.style={transform shape}]
+          \input{tikz/bdd_example_a.tex}
+        \end{tikzpicture}
+
+        \caption{\small \textbf{(a)} $(x_0 \wedge x_1 \wedge x_3) \vee (x_2 \oplus x_3)$}
+      \end{figure}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Binary Decision Diagrams \\ Arge '96, S{\o}lvsten '22}
+
+  \begin{figure}
+    \centering
+
+    \begin{subfigure}[b]{0.45\linewidth}
+      \centering
+
+      \begin{tikzpicture}[scale=1, every node/.style={transform shape}]
+        \input{tikz/bdd_example_a.tex}
+      \end{tikzpicture}
+
+      \emph{\small Decision Diagram}
+    \end{subfigure}
+    \hspace{20pt}
+    \begin{subfigure}[b]{0.45\linewidth}
+      \centering
+      { \small
+        \begin{tabular}{r c l}
+          [ & $\triple{(0,0)}{(2,0)}{(1,0)}$ & ,
+          \\ \\
+            & $\triple{(1,0)}{(2,0)}{(3,1)}$ & ,
+          \\ \\
+            & $\triple{(2,0)}{(3,0)}{(3,1)}$ & ,
+          \\ \\
+            & $\triple{(3,0)}{\top}{\bot}$   & ,
+          \\ \\
+            & $\triple{(3,1)}{\bot}{\top}$   & ]
+        \end{tabular}
+        \vspace{6pt}
+      }
+
+      \emph{\small On-Disk Format}
+    \end{subfigure}
+
+    \caption{\textbf{(a)} $(x_0 \wedge x_1 \wedge x_3) \vee (x_2 \oplus x_3)$}
+  \end{figure}
+
+\end{frame}
+
+\begin{frame}[t]
+  \frametitle{Binary Decision Diagrams \\ Arge '96, S{\o}lvsten '22}
+
+  % HACK: The slide below is only designed for single-line frametitles.
+  \vspace{-18pt}
+
+  \begin{figure}
+    \centering
+
+    \begin{tikzpicture}[scale=0.9, every node/.style={transform shape}]
+      \input{tikz/count_paths__idea.tex}
+    \end{tikzpicture}
+  \end{figure}
+
+  \only<1>{
+    \begin{center}
+      {\Large \textbf{Idea}}
+
+      {\large Count the number of in-going paths to each node.}
+    \end{center}
+  }
+
+  \only<2->{
+    \begin{center}
+      {\Large \textbf{Time-Forward Processing}}
+
+      Defer work with $Q_{\mathit{count}}$ : \texttt{PriorityQueue}$\langle (\arc{s}{}{t}, \quad
+      \N) \rangle$ sorted on $t$ in ascending order.
+
+      $(\arc{(i,\texttt{id})}{\bot}{\alpha}, \quad \sum_i n_i)$, \qquad
+      $(\arc{(i,\texttt{id})}{\top}{\beta}, \quad \sum_i n_i)$
+    \end{center}
+  }
+\end{frame}
+
+\begin{frame}
+  \frametitle{Binary Decision Diagrams \\ Arge '96, S{\o}lvsten '22}
+
+  \input{anim/count_paths_tfp.tex}
+\end{frame}
+
+\input{fram/reveal.tex}
+
+\begin{frame}
+  \frametitle{Binary Decision Diagrams \\ Arge '96, S{\o}lvsten '22}
+
+  \begin{figure}
+    \centering
+    \begin{subfigure}[b]{0.7\linewidth}
+      \centering
+
+      \begin{tikzpicture}
+        \begin{axis}[%
+          width=1\linewidth, height=0.55\linewidth,
+          every tick label/.append style={font=\scriptsize},
+          % x-axis
+          xlabel={Instance Size (\# BDD nodes)},
+          xmajorgrids=true,
+          xmin=10000,
+          xmax=1000000000000,
+          xmode = log,
+          % y-axis
+          ymin=0.001,
+          ymax=1000000,
+          ymode=log,
+          ytick={0.001,0.01,0.1,1,10,100,1000,10000,100000,1000000},
+          ylabel={Time (s)},
+          yminorgrids=false,
+          ymajorgrids=true,
+          grid style={dashed,black!20},
+          ]
+
+          \only<1-> {
+            \addplot+ [style=plot_other]
+            table {./data/queens_buddy_time.tex};
+
+            \addplot+ [style=plot_other]
+            table {./data/queens_cudd_time.tex};
+
+            \addplot+ [style=plot_other]
+            table {./data/queens_sylvan_time.tex};
+          }
+
+          \only<2-> {
+            \addplot+ [style=plot_adiar]
+            table {./data/queens_adiar_time.v1.2.0.tex};
+          }
+        \end{axis}
+
+        \only<1-> {
+          \node[color=black, rotate=90] at (5.85, 1.90) {\small $19.8$~GiB};
+        }
+        \only<2-> {
+          \node[color=black, rotate=90] at (7.50, 2.75) {\small $736$~GiB};
+        }
+      \end{tikzpicture}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.29\linewidth}
+      \centering
+
+      \begin{tikzpicture}
+        \begin{customlegend}[
+          legend columns=1,
+          legend style={draw=none,column sep=1ex},
+          legend entries={Adiar, BuDDy, CUDD, Sylvan}
+          ]
+          \addlegendimage{style=plot_adiar}
+          \addlegendimage{style=plot_other}
+          \addlegendimage{style=plot_other}
+          \addlegendimage{style=plot_other}
+        \end{customlegend}
+      \end{tikzpicture}
+
+      % HACK: Using [t] above does not do what I hoped it to.
+      \vspace{50pt}
+    \end{subfigure}
+    \caption{Running time for the \emph{N-Queens} problems.}
+  \end{figure}
+\end{frame}
+
+\blankframe
+
+\section{References}
+
+\begin{frame}[t]
+  \frametitle{Further Reading :
+    \only<1>{Foundations}%
+    \only<2>{Data Structures}%
+    \only<3>{Algorithms}%
+    \only<4>{Libraries (C++)}
+   }
+
+  \large
+
+  \only<1>{
+    \begin{itemize}
+    \item \textbf{Aggarwal and Vitter (1987)}
+
+      \emph{``The Input/Output Complexity of Sorting and Related Problems''}
+
+      {\color{gray}\normalsize The I/O-model, Sorting, Permutation, FFT, and
+        Matrix transposition.}
+
+    \item \textbf{Arge, Goodrich, Nelson, and Sitchinava (2008)}
+
+      \emph{``Fundamental Parallel Algorithms for Private-cache Chip Multiprocessors.''}
+
+      {\color{gray}\normalsize The I/O-model for Multi-Threading.}
+    \end{itemize}
+  }
+  \only<2>{
+    \begin{itemize}
+    \item \textbf{Arge (1995)}
+
+      \emph{``The Buffer Tree: A new technique for Optimal I/O-algorithms''}
+
+      {\color{gray}\normalsize An I/O-efficient Tree, Priority Queue, and Range Tree.}
+
+    \item \textbf{Sanders (2002)}
+
+      \emph{``Fast Priority Queues for Cached Memory''}
+
+      {\color{gray}\normalsize A much faster I/O-efficient Priority Queue.}
+
+    \item \textbf{Agarwal, Arge and Yi (2006)}
+
+      \emph{``I/O-Efficient Batched Union-Find and Its Applications to Terrain Analysis''}
+
+      {\color{gray}\normalsize An I/O-efficient (Lazy) Union-Find.}
+    \end{itemize}
+  }
+  \only<3>{
+    \begin{itemize}
+    \item \textbf{Goodrich, Tsay, Vengroff, and Vitter (1993)}
+
+      \emph{``External-Memory Computational Geometry''}
+
+      {\color{gray}\normalsize Distribution Sweeping and other algorithms.}
+
+    \item \textbf{Chiang, Goodrich, Grove, Tamassia, Vengroff, and Vitter (1995)}
+
+      \emph{``External-memory Graph Algorithms''}
+
+      {\color{gray}\normalsize Time-forward Processing and other algorithms.}
+
+    \item \textbf{Arge, Toma, Vitter (2001)}
+
+      \emph{``I/O-Efficient Algorithms for Problems on Grid-Based Terrains''}
+
+      {\color{gray}\normalsize The T{\footnotesize ERRA}F{\footnotesize LOW} algorithm.}
+    \end{itemize}
+  }
+  \only<4>{
+    \begin{itemize}
+    \item \textbf{TPIE : Templated Portable I/O Environment}
+
+      \href{https://github.com/thomasmoelhave/tpie}{\texttt{github.com/thomasmoelhave/tpie}}
+
+      {\color{gray}\normalsize Duke University and Aarhus University}
+
+    \item \textbf{STXXL : Standard Template library for XXL data sets}
+
+      \href{https://github.com/stxxl/stxxl}{\texttt{github.com/stxxl/stxxl}}
+
+      {\color{gray}\normalsize University of Karlsruhe}
+    \end{itemize}
+  }
+\end{frame}
+
+\input{fram/endslate.tex}
+
+\blankframe
+
+\section{Appendix}
+
+\subsection{Distribution Sweeping}
+
+\begin{frame}
+  \frametitle{Distribution Sweeping\\Goodrich, Tsay, Vengroff, and Vitter '93}
+
+  \textbf{Batched Range Searching}
+
+  Given $N$ axis-parallel rectangles and $N$ points in the plane, compute for
+  each point $p$ all rectangles containing $p$.
+
+  \begin{figure}
+    \centering
+    \begin{tikzpicture}
+      \input{tikz/distribution_sweeping.input.tex}
+    \end{tikzpicture}
+  \end{figure}
+
+  \begin{theorem}
+    Batched Range Searching can be solved in $O(\sort(N) + \scan(T))$ I/Os.
+  \end{theorem}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Distribution Sweeping\\Goodrich, Tsay, Vengroff, and Vitter '93}
+
+  \begin{columns}
+    \begin{column}{0.6\linewidth}
+      Preprocessing:
+      \begin{itemize}
+        \onslide<2->{
+        \item Split each rectangle into two vertical
+          lines.
+        }
+
+        \onslide<3->{
+        \item Sort all lines and points by their $x$-value.
+        }
+      \end{itemize}
+      Algorithm:
+      \begin{itemize}
+        \onslide<4->{
+        \item Split all data into $\Theta(\sqrt{M/B})$ \emph{slabs}. Solve these
+          recursively; output is given sorted by $y$-value.
+        }
+
+        \onslide<5->{
+        \item Merge slabs together, report points between line segments outside
+          its slab.
+          \begin{itemize}
+          \item Use $\Theta(\sqrt{M/B}^2) = \Theta(\sqrt{M/B})$ multi-slabs to
+            maintain each \emph{active} rectangle.
+          \item Output points and un-matched line segments.
+          \end{itemize}
+        }
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.4\linewidth}
+      \begin{figure}
+        \centering
+        \begin{tikzpicture}
+          \onslide<1>{
+            \input{tikz/distribution_sweeping.input.tex}
+          }
+          \onslide<2-3>{
+            \input{tikz/distribution_sweeping.lines.tex}
+          }
+          \onslide<5->{
+            \input{tikz/distribution_sweeping.slabs2.tex}
+          }
+          \onslide<4-5>{
+            \input{tikz/distribution_sweeping.slabs.tex}
+          }
+        \end{tikzpicture}
+
+        \vspace{8pt}
+
+        \begin{tikzpicture}
+          \onslide<5>{
+            \input{tikz/distribution_sweeping.multi_slabs.tex}
+          }
+        \end{tikzpicture}
+      \end{figure}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\end{document}
