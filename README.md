@@ -1,7 +1,7 @@
-# Steffan Sølvsten : beamer slides
+# Steffan Christ Sølvsten : Slides
 
-A collection of slides used for presentations at conferences, seminars,
-workshops, and elsewhere. The compiled output can be found on the
+A collection of (LaTeX Beamer) slides used for presentations at conferences,
+seminars, workshops, and elsewhere. The compiled output can be found on the
 [out](https://github.com/SSoelvsten/slides/tree/out) branch.
 
 ## Overview
