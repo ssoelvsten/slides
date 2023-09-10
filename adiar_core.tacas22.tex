@@ -103,7 +103,7 @@
         \addlegendimage{style=plot_buddy}
       \end{customlegend}
     \end{tikzpicture}
-    
+
     \caption{Minimal running time for the \emph{Queens} problems.}
   \end{figure}
 
@@ -112,7 +112,7 @@
 \begin{frame}
   \begin{figure}
     \centering
-    
+
     \begin{tikzpicture}
       \begin{axis}[%
         width=0.73\linewidth, height=0.42\linewidth,
@@ -147,7 +147,7 @@
         \addlegendimage{style=plot_buddy}
       \end{customlegend}
     \end{tikzpicture}
-    
+
     \caption{Cache-misses for the \emph{Queens} problems.}
   \end{figure}
 
@@ -164,7 +164,7 @@
 \begin{frame}
   \begin{figure}
     \centering
-    
+
     \begin{tikzpicture}
       \begin{axis}[%
         width=0.70\linewidth, height=0.42\linewidth,
@@ -183,8 +183,8 @@
         yminorgrids=true,
         ymajorgrids=true,
         grid style={dashed,black!20},
-        ]     
-        
+        ]
+
         \only<2-> {
           \addplot+ [style=plot_cudd]
           table {./data/queens_cudd_time_per_node.tex};
@@ -194,7 +194,7 @@
           \addplot+ [style=plot_sylvan]
           table {./data/queens_sylvan_time_per_node.tex};
         }
-        
+
         \only<4-> {
           \addplot+ [style=plot_adiar]
           table {./data/queens_adiar_time_per_node.tex};
@@ -214,7 +214,7 @@
         \addlegendimage{style=plot_adiar}
       \end{customlegend}
     \end{tikzpicture}
-    
+
     \caption{Minimal running time for the \emph{Queens} problems.}
   \end{figure}
 \end{frame}

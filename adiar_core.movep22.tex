@@ -63,7 +63,7 @@
 \begin{frame}
   \begin{figure}
     \centering
-    
+
     \begin{tikzpicture}
       \begin{axis}[%
         width=0.70\linewidth, height=0.42\linewidth,
@@ -83,8 +83,8 @@
         yminorgrids=false,
         ymajorgrids=true,
         grid style={dashed,black!20},
-        ]     
-        
+        ]
+
         \only<2-> {
           \addplot+ [style=plot_cudd]
           table {./data/queens_cudd_time.tex};
@@ -94,7 +94,7 @@
           \addplot+ [style=plot_sylvan]
           table {./data/queens_sylvan_time.tex};
         }
-        
+
         \only<3-> {
           \addplot+ [style=plot_adiar]
           table {./data/queens_adiar_time.tex};
@@ -113,7 +113,7 @@
         \addlegendimage{style=plot_adiar}
       \end{customlegend}
     \end{tikzpicture}
-    
+
     \caption{Minimal running time for the \emph{Queens} problems.}
   \end{figure}
 \end{frame}
@@ -122,7 +122,7 @@
   \begin{center}
     \begin{tikzpicture}[scale=0.7, every node/.style={transform shape}]
       \input{tikz/octupus.tex}
-    \end{tikzpicture}    
+    \end{tikzpicture}
   \end{center}
 \end{frame}
 
