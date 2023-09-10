@@ -1,7 +1,7 @@
 # Guidelines on Public Speaking
 
-The notes below are based on courses on I have taken on public speaking and
-conversationsI have had about the topic. You may notice, that these notes are
+The notes below are based on courses I have taken on public speaking and
+conversations I have had about the topic. You may notice, that these notes are
 contradictory - this is due to different schools of thought. I will leave it up
 to you to make up your own mind; but, please do not take that as an excuse to
 find the "school of thought" that reinforces your current *bad habits*.
@@ -16,8 +16,8 @@ notes are nothing compared to taking her course.
 
 Your main goal is to incite curiosity, make them feel you are friends, not loose
 them at any point, and you want them to be so very interested afterwards that
-they (a) want to Google the subject, (b) read your paper or (c) chase you down
-for some questions.
+they (a) want to Google the subject, (b) read your paper and/or (c) chase you
+down for some questions.
 
 Hence, everything goes back to these two things: *Audience* and *Purpose*.
 
@@ -39,8 +39,8 @@ Hence, everything goes back to these two things: *Audience* and *Purpose*.
   Think about the broader reasoning behind why you are giving this talk:
   inform/teach, enthuse, sell, or enquire?
 
-You need to identify yout audience and with that purpose of your talk, before
-you do anything else.
+Before you do anything else, you need to identify yout audience and with that
+the purpose of your talk.
 
 ### Logical Flow
 
@@ -87,9 +87,10 @@ and finally the key points.
 
 - **Opening**
 
-  You have about 45 seconds to sell your idea. During this amount of time, you
-  have to convince them, they should listen. The rest of the talk should fall
-  under the idea/topic presented here.
+  You have about 45 seconds to establish the topic and you are worth listening to.
+  Yes, first impressions matter, so during this amount of time, you have to
+  convince them, they should listen. The rest of the talk should fall under the
+  idea/topic presented here.
 
   To this end, you need to find some *hook* to start with. This should at most 3
   lines long; hopefully it is only a one-liner.
@@ -139,7 +140,8 @@ something on that supports your current point.
   - Do not have blurry images.
 
   - If you use a pointer, do not just quickly flash it on the screen, but
-    instead make sure it lingers (yes, that is what we naturally do).
+    instead make sure it lingers (despite what you may think, it does not
+    feel natural to let it linger).
 
 - **Less Obvious No-go's**
 
@@ -169,21 +171,22 @@ their attention.
 
 - **Mind Games**
 
-  - *Tone*: The tone (and your body language) you use can be used to incite a
-    desired feeling. So, you need to think about how you deliver it as much as
-    what you say.
+  - *Tone*: The tone (and your body language) you use can incite the desired
+    feelings. So, you need to think about how you deliver it as much as what
+    you say.
 
     While people should always be able to hear you, you can get extra attention
     by *altering your volume*.
 
   - *Pause*: As mentioned, put pauses directly into your script. During
-    delivery, count "*1, 2, 3*" in your head. It will be awkward, but the
-    adrenalin makes everything go faster anyway.
+    delivery, count "*1, 2, 3*" in your head. You will think this to be awkward,
+    but the adrenalin makes everything go faster anyway - so it cancels out.
 
   - *Repetition*: Your main point (or some catch-phrase) should be repeated. Of
     course, do not overdo it, but try to incorporate it.
 
-    You do not want to repeat information in disguise, i.e. change the wording.
+    You do not want to repeat information in disguise, i.e. do not change the
+    wording.
 
   - The *Blank Frame*: While it is merely a slide with nothing on it (not even
     the footer or header), it is one of the most powerful things you can use.
@@ -191,9 +194,9 @@ their attention.
 
     To this end, the `\blankframe` is part of my *LaTeX* preamble.
 
-  - *Movement*: Switche the state of your movement (moving around on stage or
-    hand-movements). For example, if you walk a lot, then stop when you state an
-    important point.
+  - *Movement*: Switch the state of your movement (moving around on stage and/or
+    your hand-movements). For example, if you walk a lot, then stop when you
+    state an important point.
 
     Even on Zoom you can still speak with your hands.
 
@@ -202,11 +205,11 @@ their attention.
 
       Breaking eye contact can be used to put weight onto a topic.
 
-    - *Pointing*: Pointing with a finger is for a _single person_ while with an
-      open hand can be interpreted as _everyone_.
+    - *Pointing*: Pointing with a finger is for a *single person* while with an
+      open hand can be interpreted as *everyone*.
 
-  - *Rule of Three*: We remember better if something comes in a package of 3.
-  For example, "X provides A, B, and C". In this case, it is also good to
+  - *Rule of Three*: We remember things better if something comes in a package of
+  3. For example, "X provides A, B, and C". In this case, it is also good to
   visually count 1,2,3 with your fingers.
 
   If you have more than three points it can feel overwhelming. If you have fewer
@@ -230,7 +233,7 @@ their attention.
 
     Finish your words before going to the next - overdo this in practice. If you
     have a heavy accent or there is a word you struggle with, practice it where
-    you _really overdo it_ - or use a synonym.
+    you *really overdo it* - or use a synonym.
 
   - *Confidence*
 
