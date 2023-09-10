@@ -1,0 +1,59 @@
+\begin{tikzpicture}
+  % nodes of level j
+  \node[shape = circle, draw = black] (a1) {$a_1$};
+  \node[shape = circle, draw = black, right=of a1] (a2) {$a_2$};
+  \node[shape = circle, draw = black, right=of a2] (a3) {$a_3$};
+
+  % subtrees of levels > j
+  \node[shape = rectangle, draw = black, below left=0.5cm and .35cm of a1] (top) {$\top$};
+  \node[below right=0.5cm and .35cm of a1] (alpha1) {$\alpha_1$};
+  \node[below right=0.5cm and .35cm of a2] (alpha2) {$\alpha_2$};
+  \node[below right=0.5cm and .35cm of a3] (alpha3) {$\alpha_3$};
+  \node[below right=0.5cm and 2.0cm of a3] (alpha4) {$\alpha_4$};
+
+  % arcs in the max-cut
+  \draw[->]
+  ($ (a1) + (-0.2, 1) $) edge (a1)
+  ($ (a1) + (0.2, 1) $)  edge (a1)
+  (a1)                   edge (alpha1)
+  (a1)                   edge (top)
+  ($ (a2) + (0, 1) $)    edge (a2)
+  (a2)                   edge (alpha1)
+  (a2)                   edge (alpha2)
+  ($ (a3) + (0, 1) $)    edge (a3)
+  (a3)                   edge (alpha2)
+  (a3)                   edge (alpha3)
+  ($ (a3) + (2.2, 1) $)  edge (alpha4)
+  ($ (a3) + (2.9, 1) $)   ->  (alpha4)
+  ;
+
+  % cut line
+  \onslide<1>{
+    \draw[thick, dashed, red]
+    ($ (a1) + (-0.9, 0.7) $) -- ($ (alpha4) + (0.6, 1.7) $)
+    ;
+  }
+  \onslide<2>{
+    \draw[thick, dashed, red]
+    ($ (a1) + (-0.9, 0.7) $) --
+    ($ (a1) + (0.5, 0.7) $) cos
+    ($ (a2) + (-0.7, 0)$) sin
+    ($ (a2) + (0, -0.7)$) cos
+    ($ (a2) + (0.7, 0)$) sin
+    ($ (a2) + (1.4, 0.7)$) --
+    ($ (alpha4) + (0.6, 1.7) $)
+    ;
+  }
+  \onslide<3>{
+    \draw[thick, dashed, red]
+    ($ (a1) + (-0.9, 0.7) $) --
+    ($ (a1) + (0.5, 0.7) $) cos
+    ($ (a2) + (-0.7, 0)$) sin
+    ($ (a2) + (0, -0.7)$) --
+    ($ (a3) + (0, -0.7)$) cos
+    ($ (a3) + (0.7, 0)$) sin
+    ($ (a3) + (1.4, 0.7)$) --
+    ($ (alpha4) + (0.6, 1.7) $)
+    ;
+  }
+\end{tikzpicture}

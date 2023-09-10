@@ -1,0 +1,331 @@
+\documentclass[english, aspectratio=169]{beamer}
+% english is for the language used in standard texts (figures, tables etc)
+% aspectratio of 16:9 or set it for more old school to 4:3 (without the ':')
+
+% ---------------------------------------------------------------------------- %
+% Load base preamble
+% ---------------------------------------------------------------------------- %
+\usepackage{import}
+\subimport{./preamble/}{beamer.tex}
+
+\metroset{sectionpage=none}
+
+% ---------------------------------------------------------------------------- %
+% Local settings
+% ---------------------------------------------------------------------------- %
+% https://tex.stackexchange.com/a/20613
+\newcommand\hcancel[2][black]{\setbox0=\hbox{$#2$}%
+  \rlap{\raisebox{.35\ht0}{\textcolor{#1}{\rule{\wd0}{1pt}}}}#2}
+
+\newcommand{\B}[0]{\ensuremath{\mathbb{B}}}
+
+\newcommand{\sort}[0]{\text{sort}}
+
+\newcommand{\triple}[3]{\ensuremath{(#1, #2, #3)}}
+\renewcommand{\arc}[3]{\ensuremath{#1 \xrightarrow{_{#2}} #3}}
+
+\tikzstyle{plot_adiar}=[color=red, mark=o, mark size=1pt, line width=1pt]
+\tikzstyle{plot_buddy}=[color=blue, mark=o, mark size=1pt, line width=0.7pt]
+\tikzstyle{plot_cudd}=[color=violet, mark=diamond, mark size=1pt, line width=0.7pt]
+\tikzstyle{plot_sylvan}=[color=purple, mark=square, mark size=1pt, line width=0.7pt]
+
+% Horizontal legends: https://tex.stackexchange.com/a/101578
+% argument #1: any options
+\makeatletter
+\newenvironment{customlegend}[1][]{%
+    \begingroup
+    % inits/clears the lists (which might be populated from previous
+    % axes):
+    \pgfplots@init@cleared@structures
+    \pgfplotsset{#1}%
+}{%
+    % draws the legend:
+    \pgfplots@createlegend
+    \endgroup
+}%
+
+% makes \addlegendimage available (typically only available within an
+% axis environment):
+\def\addlegendimage{\pgfplots@addlegendimage}
+\makeatother
+
+% ------------------------------------------------------------------------------
+% TITLEPAGE
+% ------------------------------------------------------------------------------
+\title{
+  Predicting Memory Demands of BDD Operations\\using Maximum Graph Cuts
+}
+
+\author{{\bf Steffan Christ S{\o}lvsten} and Jaco van de Pol}
+
+\institute{\includegraphics[width=0.2\linewidth]{external/aulogo_uk_var2_black.eps}}
+
+\date{ATVA 2023}
+
+\begin{document}
+
+\titleframe
+
+\begin{frame}
+  \begin{figure}
+    \centering
+
+    \only<1-2> {
+      \hspace{0.385\linewidth} %
+      %
+      \begin{tikzpicture}
+        \begin{axis}[%
+          width=0.515\linewidth, height=0.42\linewidth,
+          every tick label/.append style={font=\scriptsize},
+          % x-axis
+          xlabel={Problem Complexity (\# BDD nodes)},
+          xmajorgrids=true,
+          xmin=40000000,
+          xmax=300000000000,
+          xmode = log,
+          % y-axis
+          ymin=0.001,
+          ymax=1000000,
+          ymode=log,
+          ytick={0.001,0.01,0.1,1,10,100,1000,10000,100000,1000000},
+          ylabel={Time (s)},
+          yminorgrids=false,
+          ymajorgrids=true,
+          grid style={dashed,black!20},
+          ]
+
+          \addplot+ [style=plot_buddy]
+          table {./data/queens_buddy_time.tex};
+
+          \addplot+ [style=plot_cudd]
+          table {./data/queens_cudd_time.tex};
+
+          \addplot+ [style=plot_sylvan]
+          table {./data/queens_sylvan_time.tex};
+
+          \only<2-> {
+            \addplot+ [style=plot_adiar]
+            table {./data/queens_adiar_time.v1.0.0.tex};
+          }
+        \end{axis}
+      \end{tikzpicture}
+    }
+    \only<3-> {
+      \begin{tikzpicture}
+        \begin{axis}[%
+          width=0.88\linewidth, height=0.42\linewidth,
+          every tick label/.append style={font=\scriptsize},
+          % x-axis
+          xlabel={Problem Complexity (\# BDD nodes)},
+          xmajorgrids=true,
+          xmin=12000,
+          xmax=300000000000,
+          xmode = log,
+          % y-axis
+          ymin=0.001,
+          ymax=1000000,
+          ymode=log,
+          ytick={0.001,0.01,0.1,1,10,100,1000,10000,100000,1000000},
+          ylabel={Time (s)},
+          yminorgrids=false,
+          ymajorgrids=true,
+          grid style={dashed,black!20},
+          ]
+
+          \addplot+ [style=plot_buddy]
+          table {./data/queens_buddy_time.tex};
+
+          \addplot+ [style=plot_cudd]
+          table {./data/queens_cudd_time.tex};
+
+          \addplot+ [style=plot_sylvan]
+          table {./data/queens_sylvan_time.tex};
+
+          \only<3>{
+            \addplot+ [style=plot_adiar]
+            table {./data/queens_adiar_time.v1.0.0.tex};
+          }
+         \only<4>{
+           \addplot+ [style=plot_adiar]
+           table {./data/queens_adiar_time.v1.2.0.tex};
+         }
+        \end{axis}
+      \end{tikzpicture}
+    }
+
+    \begin{tikzpicture}
+      \only<-3>{
+        \begin{customlegend}[
+          legend columns=-1,
+          legend style={draw=none,column sep=1ex},
+          legend entries={BuDDy, CUDD, Sylvan, Adiar v1.0}
+          ]
+          \addlegendimage{style=plot_buddy}
+          \addlegendimage{style=plot_cudd}
+          \addlegendimage{style=plot_sylvan}
+          \addlegendimage{style=plot_adiar}
+        \end{customlegend}
+      }
+      \only<4>{
+        \begin{customlegend}[
+          legend columns=-1,
+          legend style={draw=none,column sep=1ex},
+          legend entries={BuDDy, CUDD, Sylvan, Adiar v1.2}
+          ]
+          \addlegendimage{style=plot_buddy}
+          \addlegendimage{style=plot_cudd}
+          \addlegendimage{style=plot_sylvan}
+          \addlegendimage{style=plot_adiar}
+        \end{customlegend}
+      }
+    \end{tikzpicture}
+
+    \caption{Running Time to solve $N$-\emph{Queens} problems.}
+  \end{figure}
+\end{frame}
+
+\begin{frame}
+  \input{anim/2-level_cut_motivation.tex}
+\end{frame}
+
+\begin{frame}
+  \begin{center}
+    \textbf{\LARGE \emph{i}-level cut}
+  \end{center}
+  \begin{columns}
+    \begin{column}{0.55\textwidth}
+      \begin{tikzpicture}[scale=0.9]
+        \input{tikz/i-level_cut_definition.tex}
+      \end{tikzpicture}
+    \end{column}
+    \begin{column}{0.44\textwidth}
+      \onslide<2-> {
+        \begin{lemma}[\footnotesize S{\o}lvsten, Van de Pol 2023]
+          The maximum $i$-level cut problem is in P for $i \in \{ 1,2 \}$.
+        \end{lemma}
+
+        \begin{theorem}[\footnotesize Lampis, Kaouri, Mitsou 2011]
+          The maximum $i$-level cut problem is NP-complete for $i \geq 4$.
+        \end{theorem}
+      }
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\blankframe
+
+\begin{frame}
+  \begin{theorem}[\footnotesize S{\o}lvsten, Van de Pol 2023]
+    Given maximum $2$-level cuts size $C_f$ for $f$ and $C_g$ for $g$, the
+    maximum $2$-level cut for $f \odot g$ is less than or equal to
+    $C_f \cdot C_g$.
+  \end{theorem}
+
+  \begin{proof}
+    \only<1>{
+      \vspace{1pt} % HACK: compensate for difference in height of figure
+      \begin{center}
+        \begin{tikzpicture}[baseline=(a1.base)]
+          \input{tikz/i-level_cut_apply.in_a.tex}
+        \end{tikzpicture}
+        \qquad
+        $\odot$
+        \qquad
+        \begin{tikzpicture}[baseline=(b1.base)]
+          \input{tikz/i-level_cut_apply.in_b.tex}
+        \end{tikzpicture}
+      \end{center}
+      \vspace{2pt} % HACK: compensate for difference in height of figures
+    }
+    \only<2>{
+      \begin{center}
+        \begin{tikzpicture}[baseline=(a1_b1__1.base)]
+          \input{tikz/i-level_cut_apply.out.tex}
+        \end{tikzpicture}
+      \end{center}
+    }
+  \end{proof}
+\end{frame}
+
+\begin{frame}
+  \begin{lemma}[\footnotesize S{\o}lvsten, Van de Pol 2023]
+    The maximum $2$-level cut for $f$ is at most $\tfrac{3}{2}$ larger
+    than its maximum $1$-level cut.
+  \end{lemma}
+  \begin{proof}
+    The maximum $1$-level cut bounds the number of available in-going and
+    out-going edges.
+
+    \begin{center}
+      \input{anim/1_to_2-level_cut_proof.tex}
+    \end{center}
+  \end{proof}
+\end{frame}
+
+\begin{frame}[plain,noframenumbering]{} % \blankframe
+  \pause
+
+  \begin{center}
+    \textbf{Possible to process a}
+
+    \vspace{8pt}
+
+    \textbf{\Huge 1.1~GiB BDD}
+
+    \vspace{2pt}
+
+    \textbf{with only}
+
+    \vspace{5pt}
+
+    \textbf{\Large 128~MiB Memory}
+  \end{center}
+\end{frame}
+
+\begin{frame}
+  \vspace{20pt}
+
+  \begin{table}[ht!]
+    \centering
+
+    { \LARGE
+      \begin{tabular}{lcl}
+        Adiar v1.0   & \quad : \quad & $56.5$ hours
+        \\ \onslide<2>{%
+          Adiar v1.2 & \quad : \quad & \phantom{5}$4.0$ hours ($-93\%$)$^1$        }
+      \end{tabular}
+    }
+    \caption{Running time to verify the $15$ smallest EPFL instances.}
+  \end{table}
+
+  \vspace{20pt}
+
+  \onslide<2->{
+    {\hrule width0.45\linewidth}
+
+    $^1$\quad $52.1$ of these hours were saved on just verifying the
+    \texttt{sin} circuit alone. }
+\end{frame}
+
+\blankframe
+
+\input{fram/endslate.tex}
+
+% ------------------------------------------------------------------------------ %
+% Appendix
+% ------------------------------------------------------------------------------ %
+\blankframe
+
+\begin{frame}
+  \begin{figure}
+    \centering
+
+    \begin{tikzpicture}
+      \input{tikz/timeline.tex}
+    \end{tikzpicture}
+  \end{figure}
+\end{frame}
+
+\input{fram/endslate.tex}
+
+\end{document}

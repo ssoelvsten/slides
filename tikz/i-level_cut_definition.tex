@@ -1,16 +1,16 @@
 % levels
-\node (Lcal) {\color{orange} $\mathcal{L}$};
+\node (Lcal) {\color{gray} $\mathcal{L}$};
 
-\node[below=0.5cm of Lcal] (Lj) {\color{orange} $j$};
-\node[below=0.5cm of Lj] (Lj1) {\color{orange} $j+1$};
-\node[below=0.5cm of Lj1] (Ldots) {\color{orange} $\vdots$};
-\node[below=0.6cm of Ldots] (Lji) {\color{orange} $j+i$};
+\node[below=0.5cm of Lcal] (Lj) {\color{gray} $j$};
+\node[below=0.5cm of Lj] (Lj1) {\color{gray} $j+1$};
+\node[below=0.5cm of Lj1] (Ldots) {\color{gray} $\vdots$};
+\node[below=0.6cm of Ldots] (Lji) {\color{gray} $j+i$};
 
-\draw[dashed, orange]
+\draw[dashed, gray]
   ($ (Lj) + (1,0) $) edge ($ (Lj) + (7,0) $)
 ;
 
-\draw[dashed, orange]
+\draw[dashed, gray]
   ($ (Lji) + (1,0) $) edge ($ (Lji) + (7,0) $)
 ;
 

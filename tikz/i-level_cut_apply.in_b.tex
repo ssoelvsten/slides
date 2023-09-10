@@ -1,0 +1,21 @@
+% nodes of level j
+\node[shape = circle, draw = black] (b1) {$b_1$};
+
+% subtrees of levels > j
+\node[below left=0.5cm and .35cm of a1]  (beta1) {$\beta_1$};
+\node[shape = rectangle, draw = black, below right=0.5cm and .35cm of a1] (bot) {$\bot$};
+
+% arcs in the max-cut
+\draw[->]
+($ (b1) + (-0.4, 1) $) edge (b1)
+($ (b1) + (0, 1) $)    edge (b1)
+($ (b1) + (0.4, 1) $)  edge (b1)
+(b1) edge (beta1)
+(b1) edge (bot)
+($ (bot) + (0, 2) $)    ->  (bot)
+;
+
+% cut line
+\draw[thick, dashed, red]
+($ (b1) + (-0.8, 0.8) $) edge ($ (b1) + (1.3, 0.8) $)
+;
