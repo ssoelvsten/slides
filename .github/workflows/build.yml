@@ -23,6 +23,7 @@ jobs:
           adiar_core.tex
           adiar_core.tacas22.tex
           adiar_core.movep22.tex
+          adiar_cuts.tex
           adiar_nested_sweeping.tex
           adiar_zdd.tex
           io_efficient_computation.tex

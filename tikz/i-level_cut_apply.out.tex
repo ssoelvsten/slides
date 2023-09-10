@@ -1,0 +1,71 @@
+% nodes
+\node[shape = circle, draw = black]                    (a1_b1)     {\tiny $a_1, b_1$};
+\node[below left=0.6cm and -0.3cm of a1_b1] (a1_b1__1) {\tiny $\top, \beta_1$};
+\node[below right=0.6cm and -0.3cm of a1_b1] (a1_b1__2) {\tiny $\alpha_1, \bot$};
+
+\node[shape = circle, draw = black, right=of a1_b1]    (a1_bot)  {\tiny $a_1, \bot$};
+\node[below left=0.6cm and -0.3cm of a1_bot] (a1_bot__1) {\tiny $\top, \bot$};
+\node[below right=0.6cm and -0.3cm of a1_bot] (a1_bot__2) {\tiny $\alpha_1, \bot$};
+
+\node[shape = circle, draw = black, right=of a1_bot] (a2_b1)     {\tiny $a_2, b_1$};
+\node[below left=0.6cm and -0.3cm of a2_b1]  (a2_b1__1) {\tiny $\alpha_1, \beta_1$};
+\node[below right=0.6cm and -0.3cm of a2_b1] (a2_b1__2) {\tiny $\alpha_1, \bot$};
+
+\node[shape = circle, draw = black, right=of a2_b1]    (a2_bot)  {\tiny $a_2, \bot$};
+\node[below left=0.6cm and -0.3cm of a2_bot]  (a2_bot__1) {\tiny $\alpha_1, \bot$};
+\node[below right=0.6cm and -0.3cm of a2_bot] (a2_bot__2) {\tiny $\alpha_2, \bot$};
+
+\node[shape = circle, draw = black, right=of a2_bot] (alpha3_b1) {\tiny $\alpha_3, b_1$};
+\node[below left=0.6cm and -0.3cm of alpha3_b1]  (alpha3_b1__1) {\tiny $\alpha_3, \beta_1$};
+\node[below right=0.6cm and -0.3cm of alpha3_b1] (alpha3_b1__2) {\tiny $\alpha_3, \bot$};
+
+\node[below right=0.6cm and 1cm of alpha3_b1] (alpha3_bot) {\tiny $\alpha_3, \bot$};
+
+% arcs in the max-cut
+\draw[->]
+($ (a1_b1) + (-1, 1) $)           edge (a1_b1)
+($ (a1_b1) + (-0.6, 1) $)         edge (a1_b1)
+($ (a1_b1) + (-0.2, 1) $)         edge (a1_b1)
+($ (a1_b1) + (0.2, 1) $)          edge (a1_b1)
+($ (a1_b1) + (0.6, 1) $)          edge (a1_b1)
+($ (a1_b1) + (1, 1) $)            edge (a1_b1)
+(a1_b1)                           edge (a1_b1__1)
+(a1_b1)                           edge (a1_b1__2)
+($ (a1_bot) + (0, 1) $)           edge (a1_bot)
+(a1_bot)                          edge (a1_bot__1)
+(a1_bot)                          edge (a1_bot__2)
+($ (a2_b1) + (-0.4, 1) $)         edge (a2_b1)
+($ (a2_b1) + (0, 1) $)            edge (a2_b1)
+($ (a2_b1) + (0.4, 1) $)          edge (a2_b1)
+(a2_b1)                           edge (a2_b1__1)
+(a2_b1)                           edge (a2_b1__2)
+($ (a2_bot) + (0, 1) $)           edge (a2_bot)
+(a2_bot)                          edge (a2_bot__1)
+(a2_bot)                          edge (a2_bot__2)
+($ (alpha3_b1) + (-1, 1) $)       edge (alpha3_b1)
+($ (alpha3_b1) + (-0.6, 1) $)     edge (alpha3_b1)
+($ (alpha3_b1) + (-0.2, 1) $)     edge (alpha3_b1)
+($ (alpha3_b1) + (0.2, 1) $)      edge (alpha3_b1)
+($ (alpha3_b1) + (0.6, 1) $)      edge (alpha3_b1)
+($ (alpha3_b1) + (1, 1) $)        edge (alpha3_b1)
+(alpha3_b1)                       edge (alpha3_b1__1)
+(alpha3_b1)                       edge (alpha3_b1__2)
+($ (alpha3_bot) + (-0.3, 2.15) $) edge (alpha3_bot)
+($ (alpha3_bot) + (0.4, 2.15) $)   -> (alpha3_bot)
+;
+
+% % cut line
+\draw[thick, dashed, red]
+($ (a1_b1) + (-1.0, 0.9) $) --
+($ (a1_b1) + (0.0, 0.9) $) cos
+($ (a1_b1) + (1, 0) $) sin
+($ (a1_bot) + (0, -0.7) $) cos
+($ (a1_bot) + (1, 0) $) sin
+($ (a2_b1) + (0, 0.9) $) cos
+($ (a2_b1) + (1, 0) $) sin
+($ (a2_bot) + (0, -0.7) $) cos
+($ (a2_bot) + (1, 0) $) sin
+($ (alpha3_b1) + (0, 0.9) $) cos
+($ (alpha3_b1) + (1, 0.4) $) sin
+($ (alpha3_b1) + (2.2, 0) $)
+;
