@@ -226,6 +226,9 @@
   \end{theorem}
 
   \begin{proof}
+    % Every edge in the output corresponds to pairs of edges in the input. Any
+    % edge not part of the input's maximum cut can be charged to one that is.
+
     \only<1>{
       \vspace{1pt} % HACK: compensate for difference in height of figure
       \begin{center}
@@ -248,6 +251,7 @@
         \end{tikzpicture}
       \end{center}
     }
+    \vspace{2pt} % HACK: make it the same height as the next slide
   \end{proof}
 \end{frame}
 
@@ -256,9 +260,11 @@
     The maximum $2$-level cut for $f$ is at most $\tfrac{3}{2}$ larger
     than its maximum $1$-level cut.
   \end{lemma}
+  \vspace{14pt}
   \begin{proof}
-    The maximum $1$-level cut bounds the number of available in-going and
-    out-going edges.
+    % The maximum $1$-level cut bounds the number of available in-going and
+    % out-going edges. Hence, it bounds the number of nodes that can be moved to
+    % increase the cut size.
 
     \begin{center}
       \input{anim/1_to_2-level_cut_proof.tex}
