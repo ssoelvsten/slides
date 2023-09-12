@@ -26,9 +26,8 @@ seminars, workshops, and elsewhere. The compiled output can be found on the
 
 - **SSMG Complexity**
 
-  Presentation that covers the complexity results I derived together with
-  Kristoffer Arnsfelt Hansen and published at [MFCS
-  2020](https://drops.dagstuhl.de/opus/volltexte/2020/12711/).
+  Presentation that covers complexity results derived and published in
+  collaboration with Kristoffer Arnsfelt Hansen.
 
 ### Type Theory
 
