@@ -24,6 +24,7 @@
 \newcommand{\triple}[3]{\ensuremath{(#1, #2, #3)}}
 \renewcommand{\arc}[3]{\ensuremath{#1 \xrightarrow{_{#2}} #3}}
 
+\tikzstyle{plot_adiar_old}=[color=black, dashed, mark=none, line width=0.5pt]
 \tikzstyle{plot_adiar}=[color=black, mark=o, mark size=1pt, line width=1pt]
 \tikzstyle{plot_buddy}=[color=red, mark=o, mark size=1pt, line width=0.7pt]
 \tikzstyle{plot_cudd}=[color=blue, mark=diamond, mark size=1pt, line width=0.7pt]
@@ -146,6 +147,9 @@
             table {./data/queens_adiar_time.v1.0.0.tex};
           }
          \only<4>{
+           \addplot+ [style=plot_adiar_old]
+           table {./data/queens_adiar_time.v1.0.0.tex};
+
            \addplot+ [style=plot_adiar]
            table {./data/queens_adiar_time.v1.2.0.tex};
          }
