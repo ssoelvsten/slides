@@ -349,6 +349,70 @@
   \end{figure}
 \end{frame}
 
+
+\begin{frame}
+  \begin{table}[ht!]
+    \centering
+
+    { %\footnotesize
+      \begin{tabular}{r||c||cccc}
+            & \faIcon{tasks}    & +\faIcon{stopwatch} & \faIcon{memory}              & \faIcon{database} & \faIcon{sync}
+        \\
+            & \tiny Sufficient? & \tiny Overhead      & \tiny Memory\footnotemark[2] & \tiny Disk R/W    & \tiny Transition Cost
+        \\ \hline \hline
+        DF \faIcon{caret-right} Adiar (\faIcon{memory} \faIcon{caret-right}\, \faIcon{database})
+            & \faIcon{times} $^{\phantom{1}}$
+                                & $3 \times$
+                                                      & --
+                                                                                     & $2N$
+                                                                                                         & --
+        \\ \hline
+        DF $\parallel$ Adiar (\faIcon{memory} $\parallel$\, \faIcon{database})
+            & \faIcon{check} $^{\phantom{1}}$
+                                & --
+                                                      & $M/3$
+                                                                                     & $2N$
+                                                                                                         & --
+        \\ \hline
+        DF \faIcon{long-arrow-alt-right} Adiar~$1.0$
+            & \faIcon{times} \footnotemark[1]
+                                & --
+                                                      & --
+                                                                                     & --
+                                                                                                         & $\Omega(N \log N)$
+        \\ \hline
+        State Pattern (\faIcon{memory} \faIcon{long-arrow-alt-right}\, \faIcon{database})
+            & \faIcon{check} \footnotemark[4]
+                                & $\sim 20\%$ \footnotemark[3]
+                                                      & $M/2$
+                                                                                     & --
+                                                                                                         & $\Omega(N)$
+        \\ \hline
+        $i$-level cut (\faIcon{memory} /\, \faIcon{database})
+            & \faIcon{check} \footnotemark[4]
+                                & $1\%$
+                                                      & --
+                                                                                     & --
+                                                                                                         & --
+      \end{tabular}
+    }
+    \caption{Comparison of possible solutions.}
+  \end{table}
+
+  \footnotetext[1]{\textcolor{gray}{There can be a gap between when depth-first
+      runs out of memory and Adiar~$1.0$ has no overhead.}}
+
+  \footnotetext[2]{\textcolor{gray}{Decreasing the memory dedicated to an
+      external memory data structure impacts its performance.}}
+
+  \footnotetext[3]{\textcolor{gray}{Runtime polymorphism adds a $20\%$ to $30\%$
+      overhead [Stroustrup].}}
+
+  \footnotetext[4]{\textcolor{gray}{This solves the gap\footnotemark[1]; a
+      \emph{non-trivial} integration with depth-first algorithms can cover tiny
+      cases.}}
+\end{frame}
+
 \begin{frame}
   \input{anim/count_paths_tfp.tex}
 \end{frame}
