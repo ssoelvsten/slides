@@ -15,7 +15,7 @@ seminars, workshops, and elsewhere. The compiled output can be found on the
 
   - **Core**: Basics of I/O-efficient BDD manipulation.
   - **ZDD**: Extension to support ZDDs.
-  - **Cuts**: Upper bounds on memory demands based via. graph theory.
+  - **Cuts**: Upper bounds on memory demands via. graph theory.
   - **Nested Sweeping**: Algorithm to make the multi-recursive BDD operations I/O-efficient.
 
 - **I/O-Efficient Computation**
