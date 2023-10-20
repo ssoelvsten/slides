@@ -272,24 +272,41 @@
   \end{proof}
 \end{frame}
 
+\blankframe
+
 \begin{frame}
   \begin{table}[ht!]
     \centering
 
     { \LARGE
-      \begin{tabular}{lcl}
-        1-level cut & \quad : \quad & $1.0\%$
+      \begin{tabular}{lccc}
+                    &               & +\faIcon{stopwatch}  & \faIcon{ruler}
         \\
-        2-level cut & \quad : \quad & $3.3\%$
+                    &               & \normalsize Overhead & \normalsize Precision
+        \\ \hline
+        1-level cut & \quad : \quad & $1.0\%$  & 76.5\%
+        \\
+        2-level cut & \quad : \quad & $3.3\%$  & 77.4\%
       \end{tabular}
     }
-    \caption{Computational overhead of piggybacking $i$-level cut within Adiar.}
   \end{table}
+
+  % \begin{table}[ht!]
+  %   \centering
+
+  %   { \LARGE
+  %     \begin{tabular}{lcl}
+  %       1-level cut & \quad : \quad & $1.0\%$
+  %       \\
+  %       2-level cut & \quad : \quad & $3.3\%$
+  %     \end{tabular}
+  %   }
+  %   \caption{Computational overhead of piggybacking $i$-level cut within Adiar.}
+  % \end{table}
+
 \end{frame}
 
-\begin{frame}[plain,noframenumbering]{} % \blankframe
-  \pause
-
+\begin{frame}
   \begin{center}
     \textbf{Possible to process a}
 
@@ -314,13 +331,17 @@
     \centering
 
     { \LARGE
-      \begin{tabular}{lcl}
-        Adiar v1.0   & \quad : \quad & $56.5$ hours
+      \begin{tabular}{lcrl}
+                     &               & \multicolumn{1}{c}{\faIcon{stopwatch}} &
+        \\
+                     &               & \multicolumn{1}{c}{\normalsize Running Time} &
+        \\ \hline
+        Adiar v1.0   & \quad : \quad & $56.5$ hours &
         \\ \onslide<2>{%
-          Adiar v1.2 & \quad : \quad & \phantom{5}$4.0$ hours ($-93\%$)$^1$        }
+          Adiar v1.2 & \quad : \quad & \phantom{5}$4.0$ hours & \large ($-93\%$)$^1$ }
       \end{tabular}
     }
-    \caption{Running time to verify the $15$ smallest EPFL instances.}
+    \caption{Verification of the $15$ smallest EPFL circuits.}
   \end{table}
 
   \vspace{20pt}
@@ -364,14 +385,14 @@
             & \faIcon{times} $^{\phantom{1}}$
                                 & $3 \times$
                                                       & --
-                                                                                     & $2N$
+                                                                                     & $2 \times$
                                                                                                          & --
         \\ \hline
         DF $\parallel$ Adiar (\faIcon{memory} $\parallel$\, \faIcon{database})
             & \faIcon{check} $^{\phantom{1}}$
                                 & --
-                                                      & $M/3$
-                                                                                     & $2N$
+                                                      & $3 \times$
+                                                                                     & $2 \times$
                                                                                                          & --
         \\ \hline
         DF \faIcon{long-arrow-alt-right} Adiar~$1.0$
@@ -384,7 +405,7 @@
         State Pattern (\faIcon{memory} \faIcon{long-arrow-alt-right}\, \faIcon{database})
             & \faIcon{check} \footnotemark[4]
                                 & $\sim 20\%$ \footnotemark[3]
-                                                      & $M/2$
+                                                      & $2 \times$
                                                                                      & --
                                                                                                          & $\Omega(N)$
         \\ \hline
