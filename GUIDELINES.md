@@ -107,6 +107,11 @@ and finally the key points.
   hook. But most importantly, it should be authentic - otherwise there is a wall
   between you and your audience.
 
+  **Note:** Do not open with your (or your collaborators') name(s) nor with
+  reading the title from your slides. Doing so takes out all the energy and wastes
+  precious seconds. Only mention co-authors to test the microphone works (or just
+  use "Thank you").
+
   **Tip:** Think about taking an improv class.
 
 - **Key Point(s)**
