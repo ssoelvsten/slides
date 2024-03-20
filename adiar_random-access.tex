@@ -1,0 +1,714 @@
+\documentclass[english, aspectratio=169]{beamer}
+% english is for the language used in standard texts (figures, tables etc)
+% aspectratio of 16:9 or set it for more old school to 4:3 (without the ':')
+
+% ---------------------------------------------------------------------------- %
+% Load base preamble
+% ---------------------------------------------------------------------------- %
+\usepackage{import}
+\subimport{./preamble/}{beamer.tex}
+
+\metroset{sectionpage=none}
+
+% ---------------------------------------------------------------------------- %
+% Local settings
+% ---------------------------------------------------------------------------- %
+% https://tex.stackexchange.com/a/20613
+\newcommand\hcancel[2][black]{\setbox0=\hbox{$#2$}%
+  \rlap{\raisebox{.35\ht0}{\textcolor{#1}{\rule{\wd0}{1pt}}}}#2}
+
+\newcommand{\B}[0]{\ensuremath{\mathbb{B}}}
+
+\newcommand{\sort}[0]{\text{sort}}
+
+\newcommand{\triple}[3]{\ensuremath{(#1, #2, #3)}}
+\renewcommand{\arc}[3]{\ensuremath{#1 \xrightarrow{_{#2}} #3}}
+
+% ------------------------------------------------------------------------------
+% TITLEPAGE
+% ------------------------------------------------------------------------------
+\title{
+  Random Access on Narrow Decision Diagrams\\in External Memory
+}
+
+\author{{\bf Steffan Christ S{\o}lvsten}, Casper Moldrup Rysgaard, and Jaco van de Pol}
+
+\institute{\includegraphics[width=0.2\linewidth]{external/aulogo_uk_var2_black.eps}}
+
+\date{SPIN 2024}
+
+\begin{document}
+
+\titleframe
+
+\input{fram/reveal.tex}
+
+\begin{frame}[plain,noframenumbering]{} % \blankframe until reveal
+  \only<1>{
+    \setvalue{feature = black}
+    \setvalue{optimisations = gray}
+  }
+  \only<2>{
+    \setvalue{feature = gray}
+    \setvalue{optimisations = black}
+  }
+
+  \begin{center}
+    \fontsize{32}{60}\selectfont
+
+    \begin{tabular}{cl}
+      \color{\getvalue{feature}} \faIcon{tasks} & \color{\getvalue{feature}} \textbf{Features}
+      \\
+      \color{\getvalue{optimisations}} \faIcon{tools} & \color{\getvalue{optimisations}} \textbf{Optimisations}
+    \end{tabular}
+  \end{center}
+\end{frame}
+
+\blankframe
+
+\begin{frame}
+  \begin{columns}
+    \begin{column}{0.49\textwidth}
+      \begin{figure}
+        \centering
+
+        \begin{tikzpicture}
+          % nodes
+          \input{tikz/bdd_example_a.tex}
+        \end{tikzpicture}
+      \end{figure}
+    \end{column}
+    \begin{column}{0.49\textwidth}
+      % Dummy
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}
+  \begin{columns}
+    \begin{column}{0.49\textwidth}
+      \begin{figure}
+        \centering
+
+        % ------------------------- Recursion Anim -------------------------
+        \begin{tikzpicture}
+          % nodes
+          \input{tikz/bdd_example_a.tex}
+
+          \node[gray, left=.02cm of 0]
+          {\footnotesize $1$};
+
+          \node[gray, right=.02cm of 1]
+          {\footnotesize $2$};
+
+          \node[gray, left=.02cm of 2]
+          {\footnotesize $3$};
+
+          \node[gray, left=.02cm of 31]
+          {\footnotesize $4$};
+
+          \node[gray, right=.02cm of 32]
+          {\footnotesize $5$};
+
+          % animations (nodes)
+          \onslide<2>{
+            \node[shape = circle, orange, draw = orange]
+            {$x_0$};
+          }
+
+          \onslide<3>{
+            \node[shape = circle, orange, draw = orange, below left=.4cm and .5cm of 1]
+            {$x_2$};
+          }
+
+          \onslide<4>{
+            \node[shape = circle, orange, draw = orange, below left=.4cm and .5cm of 2]
+            {$x_3$};
+          }
+
+          \onslide<5>{
+            \node[shape = rectangle, orange, draw = orange, below=.4cm of 31]
+            {$\top$};
+          }
+
+          \onslide<6>{
+            \node[shape = circle, orange, draw = orange, below left=.4cm and .5cm of 2]
+            {$x_3$};
+          }
+
+          \onslide<7>{
+            \node[shape = rectangle, orange, draw = orange, below=.4cm of 32]
+            {$\bot$};
+          }
+
+          \onslide<8>{
+            \node[shape = circle, orange, draw = orange, below left=.4cm and .5cm of 2]
+            {$x_3$};
+          }
+
+          \onslide<9>{
+            \node[shape = circle, orange, draw = orange, below left=.4cm and .5cm of 1]
+            {$x_2$};
+          }
+
+          \onslide<10>{
+            \node[shape = circle, orange, draw = orange, below right=.4cm and .5cm of 2]
+            {$x_3$};
+          }
+
+          \onslide<11>{
+            \node[shape = rectangle, orange, draw = orange, below=.4cm of 32]
+            {$\bot$};
+          }
+
+          \onslide<12>{
+            \node[shape = circle, orange, draw = orange, below right=.4cm and .5cm of 2]
+            {$x_3$};
+          }
+
+          \onslide<13>{
+            \node[shape = rectangle, orange, draw = orange, below=.4cm of 31]
+            {$\top$};
+          }
+
+          \onslide<14>{
+            \node[shape = circle, orange, draw = orange, below right=.4cm and .5cm of 2]
+            {$x_3$};
+          }
+
+          \onslide<15>{
+            \node[shape = circle, orange, draw = orange, below left=.4cm and .5cm of 1]
+            {$x_2$};
+          }
+
+          \onslide<16>{
+            \node[shape = circle, orange, draw = orange]
+            {$x_0$};
+          }
+
+          \onslide<17>{
+            \node[shape = circle, orange, draw = orange, below right= .4cm and .5cm of 0]
+            {$x_1$};
+          }
+
+          \onslide<18>{
+            \node[shape = circle, orange, draw = orange, below left=.4cm and .5cm of 1]
+            {$x_2$};
+          }
+
+          \onslide<19>{
+            \node[shape = circle, orange, draw = orange, below right= .4cm and .5cm of 0]
+            {$x_1$};
+          }
+
+          \onslide<20>{
+            \node[shape = circle, orange, draw = orange, below right=.4cm and .5cm of 2]
+            {$x_3$};
+          }
+
+          \onslide<21>{
+            \node[shape = circle, orange, draw = orange, below right= .4cm and .5cm of 0]
+            {$x_1$};
+          }
+
+          \onslide<22>{
+            \node[shape = circle, orange, draw = orange]
+            {$x_0$};
+          }
+        \end{tikzpicture}
+      \end{figure}
+    \end{column}
+    \begin{column}{0.49\textwidth}
+      % ------------------------- Recursion Stack -------------------------
+      \begin{table}
+        \centering
+
+        \large
+        \begin{tabular}{c}
+          \only<5>{$(4 \rightarrow \top)$}%
+          \only<7>{$(4 \rightarrow \bot)$}%
+          \only<11>{$(5 \rightarrow \bot)$}%
+          \only<13>{$(5 \rightarrow \top)$}%
+          \\
+          \only<4-8>{$(3 \rightarrow 4)$}%
+          \only<10-14>{$(3 \rightarrow 5)$}%
+          \only<18>{$(2 \rightarrow 3)$}%
+          \only<20>{$(2 \rightarrow 5)$}%
+          \\
+          \only<3-15>{$(1 \rightarrow 3)$}%
+          \only<17-21>{$(1 \rightarrow 2)$}%
+          \\
+          \only<2-22>{$(\circ \rightarrow 1)$}%
+          \\ \hline
+          \Large \hspace{10pt} Stack \hspace{10pt}
+        \end{tabular}
+      \end{table}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}
+  \begin{columns}
+    \begin{column}{0.49\textwidth}
+      \begin{figure}
+        \centering
+
+        % ------------------------- TFP Anim -------------------------
+        \begin{tikzpicture}
+          % nodes
+          \input{tikz/bdd_example_a.tex}
+
+          \node[gray, left=.02cm of 0]
+          {\footnotesize $1$};
+
+          \node[gray, right=.02cm of 1]
+          {\footnotesize $2$};
+
+          \node[gray, left=.02cm of 2]
+          {\footnotesize $3$};
+
+          \node[gray, left=.02cm of 31]
+          {\footnotesize $4$};
+
+          \node[gray, right=.02cm of 32]
+          {\footnotesize $5$};
+
+          % animations (nodes)
+          \onslide<3-5>{
+            \node[shape = circle, orange, draw = orange]
+            {$x_0$};
+          }
+
+          \onslide<6-8>{
+            \node[shape = circle, orange, draw = orange, below right= .4cm and .5cm of 0]
+            {$x_1$};
+          }
+
+          \onslide<9-11>{
+            \node[shape = circle, orange, draw = orange, below left=.4cm and .5cm of 1]
+            {$x_2$};
+          }
+
+          \onslide<12-14>{
+            \node[shape = circle, orange, draw = orange, below left=.4cm and .5cm of 2]
+            {$x_3$};
+          }
+
+          \onslide<15-17>{
+            \node[shape = circle, orange, draw = orange, below right=.4cm and .5cm of 2]
+            {$x_3$};
+          }
+
+          \onslide<18-19>{
+            \node[shape = rectangle, orange, draw = orange, below=.4cm of 31]
+            {$\top$};
+          }
+
+          \onslide<20-21>{
+            \node[shape = rectangle, orange, draw = orange, below=.4cm of 32]
+            {$\bot$};
+          }
+        \end{tikzpicture}
+      \end{figure}
+    \end{column}
+    \begin{column}{0.49\textwidth}
+      % ------------------------- Priority Queue -------------------------
+      \begin{table}
+        \centering
+
+        \large
+        \begin{tabular}{c}
+          \Large Priority Queue
+          \\ \hline
+          \only<2-3>{$(\circ \rightarrow 1)$}%
+          \only<5-6>{$(1 \rightarrow 2)$}%
+          \only<7-9>{$(1 \rightarrow 3)$}%
+          \only<10>{$(2 \rightarrow 5)$}%
+          \only<11-12>{$(3 \rightarrow 4)$}%
+          \only<13-15>{$(2 \rightarrow 5)$}%
+          \only<16-18>{$(4 \rightarrow \top)$}%
+          \only<19-20>{$(4 \rightarrow \bot)$}%
+          \\
+          \only<5-6>{$(1 \rightarrow 3)$}%
+          \only<8-9>{$(2 \rightarrow 3)$}%
+          \only<11-12>{$(2 \rightarrow 5)$}%
+          \only<13-15>{$(3 \rightarrow 5)$}%
+          \only<16>{$(4 \rightarrow \bot)$}%
+          \only<17-18>{$(5 \rightarrow \top)$}%
+          \only<19-20>{$(5 \rightarrow \bot)$}%
+          \\
+          \only<8-9>{$(2 \rightarrow 5)$}%
+          \only<11-12>{$(3 \rightarrow 5)$}%
+          \only<14-15>{$(4 \rightarrow \top)$}%
+          \only<17-18>{$(4 \rightarrow \bot)$}%
+          \\
+          \only<14-15>{$(4 \rightarrow \bot)$}%
+          \only<17-18>{$(5 \rightarrow \bot)$}%
+        \end{tabular}
+      \end{table}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}
+  \begin{figure}
+    \centering
+
+    \begin{tikzpicture}[scale=0.8]
+      \node[shape = circle, draw = black] (s) {$s$};
+
+      % First node
+      \onslide<2-> {
+        \node[shape = circle, draw = black, below left=3 and 2 of s] (t) {$t$};
+
+        \node[below left  = 0.5 and 0.2 of t] (alpha) {$\alpha$};
+        \node[below right = 0.5 and 0.2 of t] (beta)  {$\beta$};
+
+        \draw[->, dashed] (t) edge (alpha);
+        \draw[->] (t) edge (beta);
+      }
+
+      \onslide<3->{
+        \draw[->, densely dotted, thick](s) edge[bend right] node[above left] {$\texttt{PQ}_{1}$} (t);
+      }
+
+      % Second node
+      \onslide<4-> {
+        \node[shape = circle, draw = black, right= 4 of t] (u) {$u$};
+
+        \node[below left  = 0.5 and 0.2 of u] (gamma) {$\gamma$};
+        \node[below right = 0.5 and 0.2 of u] (delta) {$\delta$};
+
+        \draw[->, dashed] (u) edge (gamma);
+        \draw[->] (u) edge (delta);
+      }
+
+      \onslide<5> {
+        \draw[->, densely dotted, thick] (t) edge[bend left] node[above] {$\texttt{PQ}_{2}$} (u);
+      }
+      \onslide<6-> {
+        \draw[->, lightgray, densely dotted, thick] (t) edge[bend left] node[above] {$\texttt{PQ}_{2}$} (u);
+        \node[red, opacity=0.8] at (-0.2,-3.3) {\fontsize{42}{0} \faIcon{times}};
+        \node[red, opacity=0.8] at (-0.2,-4.5) {\Large\bf[SPIN 24]};
+      }
+    \end{tikzpicture}
+  \end{figure}
+\end{frame}
+
+\begin{frame}
+  \begin{figure}
+    \centering
+
+    \begin{tikzpicture}
+      \input{tikz/bdd_example_a.tex}
+
+      \onslide<2> {
+        \draw[-, gray, densely dotted, thick] (-3, 0.0) edge ++(2.2,0);
+        \node[gray] at (-3.5, 0.0) {1};
+
+        \draw[-, gray, densely dotted, thick] (-3,-1.0) edge ++(2.2,0);
+        \node[gray] at (-3.5,-1.0) {1};
+
+        \draw[-, gray, densely dotted, thick] (-3,-1.9) edge ++(2.2,0);
+        \node[gray] at (-3.5,-1.9) {1};
+
+        \draw[-, densely dotted, thick] (-3,-2.85) edge ++(1.2,0);
+        \node[] at (-3.5,-2.85) {2};
+      }
+    \end{tikzpicture}
+  \end{figure}
+\end{frame}
+
+\blankframe
+
+
+\begin{frame}
+  \begin{figure}
+    \centering
+
+    \begin{subfigure}[b]{0.5\linewidth}
+      \begin{tikzpicture}
+        \begin{axis}[%
+          width=0.96\linewidth, height=0.75\linewidth,
+          every tick label/.append style={font=\scriptsize},
+          % x-axis
+          xlabel={Problem Complexity (N)},
+          xtick={14,15,16,17},
+          xmajorgrids=true,
+          xmin=13.5,
+          xmax=16.5,
+          % y-axis
+          ymin=100,
+          ymax=100000,
+          ymode=log,
+          ytick={10,100,1000,10000,100000,1000000},
+          ylabel={Time (s)},
+          yminorgrids=false,
+          ymajorgrids=true,
+          grid style={dashed,black!20},
+          ]
+
+          \tikzstyle{plot_adiar}=[color=red, mark=o, mark size=1pt, line width=0.7pt]
+          \tikzstyle{plot_cudd}=[color=blue, mark=diamond, mark size=1pt, line width=0.7pt]
+
+          \addplot [style=plot_cudd] coordinates {
+            (13, 52.881)
+            (14, 316.093)
+            (15, 2687.585)
+          };
+
+          \only<2> {
+            \addplot [style=plot_adiar] coordinates {
+              (13, 118.887)
+              (14, 660.127)
+              (15, 3943.981)
+              (16, 31017.033)
+              (17, 265758.859)
+            };
+          }
+
+          \only<3> {
+            \addplot [style=plot_adiar] coordinates {
+              (13, 82.715)
+              (14, 502.855)
+              (15, 3336.591)
+              (16, 23127.559)
+              (17, 196813.872)
+            };
+          }
+
+          \only<4> {
+            \addplot [style=plot_adiar] coordinates {
+              (13, 71.277)
+              (14, 434.766)
+              (15, 2855.766)
+              (16, 19400.135)
+              (17, 202684.356)
+            };
+          }
+        \end{axis}
+      \end{tikzpicture}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.49\linewidth}
+      \centering
+
+      \large
+      \begin{tabular}[b]{cll c c}
+                                  &       &                             &   & \faIcon{stopwatch}
+        \\
+                                  &       &                             &   & \normalsize $N = 15$
+        \\ \hline
+        {\color{blue} $\diamond$} & CUDD  & v3.0                        & : & 44.8 min%
+        \onslide<2-> {
+        \\ \hline
+        {\color{red} $\circ$}     & Adiar & v1.0                        & : & 66.7 min}%
+        \onslide<3-> {
+        \\
+                                  & \multicolumn{2}{l}{+ cuts}          & : & 56.8 min}%
+        \onslide<4-> {
+        \\
+                                  & \multicolumn{2}{l}{+ random access} & : & 47.2 min}%
+      \end{tabular}
+
+      \vspace{27pt}
+    \end{subfigure}
+
+    \caption{\Large Queens}
+  \end{figure}
+\end{frame}
+
+\begin{frame}
+  \begin{figure}
+    \centering
+
+    \begin{subfigure}[b]{0.7\linewidth}
+      \centering
+
+      \begin{tikzpicture}
+        \begin{axis}[
+          ybar,
+          bar width = 0.3,
+          % x axis
+          xmin=-1,
+          xmax=51,
+          xticklabel=\empty,
+          % y axis
+          every tick label/.append style={font=\scriptsize},
+          ymin=0.12,
+          ymax=100000,
+          ymode=log,
+          ylabel={Time (s)},
+          log origin=infty,
+          % dimensions
+          width=0.9\linewidth,
+          height=0.6\linewidth,
+          % legend
+          legend cell align=left,
+          legend pos=north west,
+          legend style={draw=black,fill=white}
+          ]
+
+          % --------------------------------------------------
+          % Insignificant
+
+          % Before
+          \addplot[draw=lightgray, bar shift=0.0, forget plot] coordinates {
+            (1, 0.553)
+            (2, 0.648)
+            (3, 0.669)
+            (4, 0.672)
+            (5, 0.741)
+            (7, 1.428)
+            (8, 1.430)
+            (9, 1.688)
+            (10, 1.692)
+            (11, 1.813)
+            (12, 2.284)
+            (13, 2.326)
+            (14, 2.533)
+            (15, 2.586)
+            (16, 3.212)
+            (17, 3.213)
+            (18, 3.335)
+            (19, 3.510)
+            (20, 3.531)
+            (21, 4.136)
+            (22, 5.329)
+            (23, 5.570)
+            (24, 7.146)
+            (25, 7.896)
+            (26, 8.031)
+            (27, 8.073)
+            (28, 8.331)
+            (29, 11.112)
+            (30, 12.552)
+            (31, 14.580)
+            (32, 23.515)
+            (33, 26.727)
+            (34, 27.478)
+            (35, 50.700)
+            (36, 65.379)
+            (37, 90.475)
+            (40, 94.926)
+            (41, 353.040)
+            (42, 374.774)
+            (45, 6763.235)
+            (48, 11110.969)
+            (49, 31356.054)
+          };
+          % After
+          \addplot[draw=lightgray, fill=lightgray, bar shift=0.3, forget plot] coordinates {
+            (1, 0.604)
+            (2, 0.608)
+            (3, 0.595)
+            (4, 0.648)
+            (5, 0.835)
+            (7, 1.373)
+            (8, 1.576)
+            (9, 1.712)
+            (10, 2.071)
+            (11, 2.117)
+            (12, 2.025)
+            (13, 2.055)
+            (14, 2.271)
+            (15, 2.158)
+            (16, 3.625)
+            (17, 2.654)
+            (18, 2.965)
+            (19, 4.215)
+            (20, 3.468)
+            (21, 4.713)
+            (22, 4.761)
+            (23, 4.754)
+            (24, 6.517)
+            (25, 8.355)
+            (26, 7.832)
+            (27, 9.491)
+            (28, 5.927)
+            (29, 11.970)
+            (30, 11.535)
+            (31, 16.853)
+            (32, 19.186)
+            (33, 26.271)
+            (34, 29.663)
+            (35, 48.747)
+            (36, 66.961)
+            (37, 98.239)
+            (40, 90.200)
+            (41, 327.385)
+            (42, 375.640)
+            (45, 6559.876)
+            (48, 10918.547)
+            (49, 30889.871)
+          };
+
+          % --------------------------------------------------
+          % Significant
+
+          % Before
+          \addplot[draw=black, bar shift=0.0] coordinates {
+            (6, 0.744)
+            (38, 93.063)
+            (39, 93.212)
+            (43, 1832.058)
+            (44, 2885.936)
+            (46, 7780.512)
+            (47, 7832.249)
+          };
+          % After
+          \addplot[color=black, fill=black, bar shift=0.3] coordinates {
+            (6, 1.241)
+            (38, 87.987)
+            (39, 86.588)
+            (43, 1201.214)
+            (44, 2152.830)
+            (46, 4660.012)
+            (47, 4644.692)
+          };
+
+          % --------------------------------------------------
+          \legend{Before, After}
+        \end{axis}
+      \end{tikzpicture}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.29\linewidth}
+      \begin{tabular}[b]{c}
+        \faIcon{chevron-up}
+        \\
+        Speed Ups
+        \\ \hline
+        6 (+26.9\%)
+        \\
+        \\
+        \faIcon{chevron-down}
+        \\
+        Slowdowns
+        \\ \hline
+        1 (-66.8\%)
+      \end{tabular}
+
+      \vspace{20pt}
+    \end{subfigure}
+
+    \caption{\Large EPFL Circuit Verification}
+  \end{figure}
+\end{frame}
+
+\blankframe
+
+\input{fram/endslate.tex}
+
+% ------------------------------------------------------------------------------ %
+% APPENDIX
+% ------------------------------------------------------------------------------ %
+\begin{frame}
+  \begin{figure}
+    \centering
+
+    \begin{tikzpicture}
+      \input{tikz/timeline.tex}
+    \end{tikzpicture}
+  \end{figure}
+\end{frame}
+
+\end{document}
