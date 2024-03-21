@@ -403,17 +403,27 @@
       \input{tikz/bdd_example_a.tex}
 
       \onslide<2> {
-        \draw[-, gray, densely dotted, thick] (-3, 0.0) edge ++(2.2,0);
-        \node[gray] at (-3.5, 0.0) {1};
+        \draw[draw=red, thick, opacity=0.7] (-1.5,0.45) rectangle ++(3,-4.7);
+      }
 
-        \draw[-, gray, densely dotted, thick] (-3,-1.0) edge ++(2.2,0);
-        \node[gray] at (-3.5,-1.0) {1};
+      \onslide<4> {
+        \draw[draw=red, thick, opacity=0.7] (-1.5, 0.45) rectangle ++(3,-0.9);
+      }
+      \onslide<5> {
+        \draw[draw=red, thick, opacity=0.7] (-1.5,-0.50) rectangle ++(3,-0.9);
+      }
+      \onslide<6> {
+        \draw[draw=red, thick, opacity=0.7] (-1.5,-1.45) rectangle ++(3,-0.9);
+      }
+      \onslide<7> {
+        \draw[draw=red, thick, opacity=0.7] (-1.5,-2.4) rectangle ++(3,-0.9);
+      }
+      \onslide<8> {
+        \draw[draw=red, thick, opacity=0.7] (-1.5,-3.35) rectangle ++(3,-0.9);
+      }
 
-        \draw[-, gray, densely dotted, thick] (-3,-1.9) edge ++(2.2,0);
-        \node[gray] at (-3.5,-1.9) {1};
-
-        \draw[-, densely dotted, thick] (-3,-2.85) edge ++(1.2,0);
-        \node[] at (-3.5,-2.85) {2};
+      \onslide<9> {
+        % dummy
       }
     \end{tikzpicture}
   \end{figure}
