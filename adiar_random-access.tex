@@ -27,11 +27,13 @@
 % ------------------------------------------------------------------------------
 % TITLEPAGE
 % ------------------------------------------------------------------------------
-\title{
-  Random Access on Narrow Decision Diagrams\\in External Memory
-}
+\title{Random Access on Narrow Decision Diagrams\\in External Memory}
 
-\author{{\bf Steffan Christ S{\o}lvsten}, Casper Moldrup Rysgaard, and Jaco van de Pol}
+\author{
+  {\bf Steffan Christ S{\o}lvsten},
+  Casper Moldrup Rysgaard,
+  and Jaco van de Pol
+}
 
 \institute{\includegraphics[width=0.2\linewidth]{external/aulogo_uk_var2_black.eps}}
 
@@ -43,7 +45,7 @@
 
 \input{fram/adiar.tex}
 
-\begin{frame}[plain,noframenumbering]{} % \blankframe
+\begin{frame}
   \only<1>{
     \setvalue{feature = black}
     \setvalue{optimisations = gray}
@@ -67,287 +69,7 @@
 \blankframe
 
 \begin{frame}
-  \begin{columns}
-    \begin{column}{0.49\textwidth}
-      \begin{figure}
-        \centering
-
-        \begin{tikzpicture}
-          % nodes
-          \input{tikz/bdd_example_a.tex}
-        \end{tikzpicture}
-      \end{figure}
-    \end{column}
-    \begin{column}{0.49\textwidth}
-      % Dummy
-    \end{column}
-  \end{columns}
-\end{frame}
-
-\begin{frame}
-  \begin{columns}
-    \begin{column}{0.49\textwidth}
-      \begin{figure}
-        \centering
-
-        % ------------------------- Recursion Anim -------------------------
-        \begin{tikzpicture}
-          % nodes
-          \input{tikz/bdd_example_a.tex}
-
-          \node[gray, left=.02cm of 0]
-          {\footnotesize $1$};
-
-          \node[gray, right=.02cm of 1]
-          {\footnotesize $2$};
-
-          \node[gray, left=.02cm of 2]
-          {\footnotesize $3$};
-
-          \node[gray, left=.02cm of 31]
-          {\footnotesize $4$};
-
-          \node[gray, right=.02cm of 32]
-          {\footnotesize $5$};
-
-          % animations (nodes)
-          \onslide<2>{
-            \node[shape = circle, orange, draw = orange]
-            {$x_0$};
-          }
-
-          \onslide<3>{
-            \node[shape = circle, orange, draw = orange, below left=.4cm and .5cm of 1]
-            {$x_2$};
-          }
-
-          \onslide<4>{
-            \node[shape = circle, orange, draw = orange, below left=.4cm and .5cm of 2]
-            {$x_3$};
-          }
-
-          \onslide<5>{
-            \node[shape = rectangle, orange, draw = orange, below=.4cm of 31]
-            {$\top$};
-          }
-
-          \onslide<6>{
-            \node[shape = circle, orange, draw = orange, below left=.4cm and .5cm of 2]
-            {$x_3$};
-          }
-
-          \onslide<7>{
-            \node[shape = rectangle, orange, draw = orange, below=.4cm of 32]
-            {$\bot$};
-          }
-
-          \onslide<8>{
-            \node[shape = circle, orange, draw = orange, below left=.4cm and .5cm of 2]
-            {$x_3$};
-          }
-
-          \onslide<9>{
-            \node[shape = circle, orange, draw = orange, below left=.4cm and .5cm of 1]
-            {$x_2$};
-          }
-
-          \onslide<10>{
-            \node[shape = circle, orange, draw = orange, below right=.4cm and .5cm of 2]
-            {$x_3$};
-          }
-
-          \onslide<11>{
-            \node[shape = rectangle, orange, draw = orange, below=.4cm of 32]
-            {$\bot$};
-          }
-
-          \onslide<12>{
-            \node[shape = circle, orange, draw = orange, below right=.4cm and .5cm of 2]
-            {$x_3$};
-          }
-
-          \onslide<13>{
-            \node[shape = rectangle, orange, draw = orange, below=.4cm of 31]
-            {$\top$};
-          }
-
-          \onslide<14>{
-            \node[shape = circle, orange, draw = orange, below right=.4cm and .5cm of 2]
-            {$x_3$};
-          }
-
-          \onslide<15>{
-            \node[shape = circle, orange, draw = orange, below left=.4cm and .5cm of 1]
-            {$x_2$};
-          }
-
-          \onslide<16>{
-            \node[shape = circle, orange, draw = orange]
-            {$x_0$};
-          }
-
-          \onslide<17>{
-            \node[shape = circle, orange, draw = orange, below right= .4cm and .5cm of 0]
-            {$x_1$};
-          }
-
-          \onslide<18>{
-            \node[shape = circle, orange, draw = orange, below left=.4cm and .5cm of 1]
-            {$x_2$};
-          }
-
-          \onslide<19>{
-            \node[shape = circle, orange, draw = orange, below right= .4cm and .5cm of 0]
-            {$x_1$};
-          }
-
-          \onslide<20>{
-            \node[shape = circle, orange, draw = orange, below right=.4cm and .5cm of 2]
-            {$x_3$};
-          }
-
-          \onslide<21>{
-            \node[shape = circle, orange, draw = orange, below right= .4cm and .5cm of 0]
-            {$x_1$};
-          }
-
-          \onslide<22>{
-            \node[shape = circle, orange, draw = orange]
-            {$x_0$};
-          }
-        \end{tikzpicture}
-      \end{figure}
-    \end{column}
-    \begin{column}{0.49\textwidth}
-      % ------------------------- Recursion Stack -------------------------
-      \begin{table}
-        \centering
-
-        \large
-        \begin{tabular}{c}
-          \only<5>{$(4 \rightarrow \top)$}%
-          \only<7>{$(4 \rightarrow \bot)$}%
-          \only<11>{$(5 \rightarrow \bot)$}%
-          \only<13>{$(5 \rightarrow \top)$}%
-          \\
-          \only<4-8>{$(3 \rightarrow 4)$}%
-          \only<10-14>{$(3 \rightarrow 5)$}%
-          \only<18>{$(2 \rightarrow 3)$}%
-          \only<20>{$(2 \rightarrow 5)$}%
-          \\
-          \only<3-15>{$(1 \rightarrow 3)$}%
-          \only<17-21>{$(1 \rightarrow 2)$}%
-          \\
-          \only<2-22>{$(\circ \rightarrow 1)$}%
-          \\ \hline
-          \Large \hspace{10pt} Stack \hspace{10pt}
-        \end{tabular}
-      \end{table}
-    \end{column}
-  \end{columns}
-\end{frame}
-
-\begin{frame}
-  \begin{columns}
-    \begin{column}{0.49\textwidth}
-      \begin{figure}
-        \centering
-
-        % ------------------------- TFP Anim -------------------------
-        \begin{tikzpicture}
-          % nodes
-          \input{tikz/bdd_example_a.tex}
-
-          \node[gray, left=.02cm of 0]
-          {\footnotesize $1$};
-
-          \node[gray, right=.02cm of 1]
-          {\footnotesize $2$};
-
-          \node[gray, left=.02cm of 2]
-          {\footnotesize $3$};
-
-          \node[gray, left=.02cm of 31]
-          {\footnotesize $4$};
-
-          \node[gray, right=.02cm of 32]
-          {\footnotesize $5$};
-
-          % animations (nodes)
-          \onslide<3-5>{
-            \node[shape = circle, orange, draw = orange]
-            {$x_0$};
-          }
-
-          \onslide<6-8>{
-            \node[shape = circle, orange, draw = orange, below right= .4cm and .5cm of 0]
-            {$x_1$};
-          }
-
-          \onslide<9-11>{
-            \node[shape = circle, orange, draw = orange, below left=.4cm and .5cm of 1]
-            {$x_2$};
-          }
-
-          \onslide<12-14>{
-            \node[shape = circle, orange, draw = orange, below left=.4cm and .5cm of 2]
-            {$x_3$};
-          }
-
-          \onslide<15-17>{
-            \node[shape = circle, orange, draw = orange, below right=.4cm and .5cm of 2]
-            {$x_3$};
-          }
-
-          \onslide<18-19>{
-            \node[shape = rectangle, orange, draw = orange, below=.4cm of 31]
-            {$\top$};
-          }
-
-          \onslide<20-21>{
-            \node[shape = rectangle, orange, draw = orange, below=.4cm of 32]
-            {$\bot$};
-          }
-        \end{tikzpicture}
-      \end{figure}
-    \end{column}
-    \begin{column}{0.49\textwidth}
-      % ------------------------- Priority Queue -------------------------
-      \begin{table}
-        \centering
-
-        \large
-        \begin{tabular}{c}
-          \Large Priority Queue
-          \\ \hline
-          \only<2-3>{$(\circ \rightarrow 1)$}%
-          \only<5-6>{$(1 \rightarrow 2)$}%
-          \only<7-9>{$(1 \rightarrow 3)$}%
-          \only<10>{$(2 \rightarrow 5)$}%
-          \only<11-12>{$(3 \rightarrow 4)$}%
-          \only<13-15>{$(2 \rightarrow 5)$}%
-          \only<16-18>{$(4 \rightarrow \top)$}%
-          \only<19-20>{$(4 \rightarrow \bot)$}%
-          \\
-          \only<5-6>{$(1 \rightarrow 3)$}%
-          \only<8-9>{$(2 \rightarrow 3)$}%
-          \only<11-12>{$(2 \rightarrow 5)$}%
-          \only<13-15>{$(3 \rightarrow 5)$}%
-          \only<16>{$(4 \rightarrow \bot)$}%
-          \only<17-18>{$(5 \rightarrow \top)$}%
-          \only<19-20>{$(5 \rightarrow \bot)$}%
-          \\
-          \only<8-9>{$(2 \rightarrow 5)$}%
-          \only<11-12>{$(3 \rightarrow 5)$}%
-          \only<14-15>{$(4 \rightarrow \top)$}%
-          \only<17-18>{$(4 \rightarrow \bot)$}%
-          \\
-          \only<14-15>{$(4 \rightarrow \bot)$}%
-          \only<17-18>{$(5 \rightarrow \bot)$}%
-        \end{tabular}
-      \end{table}
-    \end{column}
-  \end{columns}
+  \input{anim/count_paths_tfp.tex}
 \end{frame}
 
 \begin{frame}
@@ -355,11 +77,11 @@
     \centering
 
     \begin{tikzpicture}[scale=0.8]
-      \node[shape = circle, draw = black] (s) {$s$};
+      \node[shape = circle, draw = black] (s) {\small $(i,s)$};
 
       % First node
       \onslide<2-> {
-        \node[shape = circle, draw = black, below left=3 and 2 of s] (t) {$t$};
+        \node[shape = circle, draw = black, below left=3 and 2 of s] (t) {\small $(j,t)$};
 
         \node[below left  = 0.5 and 0.2 of t] (alpha) {$\alpha$};
         \node[below right = 0.5 and 0.2 of t] (beta)  {$\beta$};
@@ -374,7 +96,9 @@
 
       % Second node
       \onslide<4-> {
-        \node[shape = circle, draw = black, right= 4 of t] (u) {$u$};
+        \node[below=3 of s] {\small $\cdots$};
+
+        \node[shape = circle, draw = black, below right=3 and 2 of s] (u) {\small $(j,u)$};
 
         \node[below left  = 0.5 and 0.2 of u] (gamma) {$\gamma$};
         \node[below right = 0.5 and 0.2 of u] (delta) {$\delta$};
@@ -388,8 +112,9 @@
       }
       \onslide<6-> {
         \draw[->, lightgray, densely dotted, thick] (t) edge[bend left] node[above] {$\texttt{PQ}_{2}$} (u);
-        \node[red, opacity=0.8] at (-0.2,-3.3) {\fontsize{42}{0} \faIcon{times}};
-        \node[red, opacity=0.8] at (-0.2,-4.5) {\Large\bf[SPIN 24]};
+
+        \node[red, opacity=0.8] at (-0.07,-3.3) {\fontsize{42}{0} \faIcon{times}};
+        \node[red, opacity=0.8] at (-0.07,-4.5) {\Large\bf[SPIN 24]};
       }
     \end{tikzpicture}
   \end{figure}
@@ -399,33 +124,45 @@
   \begin{figure}
     \centering
 
-    \begin{tikzpicture}
-      \input{tikz/bdd_example_a.tex}
-
+    \begin{tikzpicture}[baseline=-75pt]
       \onslide<2> {
-        \draw[draw=red, thick, opacity=0.7] (-1.5,0.45) rectangle ++(3,-4.7);
+        \draw[draw=red, thick, opacity=0.7] (-1.7,0.55) rectangle ++(3.4,-4.0);
       }
 
       \onslide<4> {
-        \draw[draw=red, thick, opacity=0.7] (-1.5, 0.45) rectangle ++(3,-0.9);
+        \draw[draw=red, thick, opacity=0.7] (-1.7, 0.51) rectangle ++(3.4,-0.99);
       }
       \onslide<5> {
-        \draw[draw=red, thick, opacity=0.7] (-1.5,-0.50) rectangle ++(3,-0.9);
+        \draw[draw=red, thick, opacity=0.7] (-1.7,-0.47) rectangle ++(3.4,-0.99);
       }
       \onslide<6> {
-        \draw[draw=red, thick, opacity=0.7] (-1.5,-1.45) rectangle ++(3,-0.9);
+        \draw[draw=red, thick, opacity=0.7] (-1.7,-1.44) rectangle ++(3.4,-0.98);
       }
       \onslide<7> {
-        \draw[draw=red, thick, opacity=0.7] (-1.5,-2.4) rectangle ++(3,-0.9);
-      }
-      \onslide<8> {
-        \draw[draw=red, thick, opacity=0.7] (-1.5,-3.35) rectangle ++(3,-0.9);
+        \draw[draw=red, thick, opacity=0.7] (-1.7,-2.40) rectangle ++(3.4,-0.99);
       }
 
-      \onslide<9> {
+      \onslide<8> {
         % dummy
       }
+      \onslide<9> {
+        \draw[draw=red, dashed, thick, opacity=0.7] (-1.7,-2.40) rectangle ++(3.4,-0.99);
+      }
+
+      \input{tikz/bdd_example_a.uid.tex}
     \end{tikzpicture}
+    \qquad\qquad
+    \onslide<9> {
+      { \LARGE\color{red}
+        \begin{tabular}{c}
+          \faIcon{ruler}
+          \\
+          \normalsize Width
+          \\ \hline
+          2
+        \end{tabular}
+      }
+    }
   \end{figure}
 \end{frame}
 
@@ -458,7 +195,7 @@
           grid style={dashed,black!20},
           ]
 
-          \tikzstyle{plot_adiar}=[color=red, mark=o, mark size=1pt, line width=0.7pt]
+          \tikzstyle{plot_adiar}=[color=orange, mark=o, mark size=1pt, line width=0.7pt]
           \tikzstyle{plot_cudd}=[color=blue, mark=diamond, mark size=1pt, line width=0.7pt]
 
           \addplot [style=plot_cudd] coordinates {
@@ -511,7 +248,7 @@
         {\color{blue} $\diamond$} & CUDD  & v3.0                        & : & 44.8 min%
         \onslide<2-> {
         \\ \hline
-        {\color{red} $\circ$}     & Adiar & v1.0                        & : & 66.7 min}%
+        {\color{orange} $\circ$}  & Adiar & v1.0                        & : & 66.7 min}%
         \onslide<3-> {
         \\
                                   & \multicolumn{2}{l}{+ cuts}          & : & 56.8 min}%
@@ -677,7 +414,7 @@
           };
 
           % --------------------------------------------------
-          \legend{Before, After}
+          \legend{Adiar + cuts, \hspace{24pt} + random access}
         \end{axis}
       \end{tikzpicture}
     \end{subfigure}
