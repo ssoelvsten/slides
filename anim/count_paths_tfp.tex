@@ -8,44 +8,7 @@
         \centering
 
         \begin{tikzpicture}[scale=0.9, every node/.style={transform shape}]
-          % nodes
-          \node[shape = circle, draw = black]
-          (0) {\tiny $(0,0)$};
-
-          \node[shape = circle, draw = black, below right= .3cm and .5cm of 0]
-          (1) {\tiny $(1,0)$};
-
-          \node[shape = circle, draw = black, below left=.3cm and .5cm of 1]
-          (2) {\tiny $(2,0)$};
-
-          \node[shape = circle, draw = black, below left=.3cm and .5cm of 2]
-          (31) {\tiny $(3,0)$};
-          \node[shape = circle, draw = black, below right=.3cm and .5cm of 2]
-          (32) {\tiny $(3,1)$};
-
-          % leafs
-          \node[shape = rectangle, draw = black, below=.4cm of 31]
-          (sink_T) {$\top$};
-
-          \node[shape = rectangle, draw = black, below=.4cm of 32]
-          (sink_F) {$\bot$};
-
-          % arcs
-          \draw[->,dashed]
-          (0) edge (2)
-          (1) edge (2)
-          (2) edge (31)
-          (31) edge (sink_T)
-          (32) edge (sink_F)
-          ;
-
-          \draw[->]
-          (0) edge (1)
-          (1) edge (32)
-          (2) edge (32)
-          (31) edge (sink_F)
-          (32) edge (sink_T)
-          ;
+          \input{tikz/bdd_example_a.uid.tex}
 
           % animations
           \onslide<3-5>{ % 0
