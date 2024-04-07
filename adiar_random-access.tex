@@ -77,10 +77,12 @@
     \centering
 
     \begin{tikzpicture}[scale=0.8]
-      \node[shape = circle, draw = black] (s) {\small $(i,s)$};
+      \onslide<2-> {
+        \node[shape = circle, draw = black] (s) {\small $(i,s)$};
+      }
 
       % First node
-      \onslide<2-> {
+      \onslide<3-> {
         \node[shape = circle, draw = black, below left=3 and 2 of s] (t) {\small $(j,t)$};
 
         \node[below left  = 0.5 and 0.2 of t] (alpha) {$\alpha$};
