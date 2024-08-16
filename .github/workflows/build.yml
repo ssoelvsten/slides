@@ -20,6 +20,7 @@ jobs:
       with:
         working_directory: ./
         root_file: |
+          anatree.tex
           adiar_core.tex
           adiar_core.tacas22.tex
           adiar_core.movep22.tex
