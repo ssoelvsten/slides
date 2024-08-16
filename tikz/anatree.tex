@@ -1,0 +1,53 @@
+  \tikzstyle{ana_node}       = [shape = circle,    draw = black,         minimum size=21pt]
+  \tikzstyle{ana_node__curr} = [shape = circle,    draw = orange, thick, minimum size=21pt]
+  \tikzstyle{ana_leaf}       = [shape = rectangle, draw = black,         minimum size=8pt]
+  \tikzstyle{ana_leaf__curr} = [shape = rectangle, draw = orange, thick, minimum size=8pt]
+
+  \node[ana_node] at (0.0, 0.0) (n1) {$a$};
+  \node           at (0.0, 0.7) {$\{ \Lambda \}$};
+
+  \node[ana_leaf] at (1.5,-1.0) (n1_l1) {\tiny $\infty$};
+  \node           at (2.1,-1.0) {$\{\}$};
+
+  \node[ana_node] at (1.5, 1.0) (n2) {$a$};
+  \node           at (1.5, 1.7) {$\{ a \}$};
+
+  \node[ana_node] at (3.0, 2.0) (n3) {$b$};
+  \node           at (3.0, 2.7) {$\{\}$};
+
+  \node[ana_leaf] at (4.5, 2.5) (n3_l1) {\tiny $\infty$};
+  \node           at (5.8, 2.5) {$\{ baa, aba \}$};
+
+  \node[ana_leaf] at (4.5, 1.5) (n3_l2) {\tiny $\infty$};
+  \node           at (5.1, 1.5) {$\{\}$};
+
+  \node[ana_node] at (3.0, 0.0) (n4) {$b$};
+  \node           at (3.0, 0.7) {$\{\}$};
+
+  \node[ana_leaf] at (4.5, 0.5) (n4_l1) {\tiny $\infty$};
+  \node           at (5.3, 0.5) {$\{ ba \}$};
+
+  \node[ana_node] at (4.5,-1.0) (n5) {$c$};
+  \node           at (4.5,-0.3) {$\{\}$};
+
+  \node[ana_leaf] at (6.0,-0.5) (n5_l1) {\tiny $\infty$};
+  \node           at (6.8,-0.5) {$\{ ca \}$};
+
+  \node[ana_leaf] at (6.0,-1.5) (n5_l2) {\tiny $\infty$};
+  \node           at (6.6,-1.5) {$\{\}$};
+
+  \draw[->, solid, thick]
+    (n1) edge    (n2)
+    (n2) edge (n3)
+    (n3) edge (n3_l1)
+    (n4) edge (n4_l1)
+    (n5) edge (n5_l1)
+  ;
+
+  \draw[->, dashed, thick]
+    (n1) edge (n1_l1)
+    (n2) edge (n4)
+    (n3) edge (n3_l2)
+    (n4) edge (n5)
+    (n5) edge (n5_l2)
+  ;
