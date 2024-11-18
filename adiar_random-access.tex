@@ -69,6 +69,46 @@
 \blankframe
 
 \begin{frame}
+  \vspace{29pt}
+
+  \begin{figure}
+    \centering
+
+    \begin{subfigure}{1.0\linewidth}
+      \centering
+
+      \begin{subfigure}[b]{0.46\linewidth}
+        \centering
+
+        \begin{tikzpicture}[scale=0.95, every node/.style={transform shape}]
+          \input{tikz/bdd_example_a.tex}
+        \end{tikzpicture}
+      \end{subfigure}
+      \begin{subfigure}[b]{0.53\linewidth}
+        \centering
+        { \footnotesize
+          \begin{tabular}{r c l}
+            [ & $\triple{(0,0)}{(2,0)}{(1,0)}$ & ,
+            \\ \\
+              & $\triple{(1,0)}{(2,0)}{(3,1)}$ & ,
+            \\ \\
+              & $\triple{(2,0)}{(3,0)}{(3,1)}$ & ,
+            \\ \\
+              & $\triple{(3,0)}{\top}{\bot}$   & ,
+            \\ \\
+              & $\triple{(3,1)}{\bot}{\top}$   & ]
+          \end{tabular}
+          \vspace{6pt}
+        }
+      \end{subfigure}
+
+      \caption{$(x_0 \wedge x_1 \wedge x_3) \vee (x_2 \oplus x_3)$}
+    \end{subfigure}
+    \caption{Node-based representation of prior shown BDDs}
+  \end{figure}
+\end{frame}
+
+\begin{frame}
   \input{anim/count_paths_tfp.tex}
 \end{frame}
 
@@ -169,7 +209,6 @@
 \end{frame}
 
 \blankframe
-
 
 \begin{frame}
   \begin{figure}
