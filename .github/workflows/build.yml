@@ -20,7 +20,6 @@ jobs:
       with:
         working_directory: ./
         root_file: |
-          anatree.tex
           adiar.core.tex
           adiar.core.tacas22.tex
           adiar.core.movep22.tex
@@ -29,6 +28,7 @@ jobs:
           adiar.random_access.tex
           adiar.relprod.tex
           adiar.zdd.tex
+          anatree.tex
           io_efficient_computation.tex
           mlightdp.tex
           one_minute_madness.tex
