@@ -21,14 +21,14 @@ jobs:
         working_directory: ./
         root_file: |
           anatree.tex
-          adiar_core.tex
-          adiar_core.tacas22.tex
-          adiar_core.movep22.tex
-          adiar_cuts.tex
-          adiar_nested_sweeping.tex
-          adiar_random-access.tex
-          adiar_relprod.tex
-          adiar_zdd.tex
+          adiar.core.tex
+          adiar.core.tacas22.tex
+          adiar.core.movep22.tex
+          adiar.cuts.tex
+          adiar.nested_sweeping.tex
+          adiar.random_access.tex
+          adiar.relprod.tex
+          adiar.zdd.tex
           io_efficient_computation.tex
           mlightdp.tex
           one_minute_madness.tex
