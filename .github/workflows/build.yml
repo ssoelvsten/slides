@@ -27,6 +27,7 @@ jobs:
           adiar_cuts.tex
           adiar_nested_sweeping.tex
           adiar_random-access.tex
+          adiar_relprod.tex
           adiar_zdd.tex
           io_efficient_computation.tex
           mlightdp.tex

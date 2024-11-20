@@ -13,141 +13,750 @@
 % ---------------------------------------------------------------------------- %
 \newcommand{\B}[0]{\ensuremath{\mathbb{B}}}
 
-\newcommand{\sort}[0]{\text{sort}}
+\newcommand{\sort}[1]{\text{sort}(#1)}
 
 \newcommand{\triple}[3]{\ensuremath{(#1, #2, #3)}}
 \renewcommand{\arc}[3]{\ensuremath{#1 \xrightarrow{_{#2}} #3}}
 
+% colors
+\newcommand{\tikzdot}[1]{
+  \protect\tikz[baseline=-3.4pt]{
+    \fill[color=#1, opacity=0.7] circle[radius=1.7pt];
+  }
+}
 
-\tikzstyle{plot_adiar}=[color=black, mark=o, mark size=1pt, line width=0.7pt]
-\tikzstyle{plot_buddy}=[color=red, mark=o, mark size=1pt, line width=0.7pt]
-\tikzstyle{plot_cudd}=[color=blue, mark=diamond, mark size=1pt, line width=0.7pt]
-\tikzstyle{plot_sylvan}=[color=purple, mark=square, mark size=1pt, line width=0.7pt]
+\tikzstyle{dots_significant}=[only marks, mark=o, mark size=1.8pt, mark options={color=black, opacity=0.9}]
 
-% Horizontal legends: https://tex.stackexchange.com/a/101578
-% argument #1: any options
-\makeatletter
-\newenvironment{customlegend}[1][]{%
-  \begingroup
-  % inits/clears the lists (which might be populated from previous
-  % axes):
-  \pgfplots@init@cleared@structures
-  \pgfplotsset{#1}%
-}{%
-  % draws the legend:
-  \pgfplots@createlegend
-  \endgroup
-}%
+\colorlet{qbf}{cyan}
+\tikzstyle{dots_qbf}=[only marks, mark=*, mark size=1.8pt, mark options={color=qbf, fill=qbf, opacity=0.5}]
+\tikzstyle{x_qbf}=[only marks, mark=x, mark size=2.2pt, mark options={color=qbf, fill=qbf, opacity=0.7}]
+\tikzstyle{plot_qbf}=[color=qbf, dashed, line width=0.7pt, opacity=0.7]
 
-% makes \addlegendimage available (typically only available within an
-% axis environment):
-\def\addlegendimage{\pgfplots@addlegendimage}
-\makeatother
+\colorlet{goe}{orange}
+\tikzstyle{dots_goe}=[only marks, mark=*, mark size=1.8pt, mark options={color=goe, fill=goe, opacity=0.5}]
+\tikzstyle{x_goe}=[only marks, mark=x, mark size=2.2pt, mark options={color=goe, fill=goe, opacity=0.7}]
+\tikzstyle{plot_goe}=[color=goe, dashed, line width=0.7pt, opacity=0.7]
 
 % ------------------------------------------------------------------------------
-% 
+%
 % ------------------------------------------------------------------------------
-% Opener: ...
-% 
+% Opener:
+% - ???
+%
 % Key points:
-% Existential
-% Basics (single variable)
-% Push
-% Bounce
-% Relabelling
-% Bounce
-% 
-% Take Home Message: How to do I/O-efficient "multi-recursion" (for RelProd)
+% - Apply-Reduce (TACAS 22)
+%   - Example Animation (single variable quantification)
+%   - Does not scale well for multiple variables...
+% - Nested Apply-Reduce (TACAS 25)
+%   - Example Animation
+%   - Theoretical Results
+%   - Experimental Results
+%
+% Take Home Message:
+% - ???
 
 % ------------------------------------------------------------------------------
 % TITLEPAGE
 % ------------------------------------------------------------------------------
-\title{An External Memory Relational Product}
+\title{Multi-variable Quantification of BDDs\\in External Memory using Nested Sweeping}
 
 \author{\textbf{Steffan Christ S\o lvsten}, Jaco van de Pol}
 
 \institute{\includegraphics[width=0.2\linewidth]{external/aulogo_uk_var2_black.eps}}
 
-\date{\today}
+\date{TACAS 2025}
 
 \begin{document}
 \titleframe
 
-\begin{frame}
-  \begin{center}
-    \LARGE
+\begin{frame}[plain,noframenumbering]
+  % Let's go back to 1986, the year of the:
+  % - Last time Halley's comet flew by (2nd of January)
+  % - Chernobyl disaster (26th of April)
+  % - Start of the "Kartoffelkur" (13th of October)
 
-    $\mathit{RelProd}(S,T)
-    \equiv
-    (
-    \ {\only<2>{\color{orange}} \exists \vec{x} .}\
-    S(\vec{x}) \wedge T(\vec{x}, \vec{x'})
-    \ ) [\vec{x'} / \vec{x}]$
+  \begin{center}
+    \bf
+    {\fontsize{42}{50}\selectfont \faIcon{backward}}
+
+    \vspace{10pt}
+
+    {\Huge 1986}
   \end{center}
 \end{frame}
 
-\begin{frame}
-  \frametitle{$\exists x_i .\ \phi \equiv \phi[x_i / \top] \vee \phi[x_i / \bot]$}
 
-  \input{anim/relprod_old.tex}
+\begin{frame}
+  \frametitle{Binary Decision Diagrams}
+
+  \begin{columns}
+    \begin{column}{0.4\linewidth}
+      \begin{figure}
+        \centering
+
+        \begin{subfigure}{1\linewidth}
+          \centering
+
+          \begin{tikzpicture}[scale=0.9, every node/.style={transform shape}]
+            \input{tikz/bdd_example_a.tex}
+          \end{tikzpicture}
+
+          \caption{$(x_0 \wedge x_1 \wedge x_3) \vee (x_2 \oplus x_3)$}
+        \end{subfigure}
+      \end{figure}
+    \end{column}
+    \begin{column}{0.59\linewidth}
+      \only<2>{
+        \begin{theorem}[Bryant~'86]
+          Given a fixed variable order, a (Reduced Ordered) Binary Decision Diagram is a unique
+          canonical representation of a Boolean function.
+        \end{theorem}
+      }
+
+      \only<4->{
+        \begin{theorem}[Bryant~'86]
+          Given BDDs $\phi$ and $\psi$, $\phi \odot \psi$ is computible in
+          $\Oh{\abs{\phi} \cdot \abs{\psi}}$ time.
+        \end{theorem}
+
+        \medskip
+
+        \begin{theorem}[Bryant~'86]
+          Given BDD $\phi$ and Boolean $b$, $\phi[x_i \mapsto b]$ is computible in
+          $\Oh{\abs{\phi}}$ time.
+        \end{theorem}
+
+        \medskip
+
+        \begin{corollary}
+          Given BDD $\phi$, $\exists x_i .\ \phi(x)$ requires $\Oh{\abs{\phi}^2}$
+          time.
+        \end{corollary}
+        \vspace{-5pt}
+        \begin{proof}
+          $\exists x_i . \phi(x_i) \equiv \phi[x_i \mapsto \bot] \lor \phi[x_i \mapsto \top]$
+        \end{proof}
+      }
+    \end{column}
+  \end{columns}
 \end{frame}
 
-\blankframe
+\begin{frame}[plain,noframenumbering]
+  % Let's go somewhat forwards in time to 1996, where:
+  % - Dolly the cloned sheep is born (5th of July)
+  % - Charles and Diana get a dirvoce (28th of August)
+  % - Copenhagen is "European Capital of Culture" of the year
 
-\begin{frame}
-  \frametitle{$\exists \vec{x}.\ \phi(\dots)$ \quad (Push)}
-
-  \input{anim/relprod_push.tex}
-\end{frame}
-
-\blankframe
-
-\begin{frame}
-  \frametitle{$\exists \vec{x}.\ \phi(\dots)$ \quad (Bounce)}
-
-  \input{anim/relprod_bounce.tex}
-\end{frame}
-
-\blankframe
-
-\begin{frame}
   \begin{center}
-    \LARGE
+    \bf
+    {\fontsize{42}{50}\selectfont \faIcon{forward}}
 
-    $\mathit{RelProd}(S,T)
-    \equiv
-    {\color{orange} (}
-    \ \exists \vec{x} .\
-    S(\vec{x}) \wedge T(\vec{x}, \vec{x'})
-    \ {\color{orange} ) [\vec{x'} / \vec{x}]}$
+    \vspace{10pt}
+
+    {\Huge 1996}
   \end{center}
 \end{frame}
 
-\begin{frame}
-  \begin{definition}
-    A relabelling $\pi$ is monotonic if $x_i < x_j \implies \pi(x_i) < \pi(x_j)$
-  \end{definition}
+\iffalse
+\begin{frame}[fragile]
+  \frametitle{$\exists x_i.\ \phi(x_i)$}
 
-  \pause
-  {\bf If $\pi$ is monotonic}
+  \begin{figure}
+    \centering
 
-  \begin{itemize}
-  \item \emph{1-Var} / \emph{Push}:
-
-    Apply $\pi$ in $O(L_N)$ extra time during the final bottom-up Reduce
-    sweep.
-
-  \item \emph{Bounce}:
-
-    $x_i' < x_j' \implies x_i < x_j$: $\pi$ can be applied during the
-    outermost Reduce sweep.
-  \end{itemize}
-
-  \quad That is, applying $\pi$ can (essentially) be done for free.
-
-  \pause
-  {\bf If $\pi$ is not monotonic}
-
-  \quad to be continued...
+    \begin{lstlisting}
+  *@{\bf exists}@*($f$, $x_i$)
+      if $f = \bot \lor f = \top$
+          return $f$
+      if $f$.var = $x_i$
+          return *@{\bf or}@*($f$.low, $f$.high)
+      else
+          exi0 := *@{\bf exists}@*($f$.low, $X$)
+          exi1 := *@{\bf exists}@*($f$.high, $X$)
+          return Node { $f$.var, exi0, exi1 }
+    \end{lstlisting}
+    \caption{A recursive single-variable {\bf exists} operation.}
+  \end{figure}
 \end{frame}
+\fi
+
+\begin{frame}
+  \frametitle{$\exists x_i .\ \phi(x_i)$}
+
+  \begin{figure}
+    % tikz/tandem.tex (but simplified)
+
+    \centering
+    \begin{tikzpicture}[scale=1.25]
+      % Boxes
+      \draw[color=black, thick]
+        (0,0) rectangle ++(2,1)
+        node[pos=.5]{\large \texttt{Apply}}
+      ;
+      \draw[color=black, thick]
+        (4.5,0) rectangle ++(2,1)
+        node[pos=.5]{\large \texttt{Reduce}}
+      ;
+
+      % Arcs
+      \draw[->, color=black, thick]
+        (-0.5,0.8) -- ++(0.5,0)
+        node[pos=-0.5]{\large $\phi$}
+      ;
+      \draw[->, color=black, thick]
+        (-0.5,0.2) -- ++(0.5,0)
+        node[pos=-0.5]{\large $x_i$}
+      ;
+
+      \draw[densely dashed, ->, thick] (2,0.5) -- ++(2.5,0)
+        node[pos=0.5,above]
+        {transposed}
+        node[pos=0.5,below]
+        {\texttt{arcs}}
+      ;
+
+      \draw[->, color=black, thick]
+        (6.5,0.5) -- ++(0.5,0)
+        node[pos=2.8]{\large $\exists x_i.\ \phi(x_i)$}
+      ;
+    \end{tikzpicture}
+  \end{figure}
+\end{frame}
+
+\begin{frame}
+  \frametitle{$\exists x_i .\ \phi(x_i)$ : \texttt{Apply}}
+
+  \input{anim/exists.singleton.down.tex}
+\end{frame}
+
+\begin{frame}
+  \frametitle{$\exists x_i .\ \phi(x_i)$ : \texttt{Reduce}}
+
+  \input{anim/exists.singleton.up.tex}
+\end{frame}
+
+\begin{frame}
+  \frametitle{$\exists x_i .\ \phi(x_i)$}
+
+  \begin{theorem}[Lars Arge~'96]
+    Given BDDs $\phi$ and $\psi$, $\phi \odot \psi$ is computible in
+    $\Oh{\sort{\abs{\phi} \cdot \abs{\psi}}}$ time and I/Os.
+  \end{theorem}
+
+  \medskip
+
+  \begin{theorem}[S{\o}lvsten et al.~'22]
+    Given BDD $\phi$ and Boolean $b$, $\phi[x_i \mapsto b]$ is computible in
+    $\Oh{\sort{\abs{\phi}}}$ time and I/Os.
+  \end{theorem}
+
+  \medskip\pause
+
+  \begin{corollary}[S{\o}elvsten et al.~'22]
+    Given BDD $\phi$, the time and I/O complexity of quantification is
+    \vspace{-8pt}
+    \begin{itemize}
+    \item $\Oh{\sort{\abs{\phi}^2}}$ for a single variable.
+    \item $\Oh{\sort{\abs{\phi}^{2^k}}}$ for $k$ variables.
+    \end{itemize}
+  \end{corollary}
+\end{frame}
+
+\begin{frame}[plain,noframenumbering]
+  % Let's go to the recent year of 2022, where:
+  % - A picture is taken of the Sagittarius A* black hole (12th of May)
+  % - Denmark lifts all restrictions due to the COVID-19 pandemic (1st of February)
+  % - Russia invades Ukraine (24th of February)
+
+  \begin{center}
+    \bf
+    {\fontsize{42}{50}\selectfont \faIcon{forward}}
+
+    \vspace{10pt}
+
+    {\Huge 2022}
+  \end{center}
+\end{frame}
+
+\input{fram/adiar.tex}
+
+\begin{frame}[plain,noframenumbering]
+  % Let's go to the present day, where:
+  % - ???
+
+  \begin{center}
+    \bf
+    {\fontsize{42}{50}\selectfont \faIcon{forward}}
+
+    \vspace{10pt}
+
+    {\Huge 2025}
+  \end{center}
+\end{frame}
+
+\iffalse
+\begin{frame}[fragile]
+  \frametitle{$\exists \vec{x}.\ \phi(\vec{x})$}
+
+  \begin{figure}
+    \centering
+
+    \begin{lstlisting}
+  *@{\bf exists}@*($f$, $X$)
+      if $f = \bot \lor f = \top$
+          return $f$
+      exi0 := *@{\bf exists}@*($f$.low, $X$)
+      exi1 := *@{\bf exists}@*($f$.high, $X$)
+      if $f$.var $\in$ $X$
+          return *@{\bf or}@*(exi0, exi1)
+      else
+          return Node { $f$.var, exi0, exi1 }
+    \end{lstlisting}
+    \caption{A (nested) recursive multi-variable {\bf exists} operation.}
+  \end{figure}
+\end{frame}
+\fi
+
+\begin{frame}
+  \frametitle{$\exists \vec{x}.\ \phi(\vec{x})$}
+
+  \begin{figure}
+    \centering
+    \begin{tikzpicture}[scale=1.25]
+      % Boxes (outer)
+      \draw[thick] (0,0) rectangle ++(2,1)
+      node[pos=.5]{\large \texttt{Apply}};
+      \draw[thick] (3.5,0) rectangle ++(2,1)
+      node[pos=.5]{\large \texttt{Reduce}};
+
+      % Arcs (outer)
+      \draw[->, thick] (-0.5,0.5) -- ++(0.5,0)
+      node[pos=-0.55]{\large $\phi$};
+
+      \draw[->, thick, dashed] (2,0.8) -- ++(1.5,0);
+
+      \draw[->, thick] ( 3.0,0.2) -- ++(0.5,0)
+      node[pos=-0.55]{\large $\vec{x}$};
+
+      \draw[->, thick] (5.5,0.5) -- ++(3,0)
+      node[pos=1.3]{\large $\exists \vec{x}.\ \phi(\vec{x})$};
+
+      % Boxes (inner)
+      \draw[thick] (6.5,-2) rectangle ++(2,1)
+      node[pos=.5]{\large \texttt{Apply}};
+      \draw[thick] (3.5,-2) rectangle ++(2,1)
+      node[pos=.5]{\large \texttt{Reduce}};
+
+      % Arcs (inner)
+      \draw[->, thick] (7.5,0.5) -- ++(0,-1.5);
+
+      \draw[->, thick, dashed] (6.5,-1.5) -- ++(-1.0,0);
+
+      \draw[->, thick] (4.5,-1) -- ++(0,1);
+    \end{tikzpicture}
+  \end{figure}
+\end{frame}
+
+\begin{frame}
+  \frametitle{$\exists \vec{x}.\ \phi(\vec{x})$}
+
+  \input{anim/exists.nested_sweeping.tex}
+\end{frame}
+
+\begin{frame}
+  \frametitle{$\exists \vec{x}.\ \phi(\vec{x})$}
+
+  \Large
+
+  {\bf Theorem~(S{\o}lvsten et al.~'25)}
+
+  Given BDD $\phi$, the quantification of $k$ variables, $\exists \vec{x}.\ \phi(\vec{x})$,\\
+  is computible in $\Oh{\sort{\abs{\phi}^{2^k}}}$ time and I/Os.
+\end{frame}
+
+\begin{frame}
+  \frametitle{Benchmarks}
+
+  \fcolorbox{goe}{goe!50!white}{%
+    \begin{minipage}{1.0\linewidth}
+      \begin{block}{Garden-of-Eden}
+        Given dimensions $N_1, N_2 \in \N$, determine whether there exists in Conway's \emph{Game of
+          Life} an initial state of size $N_1 \times N_2$ that is a \emph{Garden of Eden}, i.e.\ is
+        otherwise unreachable.
+      \end{block}
+    \end{minipage}
+  }
+
+  \medskip
+
+  \fcolorbox{qbf}{qbf!50!white}{%
+    \begin{minipage}{1.0\linewidth}
+      \begin{block}{Quantified Boolean Formula}
+        Determine whether a Boolean formula
+        $\exists \vec{x_1} \forall \vec{x_2} \dots \exists \vec{x_k} .\ \phi(\vec{x_1}, \vec{x_2},
+        \dots, \vec{x_k})$ (or any order of quantifiers) evaluates to $\top$ or $\bot$. For inputs,
+        we use the two-player games from:
+
+        Irfansha Shaik and Jaco van de Pol: ``\emph{Concise QBF encodings for games on a grid
+          (extended version)}''. arXiv (2023).
+      \end{block}
+    \end{minipage}
+  }
+\end{frame}
+
+\begin{frame}
+  \frametitle{Benchmarks : Single vs. Nested Quantification}
+
+  \begin{figure}
+    \centering
+
+    \begin{tikzpicture}
+      \begin{axis}[%
+        width=0.92\linewidth, height=0.45\linewidth,
+        every tick label/.append style={font=\scriptsize},
+        % x-axis
+        xlabel={\scriptsize Running Time of Adiar with Single-variable Quantification (s)},
+        xmin=0.01,
+        xtick={0.01,0.1,1,10,100,1000,10000,100000},
+        xmax=100000,
+        xmode=log,
+        % y-axis
+        ylabel={\scriptsize Speed-up with Nested Sweeping},
+        ymin=0.125,
+        ymax=2,
+        ymode=log,
+        ytick={0.125, 0.25, 0.5, 1, 2},
+        yticklabels={
+          $8 \times$,
+          $4 \times$,
+          $2 \times$,
+          $1 \times$,
+          $\tfrac{1}{2} \times$
+        },
+        y dir=reverse,
+        % grid
+        grid style={dashed,black!12},
+        ]
+
+        % 1x line
+        \addplot[domain=0.01:1000000, samples=8, color=black]
+        {1};
+
+        % average
+        \addplot[domain=0.01:1000000, samples=8, style=plot_goe]
+        {0.5873};
+        \addplot[domain=0.01:1000000, samples=8, style=plot_qbf]
+        {0.5848};
+
+        % data
+        \addplot+ [forget plot, style=dots_goe]
+        table {./data/goe.singleton_vs_nested.tex};
+        \addplot+ [forget plot, style=dots_qbf]
+        table {./data/qbf.singleton_vs_nested.tex};
+      \end{axis}
+    \end{tikzpicture}
+
+    {
+      \tikzdot{goe} GoE \quad \tikzdot{qbf} QBF
+    }
+
+    % \caption{Relative time ($T_{\text{old}} / T_{\text{new}}$) of quantification with nested
+    %   sweeping ($T_{\text{new}}$) compared to repeated single-variable quantification
+    %   ($T_{\text{old}}$). Averages for each benchmark are drawn as dashed lines.}
+  \end{figure}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Benchmarks : Comparison to CAL}
+
+  \begin{figure}
+    \centering
+
+    \vspace{5pt}
+
+    \begin{tikzpicture}
+      \begin{axis}[%
+        width=0.92\linewidth, height=0.45\linewidth,
+        every tick label/.append style={font=\scriptsize},
+        % x-axis
+        xlabel={\scriptsize Running Time of Adiar with Nested Sweeping (s)},
+        xmin=0.01,
+        xtick={0.01,0.1,1,10,100,1000,10000,100000},
+        xmax=100000,
+        xmode=log,
+        % y-axis
+        ylabel={\scriptsize Relative Time of CAL},
+        ymin=0.0039,
+        ymax=4000,
+        ytick = {0.00390625,0.015625,0.0625,0.25,1,4,16,64,256,1024},
+        yticklabels = {
+          $2^{-8} \times$,
+          $2^{-6} \times$,
+          $2^{-4} \times$,
+          $2^{-2} \times$,
+          $1 \times$,
+          $2^{2} \times$,
+          $2^{4} \times$,
+          $2^{6} \times$,
+          $2^{8} \times$,
+          $2^{10 \times}$
+        },
+        ymode=log,
+        % grid
+        grid style={dashed,black!12},
+        ]
+
+        % 1 line
+        \addplot[domain=0.01:1000000, samples=8, color=black]
+        {1};
+
+        % vertical 1s line
+        \draw[densely dotted, opacity=0.4] (0,7.0) -- (0,-4.5);
+
+        % average (excluding timeouts)
+        \addplot[domain=0.01:1000000, samples=8, style=plot_goe] {0.8559};
+        \addplot[domain=0.01:1000000, samples=8, style=plot_qbf] {0.6181};
+
+        % average (including timeouts)
+        % \addplot[domain=0.01:1000000, samples=8, style=plot_goe] {1.6976};
+        % \addplot[domain=0.01:1000000, samples=8, style=plot_qbf] {1.5608};
+
+        % data (solved)
+        \addplot+ [forget plot, style=dots_goe]
+        table {./data/goe.cal_solved.tex};
+        \addplot+ [forget plot, style=dots_qbf]
+        table {./data/qbf.cal_solved.tex};
+
+        % data (timeouts)
+        \addplot+ [forget plot, style=x_goe]
+        table {./data/goe.cal_timeouts.tex};
+        \addplot+ [forget plot, style=x_qbf]
+        table {./data/qbf.cal_timeouts.truncated.tex};
+      \end{axis}
+    \end{tikzpicture}
+    \hspace{3pt}
+
+    {
+      \tikzdot{goe} GoE \quad \tikzdot{qbf} QBF
+    }
+
+    % \caption{Relative performance ($T_{\text{CAL}} / T_{\text{Adiar}}$) of CAL ($T_{\text{CAL}}$)
+    %   compared to Adiar with Nested Sweeping ($T_{\text{Adiar}}$). Time-/Memouts are marked as crosses.
+    %   Averages are drawn as dashed lines.}
+  \end{figure}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Benchmarks : Comparison to BuDDy and CUDD}
+
+  \begin{figure}
+    \centering
+
+    \vspace{2pt}
+
+    \begin{subfigure}{0.48\linewidth}
+      \begin{tikzpicture}
+        \begin{axis}[%
+          width=1.0\linewidth, height=0.806\linewidth,
+          every tick label/.append style={font=\scriptsize},
+          % x-axis
+          xlabel={\scriptsize Adiar Running Time (s)},
+          xmin=0.01,
+          xmax=100000,
+          xtick={0.01,0.1,1,10,100,1000,10000,100000},
+          xmode=log,
+          % y-axis
+          ylabel={\scriptsize Relative Running Time},
+          ymin=0.00390625,
+          ymax=5.0,
+          ytick = {0.00390625,0.015625,0.0625,0.25,1,4},
+          yticklabels = {
+            $2^{-8} \times$,
+            $2^{-6} \times$,
+            $2^{-4} \times$,
+            $2^{-2} \times$,
+            $1 \times$,
+            $2^{2} \times$
+          },
+          ymode=log,
+          % grid
+          grid style={dashed,black!12},
+          ]
+
+          % 1 line
+          \addplot[domain=0.001:100000, samples=8, color=black]
+          {1};
+
+          % vertical 1s line
+          \draw[densely dotted, opacity=0.4] (0,1.0) -- (0,-5.0);
+
+          % average
+          \addplot[domain=0.01:100000, samples=8, style=plot_goe]
+          {0.2388};
+          \addplot[domain=0.01:100000, samples=8, style=plot_qbf]
+          {0.1123};
+
+          % data (solved)
+          \addplot+ [forget plot, style=dots_goe] table {./data/goe.buddy.solved.tex};
+          \addplot+ [forget plot, style=dots_qbf] table {./data/qbf.buddy.solved.tex};
+
+          % data (timeouts)
+          \addplot+ [forget plot, style=x_goe] table {./data/goe.buddy.timeouts.tex};
+          \addplot+ [forget plot, style=x_qbf] table {./data/qbf.buddy.timeouts.tex};
+        \end{axis}
+      \end{tikzpicture}
+
+      \caption{BuDDy}
+    \end{subfigure}
+    \quad
+    \begin{subfigure}{0.48\linewidth}
+      \begin{tikzpicture}
+        \begin{axis}[%
+          width=1.0\linewidth, height=0.806\linewidth,
+          every tick label/.append style={font=\scriptsize},
+          % x-axis
+          xlabel={\scriptsize Adiar Running Time (s)},
+          xmin=0.01,
+          xmax=100000,
+          xtick={0.01,0.1,1,10,100,1000,10000,100000},
+          xmode=log,
+          % y-axis
+          ymin=0.00390625,
+          ymax=5.0,
+          ytick = {0.00390625,0.015625,0.0625,0.25,1,4},
+          yticklabels = {
+            ,
+            ,
+            ,
+            ,
+            ,
+            ,
+          },
+          ymode=log,
+          % grid
+          grid style={dashed,black!12},
+          ]
+
+          % 1 line
+          \addplot[domain=0.01:100000, samples=8, color=black]
+          {1};
+
+          % vertical 1s line
+          \draw[densely dotted, opacity=0.4] (0,1.0) -- (0,-5.0);
+
+          % average
+          \addplot[domain=0.01:100000, samples=8, style=plot_goe]
+          {0.2294};
+          \addplot[domain=0.01:100000, samples=8, style=plot_qbf]
+          {0.1344};
+
+          % data (solved)
+          \addplot+ [forget plot, style=dots_goe] table {./data/goe.cudd.solved.tex};
+          \addplot+ [forget plot, style=dots_qbf] table {./data/qbf.cudd.solved.tex};
+
+          % data (timeouts)
+          \addplot+ [forget plot, style=x_goe] table {./data/goe.cudd.timeouts.tex};
+          \addplot+ [forget plot, style=x_qbf] table {./data/qbf.cudd.timeouts.tex};
+        \end{axis}
+      \end{tikzpicture}
+
+      \caption{CUDD}
+    \end{subfigure}
+
+    {
+      \tikzdot{goe} GoE \quad \tikzdot{qbf} QBF
+    }
+  \end{figure}
+\end{frame}
+
+\begin{frame}[plain,noframenumbering]
+  % custom copy of fram/endslate.tex
+  \begin{columns}
+    \begin{column}{0.42\linewidth}
+      {\Large \textbf{Steffan Christ S{\o}lvsten}}
+      \vspace{1pt} {\hrule width\linewidth}
+
+      \vspace{5pt}
+
+      \begin{itemize}
+      \item[\faIcon{envelope}] \mailto{soelvsten@cs.au.dk}
+      \item[\faIcon{globe}] \href{https://ssoelvsten.github.io}{ssoelvsten.github.io}
+      \end{itemize}
+
+      \vspace{10pt}
+
+      {\Large \textbf{Adiar}}
+      \vspace{1pt} {\hrule width\linewidth}
+
+      \vspace{5pt}
+
+      \begin{itemize}
+      \item[\faIcon{code}]
+        \href{http://github.com/ssoelvsten/adiar}{github.com/ssoelvsten/adiar}
+      \item[\faIcon{book}\hspace{2pt}]
+        \href{http://ssoelvsten.github.io/adiar}{ssoelvsten.github.io/adiar}
+      \end{itemize}
+
+      \vspace{12pt}
+
+      \includegraphics[width=0.5\linewidth]{external/aulogo_uk_var2_black.eps}
+    \end{column}
+    \begin{column}{0.58\linewidth}
+      \faStyle{regular}
+
+      {\Large \textbf{Nested Sweeping Framework}}
+      \vspace{1pt} {\hrule width\linewidth}
+
+      \vspace{5pt}
+
+      New BDD algorithms:
+      \begin{itemize}
+      \item[\faIcon{check-circle}] Multi-variable Quantification
+      \item[\faIcon{check-circle}] Relational Product
+      \item[\faIcon{circle}]       Functional Composition
+      \item[\faIcon{circle}]       Variable Reordering
+      \end{itemize}
+
+      Other Decision Diagrams:
+      \begin{itemize}
+      \item[\faIcon{circle}]       Quantum Multi-valued Decision Diagrams
+      \item[\faIcon{circle}]       Polynomial Boolean Rings
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}
+  \begin{table}
+    \centering
+    \begin{tabular}{l||ll|ll}
+                                   & \multicolumn{2}{c|}{Single Quantification} & \multicolumn{2}{c}{Nested Sweeping}
+      \\
+                                   & LOC & \# Tests                              & LOC  & \# Tests
+      \\ \hline \hline
+      \texttt{nested\_sweeping.h}  & --  & --                                    & 1287 & 104
+      \\
+                                   &     &                                       &      &
+      \\
+      \texttt{quantify}            & 548 & 84                                    & 1152 & 152
+      \\
+      \quad \texttt{core/...}      & 326 & --                                    & 904  & --
+      \\
+      \quad \texttt{bdd/...}       & 122 & 64                                    & 157  & 108
+      \\
+      \quad \texttt{zdd/...}       & 100 & 20                                    & 20   & 44
+    \end{tabular}
+  \end{table}
+\end{frame}
+
+\begin{frame}
+  \begin{figure}
+    \centering
+
+    \begin{tikzpicture}
+      \input{tikz/timeline.tex}
+    \end{tikzpicture}
+  \end{figure}
+\end{frame}
+
 \end{document}

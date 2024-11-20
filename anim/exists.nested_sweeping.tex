@@ -15,11 +15,11 @@
 
     % --------------------------------------------------------------------------
     % INPUT
-    \draw[blue, thick] (-1.8,-5.0) -- (-2.0,-4.2) -- (-1.4,-1.7) -- (-0.1,0.1)
-                    -- (0.1,0.1)  -- (1.4,-1.7)  -- (2.0,-4.2)  -- (1.8,-5.0);
-
-    \draw[red, thick] (-1.8,-5.0) -- (-1.6,-5.6)
-                      (1.8,-5.0) -- (1.6,-5.6);
+    \draw[black, densely dotted, thick]
+      % left-hand side
+      (-1.6,-5.6) -- (-1.8,-5.0) -- (-2.0,-4.2) -- (-1.4,-1.7) -- (-0.1,0.1)
+      % right-hand side
+      -- (0.1,0.1) -- (1.4,-1.7)  -- (2.0,-4.2)  -- (1.8,-5.0) -- (1.6,-5.6);
 
     \onslide<11-> {
       \node[shape = circle, draw = black, fill = white]
@@ -33,7 +33,7 @@
     }
 
     \onslide<11-> {
-      \draw[->, blue] (i_p1) edge (i_root);
+      \draw[->, black] (i_p1) edge (i_root);
     }
 
     \onslide<3-> {
@@ -43,7 +43,7 @@
     }
 
     \onslide<10-> {
-      \draw[->, dashed, blue] (i_p2) edge (i_p1);
+      \draw[->, black, dashed] (i_p2) edge (i_p1);
     }
 
     \onslide<3-> {
@@ -53,7 +53,7 @@
     }
 
     \onslide<4-> {
-      \draw[->, blue, thick] (i_quant2) edge (i_p2);
+      \draw[->, black, thick] (i_quant2) edge (i_p2);
     }
 
     \onslide<2-> {
@@ -67,9 +67,9 @@
     }
 
     \onslide<3-> {
-      \draw[->, blue, thick, dashed] (i_p3_1) edge (i_p2);
-      \draw[->, blue, dashed] (i_p3_1) edge (i_quant2);
-      \draw[->, blue] (i_p3_2) edge (i_quant2);
+      \draw[->, black, thick, dashed] (i_p3_1) edge (i_p2);
+      \draw[->, black, dashed] (i_p3_1) edge (i_quant2);
+      \draw[->, black] (i_p3_2) edge (i_quant2);
     }
 
     \onslide<2-> {
@@ -81,24 +81,24 @@
             below left=0.55cm and 0.2cm of i_p3_2]
       (i_p4_2) {};
 
-      \draw[->, blue, dashed]
+      \draw[->, black, dashed]
         (i_p4_1) edge (i_p3_1)
         (i_p4_2) edge (i_p3_2)
       ;
     }
 
-    \node[shape = rectangle, draw = red, fill = white,
-      below right=5.4cm and -0.3cm of i_root]
-    (i_p5_1) {};
-
-    \node[shape = rectangle, draw = red, fill = white,
-      below right=5.4cm and 0.7cm of i_root]
-    (i_p5_2) {};
-
     \onslide<2-> {
-      \draw[->, red]
-        (i_p4_1) edge (i_p5_1)
-        (i_p4_2) edge (i_p5_2)
+      \node[shape = rectangle, draw = black, fill = white,
+            below right=5.4cm and -0.3cm of i_root]
+      (i_p5_1) {};
+
+      \node[shape = rectangle, draw = black, fill = white,
+            below right=5.4cm and 0.7cm of i_root]
+      (i_p5_2) {};
+
+      \draw[->, black]
+        (i_p5_1) edge (i_p4_1)
+        (i_p5_2) edge (i_p4_2)
       ;
     }
 
@@ -108,7 +108,7 @@
       \draw[thick] (3.0,-5.0) -- (3.2,-5.6)
                    (5.3,-5.0) -- (5.1,-5.6)
       ;
-          
+
       \node[shape = rectangle, draw = black, fill = white,
             right=3.5cm of i_p5_1]
       (o1_p5_1) {};
@@ -196,14 +196,14 @@
     % --------------------------------------------------------------------------
     % SECOND SWEEP
     \onslide<5-9> {
-      \draw[blue, thick, dotted] (6.95, -2.9) -- (6.9,-3.2)
-                                 (9.15, -2.9) -- (9.2,-3.2)
+      \draw[black, dotted, thick] (6.95, -2.9) -- (6.9,-3.2)
+                                  (9.15, -2.9) -- (9.2,-3.2)
           ;
 
-      \draw[blue, thick] (6.9,-3.2) -- (6.8, -4.2)
-                         (9.2,-3.2) -- (9.4, -4.2)
+      \draw[black, densely dotted, thick] (6.9,-3.2) -- (6.8, -4.2)
+                                          (9.2,-3.2) -- (9.4, -4.2)
       ;
-          
+
       \node[shape = circle, draw = none, % dummy for crossing in-going arcs
             right=3.5cm of o1_p2]
       (o2_p2) {};
@@ -216,13 +216,13 @@
             right=3.5cm of o1_p3_2]
       (o2_p3_2) {};
 
-      \draw[->, thick, blue, dashed] (o2_p3_1) edge (o2_p2);
-      \draw[->, thick, blue] (o2_p3_2) edge (o2_p2);
+      \draw[->, black, dotted, thick] (o2_p3_1) edge (o2_p2);
+      \draw[->, black, densely dotted, thick] (o2_p3_2) edge (o2_p2);
     }
 
     \onslide<6-8> {
-      \draw[blue, thick] (6.8, -4.2) -- (6.9, -5.0)
-                         (9.4, -4.2) -- (9.3, -5.0)
+      \draw[black, densely dotted, thick] (6.8, -4.2) -- (6.9, -5.0)
+                                          (9.4, -4.2) -- (9.3, -5.0)
       ;
 
       \node[shape = circle, draw = black, fill = white,
@@ -233,26 +233,26 @@
             right=3.5cm of o1_p4_2]
       (o2_p4_2) {};
 
-      \draw[->, blue, dashed]
+      \draw[->, black, dashed]
         (o2_p4_1) edge (o2_p3_1)
         (o2_p4_2) edge (o2_p3_2)
       ;
 
-      \draw[red, thick] (6.9, -5.0) -- (7.2, -5.6)
-                        (9.3, -5.0) -- (9.0, -5.6)
+      \draw[black, densely dotted, thick] (6.9, -5.0) -- (7.2, -5.6)
+                                          (9.3, -5.0) -- (9.0, -5.6)
       ;
 
-      \node[shape = rectangle, draw = red, fill = white,
+      \node[shape = rectangle, draw = black, fill = white,
             right=3.5cm of o1_p5_1]
       (o2_p5_1) {};
 
-      \node[shape = rectangle, draw = red, fill = white,
+      \node[shape = rectangle, draw = black, fill = white,
             right=3.5cm of o1_p5_2]
       (o2_p5_2) {};
 
-      \draw[->, red]
-        (o2_p4_1) edge (o2_p5_1)
-        (o2_p4_2) edge (o2_p5_2)
+      \draw[->, black]
+        (o2_p5_1) edge (o2_p4_1)
+        (o2_p5_2) edge (o2_p4_2)
       ;
     }
   \end{tikzpicture}
