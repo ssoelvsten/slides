@@ -726,6 +726,258 @@
   \end{columns}
 \end{frame}
 
+\blankframe
+
+\begin{frame}
+  \frametitle{Better Transposition: Deepest Variable Quantification}
+
+  \begin{center}
+    \LARGE
+
+    $bdd\_exists(f, \max(\vec{x}))$
+  \end{center}
+
+  \bigskip
+
+  \begin{block}{Motivation}
+    Includes the first nested sweep inside of the transposition step.
+  \end{block}
+
+  \begin{block}{In Practice}
+    Slows down computation time on average by $4.7\%$.
+  \end{block}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Better Transposition: Pruning $\top$ Siblings}
+
+  \begin{figure}
+    \centering
+
+    \begin{subfigure}{0.49\linewidth}
+      \centering
+
+      \begin{tikzpicture}
+        % ------------------------------------------------------------------------
+        % Before
+        \node at (0, 1) (r) {};
+
+        \node[shape = circle,    draw = black] at (0, 0) (n) {$x_i$};
+
+        \node at (-0.6, -1) (alpha) {$\alpha$};
+        \node[shape = rectangle, draw = black] at ( 0.6, -1) (T) {$\top$};
+
+        \draw[->, dashed]
+          (n) edge (alpha)
+        ;
+        \draw[->]
+          (r) edge (n)
+          (n) edge (T)
+        ;
+
+        \node at (1.3, 0) {$\Rightarrow$};
+
+        % ------------------------------------------------------------------------
+        % After
+        \node at (2.4, 1) (r) {};
+
+        \node[shape = rectangle, draw = black] at ( 2.4, -1) (T) {$\top$};
+
+        \draw[<-]
+          (r) edge (T)
+        ;
+      \end{tikzpicture}
+
+      \caption{Pruning due to $\top$.}
+    \end{subfigure}
+    \begin{subfigure}{0.49\linewidth}
+      \centering
+
+      \begin{tikzpicture}
+        % ------------------------------------------------------------------------
+        % Before
+        \node at (0, 1) (r) {};
+
+        \node[shape = circle,    draw = black] at (0, 0) (n) {$x_i$};
+
+        \node at (-0.6, -1) (alpha) {$\alpha$};
+        \node[shape = rectangle, draw = black] at ( 0.6, -1) (F) {$\bot$};
+
+        \draw[->, dashed]
+          (n) edge (alpha)
+        ;
+        \draw[->]
+          (r) edge (n)
+          (n) edge (F)
+        ;
+
+        \node at (1.3, 0) {$\Rightarrow$};
+
+        % ------------------------------------------------------------------------
+        % After
+        \node at (2.4, 1) (r) {};
+
+        \node at ( 2.4, -1) (alpha) {$\alpha$};
+
+        \draw[<-]
+          (r) edge (alpha)
+        ;
+      \end{tikzpicture}
+
+      \caption{Pruning due to $\bot$.}
+    \end{subfigure}
+  \end{figure}
+
+  \begin{block}{In Practice}
+    If it prunes subtrees, running time can improve up to $21\%$. Otherwise, it adds an overhead of
+    up to $2\%$.
+  \end{block}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Better Transposition: Partial Quantification}
+
+  \begin{figure}
+    \centering
+
+    \begin{subfigure}{0.45\linewidth}
+      \centering
+
+      \begin{tikzpicture}
+        % ------------------------------------------------------------------------
+        % Before
+        \node at (0, 1) (r) {};
+
+        \node at (-0.6, 1) (r1) {};
+        \node[shape = circle,    draw = black] at (-0.6, 0) (n1) {$x_i$};
+
+        \node at ( 0.6, 1) (r2) {};
+        \node[shape = circle,    draw = black] at ( 0.6, 0) (n2) {$x_i$};
+
+        \node[shape = rectangle, draw = black] at (-1.2, -1) (F) {$\bot$};
+        \node at ( 0.0, -1) (alpha) {$\alpha$};
+        \node at (1.2, -1) (beta) {$\beta$};
+
+        \draw[->, dashed]
+          (n1) edge (F)
+          (n2) edge (alpha)
+        ;
+        \draw[->]
+          (r1) edge (n1)
+          (n1) edge (alpha)
+          (r2) edge (n2)
+          (n2) edge (beta)
+        ;
+
+        \node at (1.8, 0) {$\Rightarrow$};
+
+        % ------------------------------------------------------------------------
+        % After
+        \node at (2.6, 1) (r) {};
+
+        \node at (2.6, -1) (prod) {$\alpha \times \beta$};
+
+        \draw[<-]
+          (r) edge (prod)
+        ;
+      \end{tikzpicture}
+
+      \caption{Fully quantified pair of nodes.}
+    \end{subfigure}
+    \begin{subfigure}{0.54\linewidth}
+      \centering
+
+      \begin{tikzpicture}
+        \node at (0, 1) (r) {};
+
+        \node at ( 0.0, 1) (r1) {};
+        \node[shape = circle,    draw = black] at ( 0.0, 0) (n1) {$x_i$};
+
+        \node at (-0.6, -1) (alpha) {$\alpha$};
+        \node[shape = rectangle, draw = black] at ( 0.6, -1) (F) {$\bot$};
+
+        \node at ( 2.2, 1) (r2) {};
+        \node[shape = circle,    draw = black] at ( 2.2, 0) (n2) {$x_i$};
+
+        \node at ( 1.6, -1) (gamma) {$\gamma$};
+        \node at (2.8, -1) (beta) {$\beta$};
+
+        \draw[->, dashed]
+          (n1) edge (alpha)
+          (n2) edge (gamma)
+        ;
+        \draw[->]
+          (r1) edge (n1)
+          (n1) edge (F)
+          (r2) edge (n2)
+          (n2) edge (beta)
+        ;
+
+        \node at (3.4, 0) {$\Rightarrow$};
+
+        % ------------------------------------------------------------------------
+        % After
+        \node at ( 4.8, 1) (r) {};
+
+        \node[shape = circle,    draw = black] at ( 4.8, 0) (nprod) {$x_i$};
+
+        \node at ( 4.2, -1) (prod1) {$\alpha \times \beta$};
+        \node at ( 5.4, -1) (prod2) {$\gamma$};
+
+        \draw[<-, dashed]
+          (nprod) edge (prod1)
+        ;
+        \draw[<-]
+          (r) edge (nprod)
+          (nprod) edge (prod2)
+        ;
+      \end{tikzpicture}
+
+      \caption{Partially quantified pair of nodes.}
+    \end{subfigure}
+  \end{figure}
+
+  \begin{block}{In Practice}
+    In some instances, it improves performance by a factor of $\sim 2\times$.
+
+    In others, it slows down by $\sim 2\times$.
+  \end{block}
+
+  \begin{block}{Observation}
+    Instances improved by \emph{$\top$ Pruning} were disjoint from \emph{Partial Quantification}.
+  \end{block}
+\end{frame}
+
+\blankframe
+
+\begin{frame}
+  \frametitle{Optimisations for Nested Sweeping}
+
+  \begin{itemize}
+  \item {\bf Leave terminal arcs out of nested sweeps.}
+
+    {\small Required to satisfy invariants in nested algorithms from [TACAS~22].}
+
+  \item {\bf Bail-out of Inner Sweep if all edges are subtree-preserving.}
+
+    {\small In practice, $75.6\%$ of all levels are skippable (median of $81.9\%$ for each
+      benchmark).}
+
+  \item {\bf Use a sorted list as a bridge from the outer to the inner sweep.}
+
+    {\small Postpones initialising data structures for the nested sweep until it is invoked.}
+    \begin{itemize}
+    \item More memory available for the outer \texttt{Reduce} sweep.
+    \item Sorting once and then merging on-the-fly with a priority queue can be faster than
+      maintaining a larger priority queue.
+    \item This enables the \emph{levelised priority queues} [TACAS$^*$~22], \emph{levelised cuts} [ATVA~23],
+      and \emph{levelised random access} [SPIN~24] optimisations.
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\blankframe
+
 \begin{frame}
   \begin{table}
     \centering
@@ -748,6 +1000,8 @@
     \end{tabular}
   \end{table}
 \end{frame}
+
+\blankframe
 
 \begin{frame}
   \begin{figure}
