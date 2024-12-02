@@ -421,11 +421,11 @@ Ptr = Leaf (val : $\B$)
   \end{lstlisting}
   \begin{lstlisting}[firstnumber=5]
 operator < (a: Ptr) (b: Ptr) =
-    lift Uid::< s.t. Ptr::Node < Ptr::Leaf
+    lift Uid.< s.t. Ptr.Node < Ptr.Leaf
   \end{lstlisting}
 
   \begin{lemma}
-    \texttt{Uid}::$<$ and \texttt{Ptr}::$<$ are total orders.
+    \texttt{Uid}.$<$ and \texttt{Ptr}.$<$ are total orders.
   \end{lemma}
   \begin{proof}
     Trival case distinctions.
@@ -455,7 +455,7 @@ Bdd  = Leaf  (val : $\B$)
       \end{lstlisting}
 
       \begin{lstlisting}[firstnumber=4]
-Example = Bdd::Nodes([
+Example = Bdd.Nodes([
   Node(Uid(0,0), Ptr(1,0), Ptr(2,0));
   Node(Uid(1,0), Ptr(3,1), Ptr(2,0));
   Node(Uid(2,0), Ptr(3,1), Ptr(3,0));
@@ -524,8 +524,8 @@ bdd_eval' ((i t e)::ns': List[Node]) (tgt: Uid) (x: $\N \rightarrow \B$) =
              | Node(tgt') => bdd_eval' ns' tgt' x
    \end{lstlisting}
    \begin{lstlisting}[firstnumber=7]
-bdd_eval (val   : Bdd::Leaf)  (x: $\N \rightarrow \B$) = val
-bdd_eval (r::ns : Bdd::Nodes) (x: $\N \rightarrow \B$) = bdd_eval' r::ns r x
+bdd_eval (val   : Bdd.Leaf)  (x: $\N \rightarrow \B$) = val
+bdd_eval (r::ns : Bdd.Nodes) (x: $\N \rightarrow \B$) = bdd_eval' r::ns r x
   \end{lstlisting}
 \end{frame}
 
@@ -570,8 +570,8 @@ operator ! (p: Ptr) = match p with
                           | Node u => u
   \end{lstlisting}
   \begin{lstlisting}[firstnumber=4]
-bdd_not (val : Bdd::Leaf)  = Bdd::Leaf(!v)
-bdd_not (ns  : Bdd::Nodes) = Bdd::Nodes(map (i t e) => (i !t !e) ns)
+bdd_not (val : Bdd.Leaf)  = Bdd.Leaf(!v)
+bdd_not (ns  : Bdd.Nodes) = Bdd.Nodes(map (i t e) => (i !t !e) ns)
   \end{lstlisting}
 
   \pause
@@ -630,7 +630,7 @@ operator (a: Req) < (b: Req) = a.target < b.target
   \end{lstlisting}
 
   \begin{lemma}
-    \texttt{Req}::$<$ is a partial order.
+    \texttt{Req}.$<$ is a partial order.
   \end{lemma}
   \begin{proof}
     Trivial case distinctions.
@@ -780,7 +780,7 @@ combine_paths' (pq : PQ<Req>) (tgt : Uid) ((sacc, lacc) : $\N \times \N$) =
   \begin{lstlisting}
 forward_paths (pq : PQ<Req>) (ptr : Ptr) (s : $\N$) ($\ell$ : $\N$) =
     match s, ptr with
-        | 0, _          => (0, pq)
+        | 0, _          => (0, pq) *@{\color{gray} (* \emph{Well formed} $\not\Rightarrow$ fully connected *)}@*
         | _, Leaf False => (0, pq)
         | _, Leaf True  => (s$\cdot 2^{\vc - \ell}$, pq)
         | _, Node tgt   => (0, pq + {(tgt, s, $\ell$)})
@@ -840,7 +840,7 @@ bdd_satcount' (ns : List<Node>) (pq : PQ<Req>) (racc : $\N$) = ...
 
   \begin{lemma}
     Assume $\pq$ and $\ns$ are \emph{well formed} and
-    $\{ n.\texttt{uid}.\texttt{label} \mid n \in \ns \} \subseteq \{ 0, 1, \dots \vc-1 \}$. Then,
+    $\{ n.\texttt{uid}.\texttt{level} \mid n \in \ns \} \subseteq \{ 0, 1, \dots \vc-1 \}$. Then,
     $\texttt{bdd\_satcount}'\ \ns\ \pq\ r = r + \countPQ\ \ns\ \pq$.
   \end{lemma}
   \begin{proof}
@@ -862,9 +862,9 @@ bdd_satcount' (ns : List<Node>) (pq : PQ<Req>) (racc : $\N$) = ...
   Finally, deal with the root for a BDD $f$.
 
   \begin{lstlisting}
-bdd_satcount (False : Bdd::Leaf)  (vc : $\N$) = $0$
-bdd_satcount (True  : Bdd::Leaf)  (vc : $\N$) = $2^{\vc}$
-bdd_satcount (r::ns : Bdd::Nodes) (vc : $\N$) =
+bdd_satcount (False : Bdd.Leaf)  (vc : $\N$) = $0$
+bdd_satcount (True  : Bdd.Leaf)  (vc : $\N$) = $2^{\vc}$
+bdd_satcount (r::ns : Bdd.Nodes) (vc : $\N$) =
     let pq         = $\emptyset$
       ; (rt, pq')  = forward_paths pq  r.t 1 1
       ; (re, pq'') = forward_paths pq' r.e 1 1
@@ -883,7 +883,7 @@ bdd_satcount (  _   : Bdd)        (vc : $\N$) = ...
 
   \begin{theorem}
     If $f$ is \emph{well formed} (incl.\
-    $\{ n.\texttt{uid}.\texttt{label} \mid n \in \texttt{Bdd::Nodes}\ \ns \} \subseteq \{ 0, 1,
+    $\{ n.\texttt{uid}.\texttt{level} \mid n \in \texttt{Bdd.Nodes}\ \ns \} \subseteq \{ 0, 1,
     \dots \vc-1 \}$),\\then $\texttt{bdd\_satcount}\ f\ \vc = \#_0\ f$.
   \end{theorem}
   \begin{proof}
@@ -1038,7 +1038,7 @@ bdd_satcount (  _   : Bdd)        (vc : $\N$) = ...
 
   \only<11>{
     \begin{lemma}
-      If $x < t.\mathit{label}$, then $\texttt{bdd\_eval'}\ \ns\ t\ a[x := \B]$ $=$
+      If $x < t.\mathit{level}$, then $\texttt{bdd\_eval'}\ \ns\ t\ a[x := \B]$ $=$
       $\texttt{bdd\_eval'}\ \ns\ t\ a$.
     \end{lemma}
     \begin{proof}
