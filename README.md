@@ -16,7 +16,14 @@ seminars, workshops, and elsewhere. The compiled output can be found on the
   - **Core**: Basics of I/O-efficient BDD manipulation.
   - **ZDD**: Extension to support ZDDs.
   - **Cuts**: Upper bounds on memory demands via. graph theory.
-  - **Nested Sweeping**: Algorithm to make the multi-recursive BDD operations I/O-efficient.
+  - **Nested Sweeping**: Algorithm to make multi-variable BDD quantification I/O-efficient.
+  - **RelProd**: Relational Product for the model checking use-case.
+  - **Verified**: Sketch of how to redo all of Adiar as pure, tail-recursive, and provably correct
+    functional algorithms.
+
+- **Anatree**
+
+  An introduction to the Anagram tree (as a hidden introduction to BDDs)
 
 - **I/O-Efficient Computation**
 
