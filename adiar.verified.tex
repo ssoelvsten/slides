@@ -109,10 +109,10 @@
   \begin{figure}
     \centering
 
-    \tikzstyle{plot_adiar}=[color=red, mark=diamond*, mark size=1pt, line width=0.7pt]
-    \tikzstyle{plot_buddy}=[color=purple, mark=pentagon*, mark size=1pt, line width=0.7pt]
-    \tikzstyle{plot_cudd}=[color=orange, mark=triangle*, mark size=1pt, line width=0.7pt]
-    \tikzstyle{plot_sylvan}=[color=cyan, mark=*, mark size=1pt, line width=0.7pt]
+    \tikzstyle{plot_adiar} =[color=red,    mark=diamond*,  mark size=1pt, line width=0.7pt, mark options={color=red,    fill=red}]
+    \tikzstyle{plot_buddy} =[color=purple, mark=pentagon*, mark size=1pt, line width=0.7pt, mark options={color=purple, fill=purple}]
+    \tikzstyle{plot_cudd}  =[color=orange, mark=triangle*, mark size=1pt, line width=0.7pt, mark options={color=orange, fill=orange}]
+    \tikzstyle{plot_sylvan}=[color=cyan,   mark=*,         mark size=1pt, line width=0.7pt, mark options={color=cyan,   fill=cyan}]
 
     \begin{tikzpicture}
       \begin{axis}[%
@@ -411,7 +411,7 @@
 Uid = (level: $\N$, id: $\N$)
   \end{lstlisting}
   \begin{lstlisting}[firstnumber=2]
-operator (a: Uid) < (b: Uid) =
+operator < (a: Uid) (b: Uid) =
     a.level < b.level $\lor$ (a.level = b.level $\land$ a.id < b.id)
   \end{lstlisting}
 
@@ -420,13 +420,16 @@ Ptr = Leaf (val : $\B$)
     | Node (uid : Uid)
   \end{lstlisting}
   \begin{lstlisting}[firstnumber=5]
-operator (a: Ptr) < (b: Ptr) =
+operator < (a: Ptr) (b: Ptr) =
     lift Uid::< s.t. Ptr::Node < Ptr::Leaf
   \end{lstlisting}
 
   \begin{lemma}
     \texttt{Uid}::$<$ and \texttt{Ptr}::$<$ are total orders.
   \end{lemma}
+  \begin{proof}
+    Trival case distinctions.
+  \end{proof}
 \end{frame}
 
 \begin{frame}[t, fragile]
@@ -456,8 +459,8 @@ Example = Bdd::Nodes([
   Node(Uid(0,0), Ptr(1,0), Ptr(2,0));
   Node(Uid(1,0), Ptr(3,1), Ptr(2,0));
   Node(Uid(2,0), Ptr(3,1), Ptr(3,0));
-  Node(Uid(3,0), Ptr($\bot$), Ptr($\top$));
-  Node(Uid(3,1), Ptr($\top$), Ptr($\bot$));
+  Node(Uid(3,0), Ptr($\bot$),    Ptr($\top$));
+  Node(Uid(3,1), Ptr($\top$),    Ptr($\bot$));
 ])
       \end{lstlisting}
     \end{column}
@@ -492,7 +495,7 @@ Bdd  = Leaf  (val : $\B$)
         \item It is \emph{non-empty}.
         \item It is \emph{closed}, i.e.\ every node referred to exists.
         \item For each node, the level is strictly increasing.
-        \item It is \emph{sorted} w.r.t.\ \texttt{Node}::\texttt{Uid}.
+        \item It is \emph{sorted} w.r.t.\ \texttt{Node.i}.
         \end{enumerate}
       \end{definition}
     \end{column}
@@ -513,16 +516,16 @@ Bdd  = Leaf  (val : $\B$)
   \frametitle{bdd\_eval f x}
 
   \begin{lstlisting}
-    bdd_eval (f: Bdd) (x: $\N \rightarrow \B$)
-      let bdd_eval' (ns: List[Node]) (tgt: Uid) (x: $\N \rightarrow \B$) =
-        match ns with
-        | (i t e)::ns' =>
-          if i < tgt
-          then bdd_eval' ns' tgt x
-          else bdd_eval' ns' (if x(a) then t else e) x
-      in match f with
-         | Leaf  v     => v
-         | Nodes r::ns => bdd_eval' r::ns r x
+bdd_eval' ((i t e)::ns': List[Node]) (tgt: Uid) (x: $\N \rightarrow \B$) =
+    if i < tgt
+    then bdd_eval' ns' tgt x
+    else match (x(a) ? t : e) with
+             | Leaf(b)    => b
+             | Node(tgt') => bdd_eval' ns' tgt' x
+   \end{lstlisting}
+   \begin{lstlisting}[firstnumber=7]
+bdd_eval (val   : Bdd::Leaf)  (x: $\N \rightarrow \B$) = val
+bdd_eval (r::ns : Bdd::Nodes) (x: $\N \rightarrow \B$) = bdd_eval' r::ns r x
   \end{lstlisting}
 \end{frame}
 
@@ -562,14 +565,13 @@ Bdd  = Leaf  (val : $\B$)
   \frametitle{bdd\_not f}
 
   \begin{lstlisting}
-    operator ptr (p: Ptr) = match p with
+operator ! (p: Ptr) = match p with
                           | Leaf v => !v
                           | Node u => u
   \end{lstlisting}
   \begin{lstlisting}[firstnumber=4]
-    bdd_not (f: Bdd) = match f with
-                       | Leaf v   => !v
-                       | Nodes ns => map (i t e) => (i !t !e) ns
+bdd_not (val : Bdd::Leaf)  = Bdd::Leaf(!v)
+bdd_not (ns  : Bdd::Nodes) = Bdd::Nodes(map (i t e) => (i !t !e) ns)
   \end{lstlisting}
 
   \pause
@@ -617,7 +619,7 @@ Bdd  = Leaf  (val : $\B$)
   \frametitle{bdd\_satcount f vc}
 
   Think of a Priority Queue of \texttt{Req} as a \emph{Multiset} with (pure) functions
-  \texttt{top()} and \texttt{pop()}. Such a data structure can be implemented as a tree!
+  \texttt{top()} and \texttt{pop()}.
 
   \begin{lstlisting}
 Req = (target : Uid, sum : $\N$, levels_visited : $\N$)
@@ -628,15 +630,18 @@ operator (a: Req) < (b: Req) = a.target < b.target
   \end{lstlisting}
 
   \begin{lemma}
-    \texttt{Req}::$<$ is a total order.
+    \texttt{Req}::$<$ is a partial order.
   \end{lemma}
+  \begin{proof}
+    Trivial case distinctions.
+  \end{proof}
 \end{frame}
 
 \begin{frame}[t, fragile, noframenumbering] % hack to not increment counter
   \frametitle{bdd\_satcount f vc}
 
   Think of a Priority Queue of \texttt{Req} as a \emph{Multiset} with (pure) functions
-  \texttt{top()} and \texttt{pop()}. Such a data structure can be implemented as a tree!
+  \texttt{top()} and \texttt{pop()}.
 
   \begin{lstlisting}
 Req = (target : Uid, sum : $\N$, levels_visited : $\N$)
@@ -644,7 +649,8 @@ Req = (target : Uid, sum : $\N$, levels_visited : $\N$)
 
   \only<1-4>{
     \begin{definition}
-      $\countReq\ \ns\ (\texttt{Req}\ t\ s\ \ell) \triangleq s \cdot (\#_\ell\ \ns\ t)$ and
+      $\countReq\ \ns\ (\texttt{Req}\ t\ s\ \ell) \triangleq s \cdot (\#_\ell\ \ns\ t)$%
+      \quad and \quad%
       $\countPQ\ \ns\ \mathit{pq} \triangleq \sum_{r \in \mathit{pq}} \countReq\ \ns\ r$.
     \end{definition}
   }
@@ -671,7 +677,7 @@ Req = (target : Uid, sum : $\N$, levels_visited : $\N$)
   \only<4>{
     \begin{lemma}
       If $\forall r \in \pq : r.\texttt{target} \neq i$, then
-      $\countPQ\ (i\ t\ e)::\ns = \countPQ\ \ns\ r$
+      $\countPQ\ (i\ t\ e)::\ns\ \pq = \countPQ\ \ns\ \pq$
     \end{lemma}
     \begin{proof}
       $\countReq\ (i\ t\ e)::\ns\ r = \countReq\ \ns\ r$ by definition and some case
@@ -714,50 +720,53 @@ Req = (target : Uid, sum : $\N$, levels_visited : $\N$)
 \begin{frame}[t, fragile]
   \frametitle{bdd\_satcount f vc}
 
-  Accumulate from \pq the sum, \texttt{sacc}, and the number of visited levels, \texttt{vacc}, along
+  Accumulate from \pq\ the sum, \texttt{sacc}, and the number of visited levels, \texttt{lacc}, along
   all in-going edges to a single node with \texttt{Uid} \texttt{t}.
   \begin{lstlisting}
-combine_paths' (pq : PQ<Req>) (t : Uid) ((sacc, vacc) : $\N \times \N$) =
+combine_paths' (pq : PQ<Req>) (tgt : Uid) ((sacc, lacc) : $\N \times \N$) =
     match pq.top() with
-    | None            => (sacc, vacc, pq)
-    | Some Req t' s v => if t' = t
-                         then let acc' = (sacc$\cdot 2^{vc-\texttt{vacc}}$ + s, v)
-                                ; pq'  = pq.pop()
-                              in combine_paths' pq' t acc'
-                         else (sacc, vacc, pq)
+        | None              => (sacc, lacc, pq)
+        | Some Req tgt' s $\ell$ => if tgt' $\neq$ tgt
+                               then (sacc, lacc, pq)
+                               else let acc' = (sacc$\cdot 2^{\ell-\texttt{lacc}}$ + s, $\ell$)
+                                      ; pq'  = pq.pop()
+                                    in combine_paths' pq' tgt acc'
   \end{lstlisting}
   \begin{lstlisting}[firstnumber=9]
-combine_paths (pq : PQ<Req>) (t : Uid) =
-    combine_paths' pq t (0,0)
+combine_paths (pq : PQ<Req>) (tgt : Uid) =
+    combine_paths' pq tgt (0,0)
   \end{lstlisting}
 \end{frame}
 
 \begin{frame}[t, fragile, noframenumbering] % hack to not increment slide counter
   \frametitle{bdd\_satcount f vc}
 
-  Accumulate from \pq the sum, \texttt{sacc}, and the number of visited levels, \texttt{vacc}, along
+  Accumulate from \pq\ the sum, \texttt{sacc}, and the number of visited levels, \texttt{lacc}, along
   all in-going edges to a single node with \texttt{Uid} \texttt{t}.
   \begin{lstlisting}
-combine_paths' (pq : PQ<Req>) (t : Uid) ((sacc, vacc) : $\N \times \N$) =
+combine_paths' (pq : PQ<Req>) (tgt : Uid) ((sacc, lacc) : $\N \times \N$) =
     match pq.top() with
-    | None            => (sacc, vacc, pq)
-    | Some Req t' s v => if t' = t
-                         then let acc' = (sacc$\cdot 2^{vc-\texttt{vacc}}$ + s, v)
-                                ; pq'  = pq.pop()
-                              in combine_paths' pq' t acc'
-                         else (sacc, vacc, pq)
+        | None              => (sacc, lacc, pq)
+        | Some Req tgt' s $\ell$ => if tgt' $\neq$ tgt
+                               then (sacc, lacc, pq)
+                               else let acc' = (sacc$\cdot 2^{\ell-\texttt{lacc}}$ + s, $\ell$)
+                                      ; pq'  = pq.pop()
+                                    in combine_paths' pq' tgt acc'
   \end{lstlisting}
 
   \begin{lemma}
-    Let $(s', v', \pq') = \texttt{combine\_paths}\ \pq\ t$.
+    \footnotesize
+
+    Let $(s', \ell', \pq') = \texttt{combine\_paths}\ \pq\ t$,
     \only<1>{%
-      $\pq' = \{ r \in \pq \mid r.\texttt{target} \neq t \}$ (if $\pq \neq \emptyset$).
+      if $\forall r \in \pq : r.\texttt{target} \geq i$, then
+      $\pq' = \{ r \in \pq \mid r.\texttt{target} \neq t \}$.
     }%
     \only<2>{%
-      If $\pq$ is \emph{well formed} then $\pq'$ is too.
+      if $\pq$ is \emph{well formed} then $\pq'$ is too.
     }%
     \only<3>{%
-      Then, $\countPQ\ \ns\ \pq\ t = \countPQ\ \ns\ \pq' + s' \cdot \#_{v'} \ns\ t$.
+      then, $\countPQ\ \ns\ \pq = \countPQ\ \ns\ \pq' + s' \cdot \#_{\ell'} \ns\ t$.
     }%
   \end{lemma}
 \end{frame}
@@ -765,41 +774,44 @@ combine_paths' (pq : PQ<Req>) (t : Uid) ((sacc, vacc) : $\N \times \N$) =
 \begin{frame}[t, fragile]
   \frametitle{bdd\_satcount f vc}
 
-  Forward sum, \texttt{s}, and number of visited levels, \texttt{l}, along an out-going edge to
-  target \texttt{t}.
+  Forward sum, \texttt{s}, and number of visited levels, $\ell$, along an out-going edge to
+  target \texttt{ptr}.
 
   \begin{lstlisting}
-forward_paths (pq : PQ<Req>) (t : Ptr) (s : $\N$) (l : $\N$) =
-    match t with
-    | Leaf False => (0, pq)
-    | Leaf True  => (s$\cdot 2^{\vc - \texttt{l}}$, pq)
-    | Node tgt   => (0, pq.push((t, s, l)))
+forward_paths (pq : PQ<Req>) (ptr : Ptr) (s : $\N$) ($\ell$ : $\N$) =
+    match s, ptr with
+        | 0, _          => (0, pq)
+        | _, Leaf False => (0, pq)
+        | _, Leaf True  => (s$\cdot 2^{\vc - \texttt{l}}$, pq)
+        | _, Node tgt   => (0, pq + {(tgt, s, $\ell$)})
   \end{lstlisting}
 
-  \begin{lemma}
-    Let $(s', \pq') = \texttt{forward\_paths}\ \pq\ t\ s\ l$.
-    \only<1>{%
-      If $l < \vc$,\\then $\countPQ\ \ns\ \pq + s \cdot \#_l\ \ns\ t = \countPQ\ \ns\ \pq' + s'$.
-    }%
-    \only<2>{%
-      If $t \in \ns$ and $\pq$ is \emph{well formed},\\then $\pq'$ is also \emph{well formed}.
-    }%
-    \only<3>{%
-      If $t = \texttt{Leaf}\ \_$, then $\pq' \subseteq \pq$.\\If $t = \texttt{Node}\ u$, then
-      $\pq' \subseteq \pq + \{ (\texttt{Req}\ u\ s\ l) \}$.
-    }%
-  \end{lemma}
-  \begin{proof}
-    \only<1>{%
-      Case analysis and definition of $\countPQ$, $\countReq$, and $\#_l$.
-    }%
-    \only<2>{%
-      Case analysis and assumptions.
-    }%
-    \only<3>{%
-      Case analysis and assumptions.
-    }%
-  \end{proof}
+  \onslide<2->{
+    \begin{lemma}
+      Let $(s', \pq') = \texttt{forward\_paths}\ \pq\ t\ s\ \ell$.
+      \only<2>{%
+        If $\ell < \vc$,\\then $\countPQ\ \ns\ \pq + s \cdot \#_\ell\ \ns\ t = \countPQ\ \ns\ \pq' + s'$.
+      }%
+      \only<3>{%
+        If $t \in \ns$ and $\pq$ is \emph{well formed},\\then $\pq'$ is also \emph{well formed}.
+      }%
+      \only<4>{%
+        If $t = \texttt{Leaf}\ \_$, then $\pq' \subseteq \pq$.\\If $t = \texttt{Node}\ u$, then
+        $\pq' \subseteq \pq + \{ (\texttt{Req}\ u\ s\ \ell) \}$.
+      }%
+    \end{lemma}
+    \begin{proof}
+      \only<2>{%
+        Case analysis and definition of $\countPQ$, $\countReq$, and $\#_\ell$.
+      }%
+      \only<3>{%
+        Case analysis and assumptions.
+      }%
+      \only<4>{%
+        Case analysis and assumptions.
+      }%
+    \end{proof}
+  }
 \end{frame}
 
 \begin{frame}[t, fragile]
@@ -808,13 +820,13 @@ forward_paths (pq : PQ<Req>) (t : Ptr) (s : $\N$) (l : $\N$) =
   Accumulate all in-going edges and then forward to children (to-be processed later).
   \begin{lstlisting}
 bdd_satcount' (ns : List<Node>) (pq : PQ<Req>) (racc : $\N$) =
-    match ns , pq.top() with
-    | _ , None  => racc
-    | n::ns', _ =>
-      let (s, lvls, pq') = combine_paths pq n.i
-        ; (rt, pq'')     = forward_paths pq'  n.t s (lvls+1)
-        ; (re, pq''')    = forward_paths pq'' n.e s (lvls+1)
-      in bdd_satcount' ns' pq''' (racc + rt + re)
+    match ns    , pq.top() with
+        | _     , None  => racc
+        | n::ns', _     =>
+            let (s, $\ell$, pq') = combine_paths pq    n.i
+              ; (rt, pq'')  = forward_paths pq'  n.t s ($\ell$+1)
+              ; (re, pq''') = forward_paths pq'' n.e s ($\ell$+1)
+            in bdd_satcount' ns' pq''' (racc + rt + re)
     \end{lstlisting}
 \end{frame}
 
@@ -838,7 +850,7 @@ bdd_satcount' (ns : List<Node>) (pq : PQ<Req>) (racc : $\N$) = ...
     target) or to parse correctness through \texttt{combine\_paths} and \texttt{forward\_paths}.
 
     To this end, one needs to bound the number of visited levels in each request by \vc.
-    Furthermore, the results \texttt{r}, \texttt{r'}, and \texttt{r''} are combined with the lemmata
+    Furthermore, the results, \texttt{racc}, \texttt{rt}, and \texttt{re}, are combined with the lemmata
     for $\#_n$ (Appendix).
   \end{proof}
 \end{frame}
@@ -850,15 +862,13 @@ bdd_satcount' (ns : List<Node>) (pq : PQ<Req>) (racc : $\N$) = ...
   Finally, deal with the root for a BDD $f$.
 
   \begin{lstlisting}
-bdd_satcount (f : Bdd) (vc : $\N$) =
-    match f with
-    | Leaf  False => $0$
-    | Leaf  True  => $2^{\vc}$
-    | Nodes r::ns =>
-        let pq         = $\emptyset$
-          ; (rt, pq')  = forward_paths pq  r.t 1 1
-          ; (re, pq'') = forward_paths pq' r.e 1 1
-        in bdd_satcount' ns $\emptyset$ (rt + re)
+bdd_satcount (False : Bdd::Leaf)  (vc : $\N$) = $0$
+bdd_satcount (True  : Bdd::Leaf)  (vc : $\N$) = $2^{\vc}$
+bdd_satcount (r::ns : Bdd::Nodes) (vc : $\N$) =
+    let pq         = $\emptyset$
+      ; (rt, pq')  = forward_paths pq  r.t 1 1
+      ; (re, pq'') = forward_paths pq' r.e 1 1
+    in bdd_satcount' ns $\emptyset$ (rt + re)
   \end{lstlisting}
 \end{frame}
 
@@ -868,12 +878,12 @@ bdd_satcount (f : Bdd) (vc : $\N$) =
   Finally, deal with the root for a BDD $f$.
 
   \begin{lstlisting}
-bdd_satcount (f : Bdd) (vc : $\N$) = ...
+bdd_satcount (  _   : Bdd)        (vc : $\N$) = ...
   \end{lstlisting}
 
   \begin{theorem}
     If $f$ is \emph{well formed} (incl.\
-    $\{ n.\texttt{uid}.\texttt{label} \mid n \in \texttt{Bdd::Nodes} \ns \} \subseteq \{ 0, 1,
+    $\{ n.\texttt{uid}.\texttt{label} \mid n \in \texttt{Bdd::Nodes}\ \ns \} \subseteq \{ 0, 1,
     \dots \vc-1 \}$),\\then $\texttt{bdd\_satcount}\ f\ \vc = \#_0\ f$.
   \end{theorem}
   \begin{proof}
@@ -892,7 +902,7 @@ bdd_satcount (f : Bdd) (vc : $\N$) = ...
   \end{center}
 
   \begin{itemize}
-  \item (Some) Time-forward processing algorithms can be implemented \emph{functionally}.
+  \item Time-forward processing algorithms can be implemented \emph{functionally}.
     \begin{itemize}
     \item They are \emph{pure} and \emph{tail-recursive}.
     \item They are I/O-efficient since they only work on lists and trees [Blelloch \& Harper].
@@ -908,7 +918,7 @@ bdd_satcount (f : Bdd) (vc : $\N$) = ...
 
     \bigskip
 
-  \item One can them to be efficient both with respect to time and I/O complexity.
+  \item One can prove them to be efficient both with respect to time and I/O complexity.
   \end{itemize}
 \end{frame}
 
