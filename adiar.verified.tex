@@ -197,9 +197,9 @@
   inline ptr_uint64
   cnot(const ptr_uint64& p, const bool negate)
   {
-    const ptr_uint64::raw_type shifted_negate =
-      ((ptr_uint64::raw_type) negate) << ptr_uint64::data_shift;
-    return p.is_terminal() ? p._raw ^ shifted_negate : p._raw;
+    const uint64 shifted_negate =
+      ((uint64) negate) << ptr_uint64::data_shift;
+    return p.is_leaf() ? p._raw ^ shifted_negate : p._raw;
   }
   \end{lstlisting}
 \end{frame}
@@ -782,7 +782,7 @@ forward_paths (pq : PQ<Req>) (ptr : Ptr) (s : $\N$) ($\ell$ : $\N$) =
     match s, ptr with
         | 0, _          => (0, pq)
         | _, Leaf False => (0, pq)
-        | _, Leaf True  => (s$\cdot 2^{\vc - \texttt{l}}$, pq)
+        | _, Leaf True  => (s$\cdot 2^{\vc - \ell}$, pq)
         | _, Node tgt   => (0, pq + {(tgt, s, $\ell$)})
   \end{lstlisting}
 
