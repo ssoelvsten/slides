@@ -513,14 +513,6 @@
         % vertical 1s line
         \draw[densely dotted, opacity=0.4] (0,7.0) -- (0,-4.5);
 
-        % average (excluding timeouts)
-        \addplot[domain=0.01:1000000, samples=8, style=plot_goe] {0.8559};
-        \addplot[domain=0.01:1000000, samples=8, style=plot_qbf] {0.6181};
-
-        % average (including timeouts)
-        % \addplot[domain=0.01:1000000, samples=8, style=plot_goe] {1.6976};
-        % \addplot[domain=0.01:1000000, samples=8, style=plot_qbf] {1.5608};
-
         % data (solved)
         \addplot+ [forget plot, style=dots_goe]
         table {./data/goe.cal_solved.tex};
@@ -590,12 +582,6 @@
           % vertical 1s line
           \draw[densely dotted, opacity=0.4] (0,1.0) -- (0,-5.0);
 
-          % average
-          \addplot[domain=0.01:100000, samples=8, style=plot_goe]
-          {0.2388};
-          \addplot[domain=0.01:100000, samples=8, style=plot_qbf]
-          {0.1123};
-
           % data (solved)
           \addplot+ [forget plot, style=dots_goe] table {./data/goe.buddy.solved.tex};
           \addplot+ [forget plot, style=dots_qbf] table {./data/qbf.buddy.solved.tex};
@@ -643,12 +629,6 @@
 
           % vertical 1s line
           \draw[densely dotted, opacity=0.4] (0,1.0) -- (0,-5.0);
-
-          % average
-          \addplot[domain=0.01:100000, samples=8, style=plot_goe]
-          {0.2294};
-          \addplot[domain=0.01:100000, samples=8, style=plot_qbf]
-          {0.1344};
 
           % data (solved)
           \addplot+ [forget plot, style=dots_goe] table {./data/goe.cudd.solved.tex};
