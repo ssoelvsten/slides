@@ -24,11 +24,21 @@
 \newcommand{\triple}[3]{\ensuremath{(#1, #2, #3)}}
 \renewcommand{\arc}[3]{\ensuremath{#1 \xrightarrow{_{#2}} #3}}
 
-\tikzstyle{plot_adiar_old}=[color=black, dashed, mark=none, line width=0.5pt]
-\tikzstyle{plot_adiar}=[color=black, mark=o, mark size=1pt, line width=1pt]
-\tikzstyle{plot_buddy}=[color=red, mark=o, mark size=1pt, line width=0.7pt]
-\tikzstyle{plot_cudd}=[color=blue, mark=diamond, mark size=1pt, line width=0.7pt]
-\tikzstyle{plot_sylvan}=[color=purple, mark=square, mark size=1pt, line width=0.7pt]
+\colorlet{adiar}{red}
+\colorlet{buddy}{blue!40!purple}
+\colorlet{cudd}{orange}
+\colorlet{sylvan}{cyan}
+
+\tikzstyle{plot_adiar_old}=[color=adiar, dashed, mark=diamond*, mark size=1.6pt, line width=0.6pt,
+                            mark options={color=adiar, fill=adiar, opacity=0.6}]
+\tikzstyle{plot_adiar}=[color=adiar, mark=diamond*, mark size=2pt, line width=1pt,
+                        mark options={color=adiar, fill=adiar, opacity=0.6}]
+\tikzstyle{plot_buddy}=[color=buddy, mark=pentagon*, mark size=2pt, line width=1pt,
+                        mark options={color=buddy, fill=buddy, opacity=0.6}]
+\tikzstyle{plot_cudd}=[color=cudd, mark=triangle*, mark size=2pt, line width=1pt,
+                       mark options={color=cudd, fill=cudd, opacity=0.6}]
+\tikzstyle{plot_sylvan}=[color=sylvan, mark=*, mark size=2pt, line width=1pt,
+                         mark options={color=sylvan, fill=sylvan, opacity=0.6}]
 
 % Horizontal legends: https://tex.stackexchange.com/a/101578
 % argument #1: any options

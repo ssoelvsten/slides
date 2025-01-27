@@ -236,8 +236,14 @@
           grid style={dashed,black!20},
           ]
 
-          \tikzstyle{plot_adiar}=[color=orange, mark=o, mark size=1pt, line width=0.7pt]
-          \tikzstyle{plot_cudd}=[color=blue, mark=diamond, mark size=1pt, line width=0.7pt]
+          \colorlet{adiar}{red}
+          \colorlet{cudd}{orange}
+
+          \tikzstyle{plot_adiar}=[color=adiar, mark=diamond*, mark size=2pt, line width=1pt,
+                                  mark options={color=adiar, fill=adiar, opacity=0.6}]
+          \tikzstyle{plot_cudd}=[color=cudd, mark=triangle*, mark size=2pt, line width=1pt,
+                                 mark options={color=cudd, fill=cudd, opacity=0.6}]
+
 
           \addplot [style=plot_cudd] coordinates {
             (13, 52.881)

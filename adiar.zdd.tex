@@ -29,8 +29,14 @@
 \renewcommand{\arc}[3]{\ensuremath{#1 \xrightarrow{_{#2}} #3}}
 
 \tikzstyle{plot_instance}=[color=gray, mark=none, line width=0.7pt, densely dotted]
-\tikzstyle{plot_adiar}=[color=blue, mark=o, mark size=1.5pt, line width=1pt, solid]
-\tikzstyle{plot_cudd}=[color=red, mark=diamond, mark size=1.5pt, line width=1pt, solid]
+
+\colorlet{adiar}{red}
+\colorlet{cudd}{orange}
+
+\tikzstyle{plot_adiar}=[color=adiar, mark=diamond*, mark size=2pt, line width=1pt,
+                        mark options={color=adiar, fill=adiar, opacity=0.6}]
+\tikzstyle{plot_cudd}=[color=cudd, mark=triangle*, mark size=2pt, line width=1pt,
+                       mark options={color=cudd, fill=cudd, opacity=0.6}]
 
 % Horizontal legends: https://tex.stackexchange.com/a/101578
 % argument #1: any options
