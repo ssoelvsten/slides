@@ -1,0 +1,30 @@
+% Fig 1.4
+\node[shape=circle, draw=black, fill=white, inner sep=4.5pt] at (0, 0.3)
+(r) {$r$};
+
+\node[shape=circle, draw=black, fill=white] at ( 0, -1)
+(y) {$y$};
+
+\node[shape=circle, draw=black, fill=white] at (-1, -2)
+(g1) {$g$};
+
+\node[shape=circle, draw=black, fill=white] at ( 1, -2)
+(g2) {$g$};
+
+\node[shape=rectangle, draw=black, fill=white] at (-1,-3)
+(bot) {$0$};
+\node[shape=rectangle, draw=black, fill=white] at ( 1,-3)
+(top) {$1$};
+
+\draw[->, dashed]
+  (r)  edge (y)
+  (y)  edge (g1)
+  (g1) edge (bot)
+  (g2) edge (top)
+;
+\draw[->]
+  (r)  edge (g2)
+  (y)  edge (g2)
+  (g1) edge (top)
+  (g2) edge (bot)
+;

@@ -99,7 +99,7 @@
 
 \author{\textbf{Steffan Christ S\o lvsten}, Jaco van de Pol}
 
-\institute{\includegraphics[width=0.2\linewidth]{external/aulogo_uk_var2_black.eps}}
+\institute{\includegraphics[width=0.2\linewidth]{external/aulogo_uk_var2_black.esp}}
 
 \date{????? 202?}
 
@@ -151,39 +151,8 @@
   \begin{figure}
     \centering
 
-    % tikz/tandem.tex (but simplified)
     \begin{tikzpicture}[scale=1.25]
-      % Boxes
-      \draw[color=\getvalue{tandem_apply}, thick]
-        (0,0) rectangle ++(2,1)
-        node[pos=.5]{\large \texttt{Apply} ($\land$)}
-      ;
-      \draw[color=\getvalue{tandem_reduce}, thick]
-        (4,0) rectangle ++(2,1)
-        node[pos=.5]{\large \texttt{Reduce}}
-      ;
-
-      % Arcs
-      \draw[->, color=\getvalue{tandem_apply}, thick]
-        (-0.5,0.8) -- ++(0.5,0)
-        node[pos=-0.5]{\large $f$}
-      ;
-      \draw[->, color=\getvalue{tandem_apply}, thick]
-        (-0.5,0.2) -- ++(0.5,0)
-        node[pos=-0.5]{\large $g$}
-      ;
-
-      \draw[densely dashed, ->, thick] (2,0.5) -- ++(2,0)
-        node[pos=0.5,above]
-        {transposed}
-        node[pos=0.5,below]
-        {\texttt{arcs}}
-      ;
-
-      \draw[->, color=\getvalue{tandem_reduce}, thick]
-        (6,0.5) -- ++(0.5,0)
-        node[pos=2.0]{\large $f \land g$}
-      ;
+      \input{tikz/tandem.simple.tex}
     \end{tikzpicture}
   \end{figure}
 \end{frame}
@@ -226,40 +195,14 @@
 \begin{frame}
   \frametitle{[TACAS 25]}
 
+  \setvalue{tandem_transpose = black}
+  \setvalue{tandem_outer     = black}
+  \setvalue{tandem_inner     = black}
+
   \begin{figure}
     \centering
     \begin{tikzpicture}[scale=1.25]
-      % Boxes (outer)
-      \draw[thick] (0,0) rectangle ++(2,1)
-      node[pos=.5]{\large \texttt{Transpose}};
-
-      \draw[thick] (3.5,0) rectangle ++(2,1)
-      node[pos=.5]{\large \texttt{Reduce}};
-
-      % Arcs (outer)
-      \draw[->, thick] (-0.5,0.5) -- ++(0.5,0)
-      node[pos=-0.35]{\large $f$};
-
-      \draw[->, thick, dashed] (2,0.8) -- ++(1.5,0);
-
-      \draw[->, thick] ( 3.0,0.2) -- ++(0.5,0)
-      node[pos=-0.35]{\large $\vec{x}$};
-
-      \draw[->, thick] (5.5,0.5) -- ++(3,0)
-      node[pos=1.3]{\large $\exists \vec{x}.\ f(\vec{x})$};
-
-      % Boxes (inner)
-      \draw[thick] (6.5,-2) rectangle ++(2,1)
-      node[pos=.5]{\large \texttt{Apply} ($\lor$)};
-      \draw[thick] (3.5,-2) rectangle ++(2,1)
-      node[pos=.5]{\large \texttt{Reduce}};
-
-      % Arcs (inner)
-      \draw[->, thick] (7.5,0.5) -- ++(0,-1.5);
-
-      \draw[->, thick, dashed] (6.5,-1.5) -- ++(-1.0,0);
-
-      \draw[->, thick] (4.5,-1) -- ++(0,1);
+      \input{tikz/nested_tandem.simple.tex}
     \end{tikzpicture}
   \end{figure}
 \end{frame}
@@ -441,6 +384,8 @@
     \begin{subfigure}{0.3\linewidth}
       \centering
 
+      \qquad\quad{\tiny \texttt{GPUForwardProgress}~20a}
+
       \begin{tikzpicture}
         \begin{axis}[%
           width=1.05\linewidth, height=1.2\linewidth,
@@ -475,12 +420,12 @@
           table {./data/memory.gpufp_20_a.buddy.tex};
         \end{axis}
       \end{tikzpicture}
-
-      \caption{\tiny \texttt{GPUForwardProgress}~20a}
     \end{subfigure}
     \hspace{-30pt}
     \begin{subfigure}{0.3\linewidth}
       \centering
+
+      \quad{\tiny \texttt{SmartHome}~16}
 
       \begin{tikzpicture}
         \begin{axis}[%
@@ -516,12 +461,12 @@
           table {./data/memory.smhome_16.buddy.tex};
         \end{axis}
       \end{tikzpicture}
-
-      \caption{\tiny \texttt{SmartHome}~16}
     \end{subfigure}
     \hspace{-36.8pt}
     \begin{subfigure}{0.5\linewidth}
       \centering
+
+      \quad{\tiny \texttt{ShieldPPPs}~10a}
 
       \begin{tikzpicture}
         \begin{axis}[%
@@ -559,8 +504,6 @@
           table {./data/memory.shield_s_ppp_010_a.buddy.tex};
         \end{axis}
       \end{tikzpicture}
-
-      \caption{\tiny \texttt{ShieldPPPs}~10a}
     \end{subfigure}
 
     \smallskip

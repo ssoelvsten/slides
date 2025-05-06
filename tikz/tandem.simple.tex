@@ -1,0 +1,33 @@
+% tikz/tandem.tex (but simplified)
+
+% Boxes
+\draw[color=\getvalue{tandem_apply}, thick]
+(0,0) rectangle ++(2,1)
+node[pos=.5]{\large \texttt{Apply} ($\land$)}
+;
+\draw[color=\getvalue{tandem_reduce}, thick]
+(4,0) rectangle ++(2,1)
+node[pos=.5]{\large \texttt{Reduce}}
+;
+
+% Arcs
+\draw[->, color=\getvalue{tandem_apply}, thick]
+(-0.5,0.8) -- ++(0.5,0)
+node[pos=-0.5]{\large $f$}
+;
+\draw[->, color=\getvalue{tandem_apply}, thick]
+(-0.5,0.2) -- ++(0.5,0)
+node[pos=-0.5]{\large $g$}
+;
+
+\draw[densely dashed, ->, thick] (2,0.5) -- ++(2,0)
+node[pos=0.5,above]
+{transposed}
+node[pos=0.5,below]
+{\texttt{arcs}}
+;
+
+\draw[->, color=\getvalue{tandem_reduce}, thick]
+(6,0.5) -- ++(0.5,0)
+node[pos=2.0]{\large $f \land g$}
+;

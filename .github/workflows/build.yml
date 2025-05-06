@@ -25,6 +25,7 @@ jobs:
           adiar.core.movep22.tex
           adiar.cuts.tex
           adiar.nested_sweeping.tex
+          adiar.phd_defence.tex
           adiar.random_access.tex
           adiar.relprod.tex
           adiar.verified.tex

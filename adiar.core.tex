@@ -1167,9 +1167,9 @@
 
 \begin{frame}[plain,noframenumbering]
   % custom copy of fram/endslate.tex
-  {\Large \textbf{Steffan Christ Sølvsten}}
   \begin{columns}
-    \begin{column}{0.4\linewidth}
+    \begin{column}{0.42\linewidth}
+      {\Large \textbf{Steffan Christ S{\o}lvsten}}
       \vspace{1pt} {\hrule width\linewidth}
 
       \vspace{5pt}
@@ -1197,23 +1197,23 @@
 
       \includegraphics[width=0.5\linewidth]{external/aulogo_uk_var2_black.eps}
     \end{column}
-    \begin{column}{0.6\linewidth}
-      \begin{table}
-        \centering
-        \begin{tabular}{rll}
-          Algorithm                 & Depth-First  & Time-Forwared
-          \\ \hline \hline
-          \lstinline{bdd_pathcount} & $O(N_f)$     & $O(\sort(N_f))$
-          \\ \hline
-          \lstinline{bdd_not}       & $O(N_f)$     & $2 N_f / B$
-          \\
-          \lstinline{bdd_restrict}  & $O(N_f)$     & $O(\sort(N_f))$
-          \\
-          \lstinline{bdd_apply}     & $O(N_f N_g)$ & $O(\sort(N_f  N_g))$
-          \\ \hline
-          \lstinline{bdd_equal}     & $O(1)$       & $2 N/B$
-        \end{tabular}
-      \end{table}
+    \begin{column}{0.57\linewidth}
+      \centering
+      \begin{tabular}{rll}
+        Algorithm                 & Depth-First  & Time-Forwarding
+        \\ \hline \hline
+        \lstinline{bdd_pathcount} & $O(N_f)$     & $O(\sort(N_f))$
+        \\ \hline
+        \lstinline{bdd_not}       & $O(N_f)$     & $2 N_f / B$
+        \\
+        \lstinline{bdd_restrict}  & $O(N_f)$     & $O(\sort(N_f))$
+        \\
+        \lstinline{bdd_apply}     & $O(N_f N_g)$ & $O(\sort(N_f  N_g))$
+        \\ \hline
+        \lstinline{bdd_equal}     & $O(1)$       & $2 N/B$
+      \end{tabular}
+
+      \vspace{60pt}
     \end{column}
   \end{columns}
 
