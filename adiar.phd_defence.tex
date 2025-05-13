@@ -737,6 +737,7 @@
   \centering\Huge $\phi \land \psi$
 \end{frame}
 
+\iffalse
 % We'll do so in two steps: first we go over both inputs simultaneously
 % top-down and construct the output. The resulting BDD can potentially be made
 % smaller, which we do in the second step.
@@ -758,6 +759,7 @@
     \end{tikzpicture}
   \end{center}
 \end{frame}
+\fi
 
 % Apply Phase:
 %   Without going into too many details, the Apply an And operation takes the
@@ -956,6 +958,7 @@
   \end{columns}
 \end{frame}
 
+\iffalse
 % This is where the second phase comes in!
 \begin{frame}{$\phi \land \psi$}
   \setvalue{tandem_apply  = lightgray}
@@ -967,6 +970,7 @@
     \end{tikzpicture}
   \end{center}
 \end{frame}
+\fi
 
 % Reduce Phase:
 %   I'll spare you the technical details. But, assuming everything below some
@@ -1146,6 +1150,7 @@
   \centering\Huge $\exists x: \phi(x)$\onslide<2>{ $\equiv$ $\phi(0) \lor \phi(1)$}
 \end{frame}
 
+\iffalse
 % To do so, we build on top of the previous algorithms as follows:
 %
 %   First, we transpose the graph. That is, we reverse the edges.
@@ -1185,6 +1190,7 @@
     \end{tikzpicture}
   \end{center}
 \end{frame}
+\fi
 
 % If we take a deeper look, it looks like this:
 %   In this example, we want to quantify variables 'b' and 'd'.
