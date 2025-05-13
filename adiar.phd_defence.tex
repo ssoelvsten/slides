@@ -1855,296 +1855,6 @@
 % Right now, I'd like to go into Levelised Cuts in more detail as an example.
 \againframe{timeline}
 
-% First, let us take a look at our initial experiments from back in 2021. On
-% the x-axis you have the problem's complexity while on the y-axis you have the
-% time spent by both algorithms.
-%
-% First of all, our algorithm can compute on much larger BDDs - far beyond what
-% is possible by BuDDy's algorithms.
-%
-% But, you may also notice something quite odd: the running time of our
-% implementation seems to always use at least 1 second. This turns out to be
-% due the fact, that the external memory priority queues we use has to spend
-% time initialising its internal memory.
-%
-% This in fact means, the more memory you have, the slower our algorithms are!
-% This really should not be the case - especially in these smaller cases where
-% external memory is not needed. We could just use a simpler priority queue
-% that does not have such an overhead.
-%
-% So, the question is: when can we safely replace the expensive external memory
-% priority queue? To this end, we need to know how much stuff needs to be
-% stored in this priority queue. That is, we need to get an upper bound on its
-% size.
-\begin{frame}{Levelised Cuts}
-  \begin{figure}
-    \centering
-
-    \begin{tikzpicture}
-      \begin{axis}[%
-        width=0.88\linewidth, height=0.42\linewidth,
-        every tick label/.append style={font=\scriptsize},
-        % x-axis
-        xlabel={Problem Complexity (\# BDD nodes)},
-        xmajorgrids=true,
-        xmin=12000,
-        xmax=300000000000,
-        xmode = log,
-        % y-axis
-        ymin=0.001,
-        ymax=1000000,
-        ymode=log,
-        ytick={0.001,0.01,0.1,1,10,100,1000,10000,100000,1000000},
-        ylabel={Time (s)},
-        yminorgrids=false,
-        ymajorgrids=true,
-        grid style={dashed,black!20},
-        ]
-
-        \addplot+ [style=plot_buddy]
-        table {./data/queens_buddy_time.tex};
-
-        \only<1>{
-          \addplot+ [style=plot_adiar]
-          table {./data/queens_adiar_time.v1.0.0.tex};
-        }
-        \only<2>{
-          \addplot+ [style=plot_adiar, dashed]
-          table {./data/queens_adiar_time.v1.0.0.tex};
-
-          \addplot+ [style=plot_adiar]
-          table {./data/queens_adiar_time.v1.2.0.tex};
-        }
-      \end{axis}
-    \end{tikzpicture}
-
-    \begin{tikzpicture}
-      \only<1>{
-        \begin{customlegend}[
-          legend columns=-1,
-          legend style={draw=none,column sep=1ex},
-          legend entries={BuDDy, Adiar v1.0}
-          ]
-          \addlegendimage{style=plot_buddy}
-          \addlegendimage{style=plot_adiar}
-        \end{customlegend}
-      }
-      \only<2>{
-        \begin{customlegend}[
-          legend columns=-1,
-          legend style={draw=none,column sep=1ex},
-          legend entries={BuDDy, Adiar v1.2}
-          ]
-          \addlegendimage{style=plot_buddy}
-          \addlegendimage{style=plot_adiar}
-        \end{customlegend}
-      }
-    \end{tikzpicture}
-
-    \caption{Running Time to solve $N$-\emph{Queens} problems.}
-  \end{figure}
-\end{frame}
-
-% If we take a closer look at our algorithm, we notice something quite
-% interesting as it processes a single level of a BDD:
-%
-%   It has one (or more) priority queue(s) that contain edges to the nodes it
-%   needs to process. It retrieves all in-going edges to a node, processes the
-%   node, and then puts back into the priority queue the out-going edges to the
-%   nodes’ yet-to-be-resolved children. Then, it goes on to do the same for the
-%   next node on this level.
-%
-%   What you might notice is that the edges in the priority queue always are a
-%   cut in the output BDD: a cut between the resolved and the
-%   yet-to-be-resolved half.
-%
-%   So, our previous question about the size of the priority queues can be
-%   rephrased as a question about how large this cut could be.
-\begin{frame}{Levelised Cuts}
-  % \input{anim/2-level_cut_motivation.tex} with output arcs reversed
-
-  \begin{center}
-    \begin{tikzpicture}[scale=1.7, every node/.style={transform shape}]
-      % cut coordinates
-      \coordinate (cut_start) at (-0.7,-0.5);
-      \coordinate (cut_end_low) at (5.2,-0.5);
-      \path (cut_end_low) +(0,1) coordinate (cut_end_high);
-
-      % --------------------------------------------------------------------------
-      % before
-      \onslide<1> {
-        \node[shape = circle, draw = gray] at (0,0)  (0_before) {};
-        \draw[gray, dashed, <-] (0_before) -- ++(0.5,1.0);
-      }
-
-      % after
-      \onslide<2-> {
-        \node[shape = circle, draw = black] at (0,0) (0_after) {};
-        \draw[black, ->] (0_after) -- ++(0.5,1.0);
-
-        \draw[gray, dashed, ->] (0_after) -- ++(-0.5,-1);
-        \draw[gray, dashed, ->] (0_after) -- ++(0.5,-1);
-      }
-
-      % --------------------------------------------------------------------------
-      % before
-      \onslide<-2> {
-        \node[shape = circle, draw = gray] at (1.5,0) (1_before) {};
-        \draw[gray, dashed, <-] (1_before) -- ++(-0.5,1.0);
-        \draw[gray, dashed, <-] (1_before) -- ++(0.5, 1.0);
-      }
-
-      % after
-      \onslide<3-> {
-        \node[shape = circle, draw = black] at (1.5,0) (1_after) {};
-        \draw[black, ->] (1_after) -- ++(-0.5,1.0);
-        \draw[black, ->] (1_after) -- ++(0.5, 1.0);
-
-        \draw[gray, dashed, ->] (1_after) -- ++(-0.5,-1);
-        \draw[gray, dashed, ->] (1_after) -- ++(0.5,-1);
-      }
-
-      % cut
-      \onslide<4> {
-        \draw[thick, dashed, red]
-        (cut_start) -- ++(2.4,0.0) cos ++(0.6,0.5) sin ++(0.6,0.5) -- (cut_end_high)
-        ;
-      }
-
-      % --------------------------------------------------------------------------
-      % before
-      \onslide<-4> {
-        \node[shape = circle, draw = gray] at (3.0,0) (2_before) {};
-        \draw[gray, dashed, <-] (2_before) -- ++(-0.5,1.0);
-        \draw[gray, dashed, <-] (2_before) -- ++(0.5,1.0);
-      }
-
-      % after
-      \onslide<5-> {
-        \node[shape = circle, draw = black] at (3.0,0) (2_after) {};
-        \draw[black, ->] (2_after) -- ++(-0.5, 1.0);
-        \draw[black, ->] (2_after) -- ++(0.5, 1.0);
-
-        \draw[gray, dashed, ->] (2_after) -- ++(-0.5,-1);
-        \draw[gray, dashed, ->] (2_after) -- ++(0.5,-1);
-      }
-
-      % cut
-      \onslide<5> {
-        \draw[thick, dashed, red]
-        (cut_start) -- ++(3.8,0.0) cos ++(0.6,0.5) sin ++(0.6,0.5) -- (cut_end_high)
-        ;
-      }
-
-      % --------------------------------------------------------------------------
-      % before
-      \onslide<-5> {
-        \node[shape = circle, draw = gray] at (4.5,0) (3_before) {};
-        \draw[gray, dashed, <-] (3_before) -- ++(-0.5,1.0);
-      }
-
-      % after
-      \onslide<6-> {
-        \node[shape = circle, draw = black] at (4.5,0) (3_after) {};
-        \draw[black, ->] (3_after) -- ++(-0.5,1.0);
-
-        \draw[gray, dashed, ->] (3_after) -- ++(-0.5,-1);
-        \draw[gray, dashed, ->] (3_after) -- ++(0.5,-1);
-      }
-
-      % cut
-      \onslide<6> {
-        \draw[thick, dashed, red]
-        (cut_start) -- (cut_end_low)
-        ;
-      }
-    \end{tikzpicture}
-  \end{center}
-\end{frame}
-
-% In fact, this cut has a very particular shape which we can formalise as an
-% *i-level cut*: given that every node of a directed acyclic graph is assigned
-% some level, we restrict the cut to span at most i levels.
-%
-% In particular, a 1-level cut is a horizontal cut and a 2-level cut only
-% leaves a single level free to move between either side of the cut.
-%
-% Theorem:
-%   Now, if we have the maximum 2-level cuts of two input BDDs, then we can
-%   upper bound the output's maximum 2-level cut by their product.
-%
-%   Since it is cheaper to compute the maximum 1-level cut size, we would want
-%   to use that one to bound the 2-level cut if possible. In fact we can,
-%   because for BDDs the size of the 2-level cut can at most be three halves
-%   larger!
-%
-% The only thing missing is to compute the cut sizes in the first place...
-\begin{frame}{Levelised Cuts}
-  \begin{columns}
-    \begin{column}[b]{0.55\textwidth}
-      \begin{center}
-        \textbf{\LARGE \emph{i}-level cut}
-      \end{center}
-
-      \begin{tikzpicture}[scale=0.9]
-        \input{tikz/i-level_cut_definition.tex}
-      \end{tikzpicture}
-    \end{column}
-    \begin{column}[b]{0.44\textwidth}
-      \onslide<2-> {
-        \begin{theorem}
-          Given maximum $2$-level cuts size $C_{\phi}$ for BDD $\phi$ and
-          $C_{\psi}$ for BDD $\psi$, the maximum $2$-level cut for the BDD
-          $\phi \land \psi$ is less than or equal to $C_{\phi} \cdot C_{\psi}$.
-        \end{theorem}
-      }
-
-      \onslide<3-> {
-        \begin{lemma}
-          The maximum $2$-level cut for BDD $\phi$ is at most $\tfrac{3}{2}$
-          larger than its maximum $1$-level cut.
-        \end{lemma}
-      }
-    \end{column}
-  \end{columns}
-\end{frame}
-
-% ... luckily, it turns out that we can compute an over-approximation of the
-% i-level cuts as part of the Apply and Reduce sweeps I showed you earlier.
-%
-% By approximating the 1-level cut and multiplying it with three halves, we
-% only pay a single 1 percent in running time overhead. The accuracy on the
-% size of the priority queue is pretty good.
-%
-% We can improve the accuracy by computing the 2-level cut directly. But, in
-% practice the additional precision is not worth the additional overhead.
-\begin{frame}{Levelised Cuts}
-  \begin{table}[ht!]
-    \centering
-
-    { \LARGE
-      \begin{tabular}{lccc}
-        &               & +\faIcon{stopwatch}  & \faIcon{ruler}
-        \\
-        &               & \normalsize Overhead & \normalsize Precision
-        \\ \hline
-        1-level cut & \quad : \quad & $1.0\%$  & 69.2\%
-        \\
-        2-level cut & \quad : \quad & $3.3\%$  & 86.3\%
-      \end{tabular}
-    }
-  \end{table}
-\end{frame}
-
-% The other optimisation follow a similar theme: we make the algorithm adapt to
-% the given BDDs based on some information about its structure that is cheap to
-% compute.
-%
-% That is, we also compute some additional information next to the BDD. This
-% information provides us with some guarantees. Based on these, we can change
-% the algorithm in subtle - or not so subtle - ways.
-\againframe{timeline}
-
 % ---------------------------------------------------------------------------- %
 % Take Home Message:
 %
@@ -2535,6 +2245,140 @@
         \caption{Checking the (EPFL Benchmark) \emph{voter} circuit's single output
           gate ($\abs{N_f} = \abs{N_g} = 5.76~\text{MiB}$).}
       \end{table}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{Levelised Cuts}
+  \begin{columns}
+    \begin{column}{0.5\textwidth}
+      \centering
+
+      {
+        \begin{tikzpicture}[scale=1.1, every node/.style={transform shape}]
+          % cut coordinates
+          \coordinate (cut_start) at (-0.7,-0.5);
+          \coordinate (cut_end_low) at (5.2,-0.5);
+          \path (cut_end_low) +(0,1) coordinate (cut_end_high);
+
+          % --------------------------------------------------------------------------
+          % before
+          \onslide<1> {
+            \node[shape = circle, draw = gray] at (0,0)  (0_before) {};
+            \draw[gray, dashed, <-] (0_before) -- ++(0.5,1.0);
+          }
+
+          % after
+          \onslide<2-> {
+            \node[shape = circle, draw = black] at (0,0) (0_after) {};
+            \draw[black, ->] (0_after) -- ++(0.5,1.0);
+
+            \draw[gray, dashed, ->] (0_after) -- ++(-0.5,-1);
+            \draw[gray, dashed, ->] (0_after) -- ++(0.5,-1);
+          }
+
+          % --------------------------------------------------------------------------
+          % before
+          \onslide<-2> {
+            \node[shape = circle, draw = gray] at (1.5,0) (1_before) {};
+            \draw[gray, dashed, <-] (1_before) -- ++(-0.5,1.0);
+            \draw[gray, dashed, <-] (1_before) -- ++(0.5, 1.0);
+          }
+
+          % after
+          \onslide<3-> {
+            \node[shape = circle, draw = black] at (1.5,0) (1_after) {};
+            \draw[black, ->] (1_after) -- ++(-0.5,1.0);
+            \draw[black, ->] (1_after) -- ++(0.5, 1.0);
+
+            \draw[gray, dashed, ->] (1_after) -- ++(-0.5,-1);
+            \draw[gray, dashed, ->] (1_after) -- ++(0.5,-1);
+          }
+
+          % cut
+          \onslide<4> {
+            \draw[thick, dashed, red]
+            (cut_start) -- ++(2.4,0.0) cos ++(0.6,0.5) sin ++(0.6,0.5) -- (cut_end_high)
+            ;
+          }
+
+          % --------------------------------------------------------------------------
+          % before
+          \onslide<-4> {
+            \node[shape = circle, draw = gray] at (3.0,0) (2_before) {};
+            \draw[gray, dashed, <-] (2_before) -- ++(-0.5,1.0);
+            \draw[gray, dashed, <-] (2_before) -- ++(0.5,1.0);
+          }
+
+          % after
+          \onslide<5-> {
+            \node[shape = circle, draw = black] at (3.0,0) (2_after) {};
+            \draw[black, ->] (2_after) -- ++(-0.5, 1.0);
+            \draw[black, ->] (2_after) -- ++(0.5, 1.0);
+
+            \draw[gray, dashed, ->] (2_after) -- ++(-0.5,-1);
+            \draw[gray, dashed, ->] (2_after) -- ++(0.5,-1);
+          }
+
+          % cut
+          \onslide<5> {
+            \draw[thick, dashed, red]
+            (cut_start) -- ++(3.8,0.0) cos ++(0.6,0.5) sin ++(0.6,0.5) -- (cut_end_high)
+            ;
+          }
+
+          % --------------------------------------------------------------------------
+          % before
+          \onslide<-5> {
+            \node[shape = circle, draw = gray] at (4.5,0) (3_before) {};
+            \draw[gray, dashed, <-] (3_before) -- ++(-0.5,1.0);
+          }
+
+          % after
+          \onslide<6-> {
+            \node[shape = circle, draw = black] at (4.5,0) (3_after) {};
+            \draw[black, ->] (3_after) -- ++(-0.5,1.0);
+
+            \draw[gray, dashed, ->] (3_after) -- ++(-0.5,-1);
+            \draw[gray, dashed, ->] (3_after) -- ++(0.5,-1);
+          }
+
+          % cut
+          \onslide<6> {
+            \draw[thick, dashed, red]
+            (cut_start) -- (cut_end_low)
+            ;
+          }
+        \end{tikzpicture}
+      }
+
+      \bigskip
+
+      \begin{theorem}
+        Given maximum $2$-level cuts size $C_{\phi}$ for BDD $\phi$ and
+        $C_{\psi}$ for BDD $\psi$, the maximum $2$-level cut for the BDD
+        $\phi \land \psi$ is less than or equal to $C_{\phi} \cdot C_{\psi}$.
+      \end{theorem}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \begin{lemma}
+        The maximum $2$-level cut for BDD $\phi$ is at most $\tfrac{3}{2}$
+        larger than its maximum $1$-level cut.
+      \end{lemma}
+
+      \bigskip
+
+      { \normalsize
+        \begin{tabular}{lccc}
+          &               & +\faIcon{stopwatch}  & \faIcon{ruler}
+          \\
+          &               & \small Overhead & \small Precision
+          \\ \hline
+          1-level cut & : & $1.0\%$  & 69.2\%
+          \\
+          2-level cut & : & $3.3\%$  & 86.3\%
+        \end{tabular}
+      }
     \end{column}
   \end{columns}
 \end{frame}
