@@ -138,9 +138,12 @@
 %   - I/O Issues
 
 % Its memory is just one of many ways in which our modern electronics are
-% extremely complicated. Yet, we depend on them every day as part of (1) our
-% vehicles, (2) our hospital, and (3) our personal machines. So, it is vital
-% that these actually work as intended!
+% extremely complicated.
+
+\iffalse
+  % Yet, we depend on them every day as part of (1) our vehicles, (2) our
+  % hospital, and (3) our personal machines. So, it is vital that these
+  % actually work as intended!
 \begin{frame}
   \pause
 
@@ -150,6 +153,7 @@
     \faBus* \qquad \faStethoscope \qquad \faLaptop
   \end{center}
 \end{frame}
+\fi
 
 % In particular, if we consider a mere traffic light it should behave as shown
 % in this diagram which we call a "transition system". In reality, a traffic
@@ -174,6 +178,12 @@
 % it will be "exclusively green" in the next state. Here, you'll notice we use
 % new variables to denote the next set of states as denoted with the
 % apostrophes.
+%
+% These formulas can be combined to obtain the next set of states using the
+% relational product. This formula, given a set of states in blue, computes the
+% next set of states they can reach. The important thing is, we can explore all
+% states of a transition system only using formulas, if we can use the "and",
+% "exists, and "substitution" operators.
 \begin{frame}
   \begin{center}
     \only<1-6>{
@@ -212,6 +222,13 @@
       {\LARGE
         $\mathtt{red} \land \mathtt{yellow} \rightarrow \neg \mathtt{red}' \land \neg \mathtt{yellow}' \land \mathtt{green}'$}
     }%
+    \only<9-10>{
+      \vspace{25pt}
+      {\LARGE
+        $\mathit{RelProd}(S_{\vec{x}}, T_{\vec{x}, \vec{x}'}) \triangleq
+          (\exists \vec{x}\ .\ S_{\vec{x}} \land T_{\vec{x}, \vec{x}'})[\vec{x}' \mapsto \vec{x}]$
+      }
+    }
     \only<7->{
       \vspace{11pt}
     }
@@ -245,99 +262,31 @@
         (g)    edge (y)
         (y) -- (y_anchor) -- (r_anchor) -- (r)
       ;
-      \only<8>{
+      \onslide<8>{
         \draw[very thick, dashed, ->] (ry) edge (g);
       }
+
+      \onslide<9> {
+        \node[fill=cyan!50!white, shape=rectangle, thick, draw=black, right=of r]
+        {\texttt{red, yellow}};
+      }
+      \onslide<9-10> {
+        \node[fill=cyan!50!white, shape=rectangle, thick, draw=black, right=of ry]
+        {\texttt{green}};
+      }
+      \onslide<10> {
+        \node[fill=cyan!50!white, shape=rectangle, thick, draw=black, right=of g]
+        {\texttt{yellow}};
+    }
     \end{tikzpicture}
   \end{figure}
-\end{frame}
-
-% These formulas can be combined to obtain the next set of states as follows:
-%
-% - First, we intersect the current set of states (cyan) with the relation. So,
-%   now we only have restricted ourselves to the transitions that are currently
-%   available; that is, the edges between the cyan and orange states.
-%
-% - Second, we use existential quantification to forget about where we came
-%   from. So, now we only have the next set of states. But, they are still
-%   marked as being next set of states.
-%
-% - Finally, we rename all the next set of states to current set of states.
-%   At which point we can start over again to take another step in the
-%   transition system
-%
-% The important thing is, we can explore all states of a transition system only
-% using formulas, if we can use the "and", "exists, and "substitution" operators.
-\begin{frame}
-  \LARGE
-  \begin{equation*}
-    \mathit{RelProd}(S_{\vec{x}}, T_{\vec{x}, \vec{x}'}) \triangleq
-    (\exists \vec{x}\ .\ S_{\vec{x}} \land T_{\vec{x}, \vec{x}'})[\vec{x}' \mapsto \vec{x}]
-  \end{equation*}
-
-  \begin{center}
-    \begin{tikzpicture}
-      \node[shape=rectangle, thick, draw=black] (s1) {\phantom{S}};
-      \node[shape=rectangle, thick, draw=black, right=of s1] (s2) {\phantom{S}};
-      \node[shape=rectangle, thick, draw=black, right=of s2] (s3) {\phantom{S}};
-      \node[shape=rectangle, thick, draw=black, above=of s1] (s4) {\phantom{S}};
-      \node[shape=rectangle, thick, draw=black, right=of s4] (s5) {\phantom{S}};
-      \node[shape=rectangle, thick, draw=black, right=of s5] (s6) {\phantom{S}};
-
-      \only<2-3>{
-        \node[shape=rectangle, thick, fill=cyan, draw=black] {\phantom{S}};
-        \node[shape=rectangle, thick, fill=cyan, draw=black, right=of s1] {\phantom{S}};
-        \node[shape=rectangle, thick, fill=cyan, draw=black, above=of s1] {\phantom{S}};
-      }
-      \only<3-4>{
-        \node[shape=rectangle, thick, pattern=checkerboard, pattern color=red, draw=black] {\phantom{S}};
-        \node[shape=rectangle, thick, pattern=checkerboard, pattern color=red, draw=black, right=of s1] {\phantom{S}};
-        \node[shape=rectangle, thick, pattern=checkerboard, pattern color=red, draw=black, right=of s2] {\phantom{S}};
-        \node[shape=rectangle, thick, pattern=checkerboard, pattern color=red, draw=black, above=of s1] {\phantom{S}};
-        \node[shape=rectangle, thick, pattern=checkerboard, pattern color=red, draw=black, right=of s4] {\phantom{S}};
-      }
-      \only<5>{
-        \node[shape=rectangle, thick, fill=cyan, draw=black] {\phantom{S}};
-        \node[shape=rectangle, thick, fill=cyan, draw=black, right=of s1] {\phantom{S}};
-        \node[shape=rectangle, thick, fill=cyan, draw=black, right=of s2] {\phantom{S}};
-        \node[shape=rectangle, thick, fill=cyan, draw=black, above=of s1] {\phantom{S}};
-        \node[shape=rectangle, thick, fill=cyan, draw=black, right=of s4] {\phantom{S}};
-      }
-
-      \coordinate[above=0.5 of s4] (s4_anchor);
-      \coordinate[above=0.5 of s6] (s6_anchor);
-
-      \draw[->, thick]
-        (s1) edge (s2)
-        (s1) edge[bend left] (s4)
-        (s2) edge (s3)
-        (s2) edge (s5)
-        (s3) edge[loop right] (s3)
-        (s4) edge[bend left] (s1)
-        (s4) edge (s5)
-        (s5) edge (s6)
-        (s6) edge (s3)
-        (s6) -- (s6_anchor) -- (s4_anchor) -- (s4)
-      ;
-
-      \only<3>{
-        \draw[->, thick, red]
-          (s1) edge (s2)
-          (s1) edge[bend left] (s4)
-          (s2) edge (s3)
-          (s2) edge (s5)
-          (s4) edge[bend left] (s1)
-          (s4) edge (s5)
-        ;
-      }
-    \end{tikzpicture}
-  \end{center}
 \end{frame}
 
 % So the question now is, how can we represent and compute on these formulas
 % efficiently?
 \blankframe
 
+\iffalse
 % The naive way to do so is to enumerate all possible assignments of 0 and 1 to
 % each variable and whether the formula ends up being 1 too. But, as you can
 % see, this "truth table" ends up enumerating all states individually. So, we
@@ -367,6 +316,7 @@
     \end{tabular}
   \end{table}
 \end{frame}
+\fi
 
 % Instead, we can use something called a Binary Decision Diagram! Here, each
 % node in this diagram represents an if-then-else question on some variable. If
@@ -380,8 +330,11 @@
 \begin{frame}
   \begin{center}
     {\Large Binary Decision Diagram (BDD)}
+    \medskip
 
-    \vspace{20pt}
+    $(\mathtt{red} \vee \mathtt{yellow}) \oplus \mathtt{green}$
+
+    \bigskip
     \resizebox{0.25\textwidth}{!}{%
       \begin{tikzpicture}
         \input{tikz/bdd_example_c.all.tex}
