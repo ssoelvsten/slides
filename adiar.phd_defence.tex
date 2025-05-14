@@ -107,6 +107,10 @@
 % The memory in your computer is quite similar: it has a several types of
 % memory, some of which are short-term but fast [point at head] whereas others
 % can store data for the long term but is very slow to access [point at book].
+%
+% Its memory is just one of many ways in which our modern electronics are
+% extremely complicated. Yet, we depend on them every day.So, it is vital that
+% these actually work as intended!
 \begin{frame}
   \LARGE
   \begin{columns}
@@ -137,24 +141,6 @@
 %   - Conventional Algorithms
 %   - I/O Issues
 
-% Its memory is just one of many ways in which our modern electronics are
-% extremely complicated.
-
-\iffalse
-  % Yet, we depend on them every day as part of (1) our vehicles, (2) our
-  % hospital, and (3) our personal machines. So, it is vital that these
-  % actually work as intended!
-\begin{frame}
-  \pause
-
-  \begin{center}
-    \fontsize{42}{50}\selectfont
-
-    \faBus* \qquad \faStethoscope \qquad \faLaptop
-  \end{center}
-\end{frame}
-\fi
-
 % In particular, if we consider a mere traffic light it should behave as shown
 % in this diagram which we call a "transition system". In reality, a traffic
 % light is much more complicated; some set of consecutive states are going to
@@ -184,6 +170,9 @@
 % next set of states they can reach. The important thing is, we can explore all
 % states of a transition system only using formulas, if we can use the "and",
 % "exists, and "substitution" operators.
+%
+% So the question now is, how can we represent and compute on these formulas
+% efficiently?
 \begin{frame}
   \begin{center}
     \only<1-6>{
@@ -282,45 +271,10 @@
   \end{figure}
 \end{frame}
 
-% So the question now is, how can we represent and compute on these formulas
-% efficiently?
-\blankframe
 
-\iffalse
-% The naive way to do so is to enumerate all possible assignments of 0 and 1 to
-% each variable and whether the formula ends up being 1 too. But, as you can
-% see, this "truth table" ends up enumerating all states individually. So, we
-% have not gained anything by doing so.
-\begin{frame}
-  \begin{table}
-    \centering\large
-
-    \begin{tabular}{ccc|c|}
-      \texttt{red} & \texttt{yellow} & \texttt{green} & $(\mathtt{red} \vee \mathtt{yellow}) \oplus \mathtt{green}$
-      \\ \hline
-      $0$       & $0$          & $0$         & $0$
-      \\
-      $0$       & $0$          & $1$         & $1$
-      \\
-      $0$       & $1$          & $0$         & $1$
-      \\
-      $0$       & $1$          & $1$         & $0$
-      \\
-      $1$       & $0$          & $0$         & $1$
-      \\
-      $1$       & $0$          & $1$         & $0$
-      \\
-      $1$       & $1$          & $0$         & $1$
-      \\
-      $1$       & $1$          & $1$         & $0$
-    \end{tabular}
-  \end{table}
-\end{frame}
-\fi
-
-% Instead, we can use something called a Binary Decision Diagram! Here, each
-% node in this diagram represents an if-then-else question on some variable. If
-% the variable is 1, then you follow the solid line. If it is 0, you follow the
+% We can use something called a Binary Decision Diagram! Here, each node in
+% this diagram represents an if-then-else question on some variable. If the
+% variable is 1, then you follow the solid line. If it is 0, you follow the
 % dashed line. So for example, if it is 'red' the yellow light can be on or off
 % (so we may as well skip it) but the green light is turned off.
 %
@@ -337,7 +291,7 @@
     \bigskip
     \resizebox{0.25\textwidth}{!}{%
       \begin{tikzpicture}
-        \input{tikz/bdd_example_c.all.tex}
+        \input{tikz/bdd_example_c.tex}
       \end{tikzpicture}
     }
   \end{center}
@@ -551,8 +505,12 @@
 % priority queue to synchronise a list of all deferred computations with the
 % order in which they are to be processed!
 \begin{frame}
+  \begin{center}
+    \LARGE Time-forward Processing
+  \end{center}
+
   \begin{columns}
-    \begin{column}{0.25\textwidth}
+    \begin{column}{0.27\textwidth}
       \centering
 
       \resizebox{\textwidth}{!}{%
@@ -563,7 +521,7 @@
           \onslide<6->  { \draw[red, thick, dashed] (-1.5,-3)   -- ++(3, 0); }
 
           % Nodes
-          \input{tikz/bdd_example_c.all.tex}
+          \input{tikz/bdd_example_c.tex}
 
           % Node Highlights
           \onslide<2> {
@@ -608,7 +566,7 @@
     \begin{column}{3em}
       $\implies$
     \end{column}
-    \begin{column}{0.55\textwidth}
+    \begin{column}{0.53\textwidth}
       \centering
 
       \resizebox{\textwidth}{!}{%
@@ -690,34 +648,10 @@
   \centering\Huge $\phi \land \psi$
 \end{frame}
 
-\iffalse
-% We'll do so in two steps: first we go over both inputs simultaneously
-% top-down and construct the output. The resulting BDD can potentially be made
-% smaller, which we do in the second step.
-%
-% Let's start with taking a slightly deeper look at the first phase.
-\begin{frame}{$\phi \land \psi$}
-  \only<1>{
-    \setvalue{tandem_apply  = black}
-    \setvalue{tandem_reduce = black}
-  }
-  \only<2>{
-    \setvalue{tandem_apply  = black}
-    \setvalue{tandem_reduce = lightgray}
-  }
-
-  \begin{center}
-    \begin{tikzpicture}[scale=1.25]
-      \input{tikz/tandem.simple.tex}
-    \end{tikzpicture}
-  \end{center}
-\end{frame}
-\fi
-
 % Apply Phase:
-%   Without going into too many details, the Apply an And operation takes the
-%   two inputs on the left and sweeps through them level by level. As we go
-%   down, more and more of the output is resolved and is output on the right.
+%   On a high level, the algorithm looks as follows: we have the two inputs on
+%   the left. We sweep through them level by level. As we go down, more and
+%   more of the output is resolved and is output on the right.
 %
 %   Due to the way in which the output is created, we actually have reversed
 %   the edges. But, this actually is to our benefit as you'll see soon.
@@ -911,27 +845,13 @@
   \end{columns}
 \end{frame}
 
-\iffalse
-% This is where the second phase comes in!
-\begin{frame}{$\phi \land \psi$}
-  \setvalue{tandem_apply  = lightgray}
-  \setvalue{tandem_reduce = black}
-
-  \begin{center}
-    \begin{tikzpicture}[scale=1.25]
-      \input{tikz/tandem.simple.tex}
-    \end{tikzpicture}
-  \end{center}
-\end{frame}
-\fi
-
 % Reduce Phase:
-%   I'll spare you the technical details. But, assuming everything below some
-%   level already is minimized, then we can find all redundant and duplicate
-%   nodes on said level relatively simply. Hence, we want to process the
-%   diagram from the bottom and up. Again, we want to use time-forward
-%   processing but this time to send information up. Luckily, the edges were
-%   reversed, so they already match this flow!
+%   So, we want to clean them up. Here you should note, that -- assuming
+%   everything below some level already is minimized -- we can identify all
+%   redundant and duplicate nodes on said level relatively easily. Hence, we
+%   want to process the diagram from the bottom and up. Again, we want to use
+%   time-forward processing but this time to send information up. Luckily, the
+%   edges were reversed, so they already match this flow!
 %
 %   So, we start from the bottom, and construct level by level the minimized
 %   output.
@@ -1103,53 +1023,12 @@
   \centering\Huge $\exists x: \phi(x)$\onslide<2>{ $\equiv$ $\phi(0) \lor \phi(1)$}
 \end{frame}
 
-\iffalse
-% To do so, we build on top of the previous algorithms as follows:
-%
-%   First, we transpose the graph. That is, we reverse the edges.
-%
-%   With the edges reversed, we can forward information up rather than down.
-%   This allows us to accumulate the result from the bottom up in the *outer*
-%   Reduce sweep.
-%
-%   In particular, we accumulates the result of multiple *nested* Apply-Reduce
-%   cycles. Each cycle applies a single Or-operation to a to be quantified
-%   variable.
-\begin{frame}{$\exists \vec{x} : \phi(\vec{x})$}
-  \only<1>{
-    \setvalue{tandem_transpose = black}
-    \setvalue{tandem_outer     = black}
-    \setvalue{tandem_inner     = black}
-  }
-  \only<2>{
-    \setvalue{tandem_transpose = black}
-    \setvalue{tandem_outer     = lightgray}
-    \setvalue{tandem_inner     = lightgray}
-  }
-  \only<3>{
-    \setvalue{tandem_transpose = lightgray}
-    \setvalue{tandem_outer     = black}
-    \setvalue{tandem_inner     = lightgray}
-  }
-  \only<4>{
-    \setvalue{tandem_transpose = lightgray}
-    \setvalue{tandem_outer     = lightgray}
-    \setvalue{tandem_inner     = black}
-  }
-
-  \begin{center}
-    \begin{tikzpicture}[scale=1.25]
-      \input{tikz/nested_tandem.simple.tex}
-    \end{tikzpicture}
-  \end{center}
-\end{frame}
-\fi
-
 % If we take a deeper look, it looks like this:
 %   In this example, we want to quantify variables 'b' and 'd'.
 %
 % Transposition:
-%   On the left we have the already transposed diagram.
+%   On the left we have the already transposed diagram. Similar to before, this
+%   allows us to propagate information upwards.
 %
 % Outer Reduce:
 %   We start out as with the other Reduce by creating the output from the
@@ -1925,7 +1804,7 @@
         \begin{center}
           \resizebox{0.8\textwidth}{!}{%
             \begin{tikzpicture}
-              \input{tikz/bdd_example_c.all.tex}
+              \input{tikz/bdd_example_c.tex}
 
               % iff
               \node[] at (3, -1) {$\iff$};
