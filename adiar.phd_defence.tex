@@ -1396,11 +1396,11 @@
 
       $\Oh{N}$ time, $2 \cdot \scan{N}$ I/Os, and $N$ external space.
 
-    \item {\bf One can incorporate $\pi$ into a (succeeding) top-down \texttt{Apply} sweep.}
+    \item {\bf One can incorporate $\pi$ into a (succeeding) top-down sweep.}
 
       $\Oh{N}$ time, $0$ I/Os, and $0$ external space.
 
-    \item {\bf One can incorporate $\pi$ into a (preceeding) bottom-up \texttt{Reduce} sweep.}
+    \item {\bf One can incorporate $\pi$ into a (preceeding) bottom-up sweep.}
 
       $\Oh{n}$ time, $0$ I/Os, and $0$ external space.
     \end{itemize}
@@ -1701,27 +1701,6 @@
   \end{figure}
 \end{frame}
 
-% Now, these are of course the two coolest positive highlights. There are two
-% caviats that I want to highlight with respect to the relational product:
-%
-% 1. For this particular operation, our experiments indicate that our approach
-%    is not only 4 times slower for the medium instances but 10 times slower.
-%
-%    But, if you dig into the litterature on BDDs and look a bit deeper into
-%    our experiments, there are indications as to where to look for performance
-%    improvements.
-%
-% 2. In the case of transition systems, the size of the BDDs explode quite
-%    slowly. Now, that sounds like a good thing. But, for our algorithms this
-%    is quite bad, since this is the case where it is several orders of
-%    magnitude slower.
-%
-%    But, the thesis includes ideas for how to get the best of both worlds.
-%
-% So all in all; these are not only 'issues' but just as much 'opportunities'.
-% That's what you call 'Future Work', right?
-\blankframe
-
 % ---------------------------------------------------------------------------- %
 % Chapter 5:
 % - Motivation -> Results
@@ -1748,8 +1727,14 @@
 % large very quickly.
 %
 % In the thesis we also sketch the two most pressing future directions for this
-% project - specifically we show to fix the slow performance on smaller
-% instances and how to change the variable ordering of the BDDs.
+% project:
+% - First of all, we show how to fix the slow performance on smaller instances.
+%   This is especially important for the verification of transition systems.
+%   Here, the BDDs start out small and grow only slowly in size. But, this is
+%   exactly the kind of setting where our algorithms do% not work well.
+%
+% - Furthermore, we show how to change the variable ordering of the BDDs. This
+%   can have a major effect on their size.
 %
 % And, this work we hopefully are one step closer to verify more complex
 % critical system we rely on every day.
