@@ -411,6 +411,12 @@
 %   sure there are no deficiencies in our algorithm which will be amplified in
 %   the Quantification algorithm (and in turn the Relational Product).
 %
+%   I'll not be able to get into details on these optimisations. But, they have
+%   all followed quite an interesting theme: we make the algorithms I'll show
+%   you soon also compute some additional information about its output. We can
+%   then exploit this meta data to tweak the algorithms to improve their
+%   performance.
+%
 % Up until the quantification algorithm, everything has been published at
 % international conferences. The paper on Quantification is currently in
 % submission. The paper on the Relational Product will the least be
@@ -419,7 +425,7 @@
 % On the right, there are two additional topics that are only covered in my PhD
 % thesis [point to variable reordering]. Both of these have not (yet) been
 % implemented. So, these contributions are only theoretical.
-\begin{frame}[label=timeline]
+\begin{frame}
   \begin{center}
     \begin{tikzpicture}
       \input{tikz/timeline.tex}
@@ -1696,20 +1702,6 @@
     %         as stars.}
   \end{figure}
 \end{frame}
-
-% ---------------------------------------------------------------------------- %
-% Chapter 5:
-% - Motivation -> Results
-% - Insight
-% - Solution
-
-% So, that was the highlight of our algorithmic contributions at the top of
-% this timeline. At the bottom, we have several optimisations that have been
-% vital to obtain this level of performance.
-%
-% In many ways, these optimisations are quite similar. I'll get to how later.
-% Right now, I'd like to go into Levelised Cuts in more detail as an example.
-\againframe{timeline}
 
 % ---------------------------------------------------------------------------- %
 % Take Home Message:
