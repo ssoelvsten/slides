@@ -236,7 +236,7 @@
     expressed in a simple functional language. We show how some algorithms written in standard forms
     using just lists and trees (no arrays) and requiring no explicit memory layout or memory
     management are efficient in the model. We then describe an implementation of the language and
-    show provable bounds for mapping the cost in our model to the cost in the ideal- cache model.
+    show provable bounds for mapping the cost in our model to the cost in the ideal-cache model.
     \hl{These bound imply that purely functional programs based on lists
       and trees with no special attention to any details of memory layout can be as asymptotically
       as efficient as the carefully designed imperative I/O efficient algorithms.} For example we
@@ -578,7 +578,7 @@ bdd_not (ns  : Bdd.Nodes) = Bdd.Nodes(map (i t e) => (i !t !e) ns)
 
   \begin{theorem}
     If $f$ is \emph{well formed}, then $\forall x$: $\neg$\texttt{(bdd\_eval f x)} $\iff$
-    \texttt{bff\_eval (bdd\_not f) x}.
+    \texttt{bdd\_eval (bdd\_not f) x}.
   \end{theorem}
   \begin{proof}
     Case \texttt{Leaf} $\B$: Trivial\\
