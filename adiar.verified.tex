@@ -519,9 +519,9 @@ Bdd  = Leaf  (val : $\B$)
 bdd_eval' ((i t e)::ns': List[Node]) (tgt: Uid) (x: $\N \rightarrow \B$) =
     if i < tgt
     then bdd_eval' ns' tgt x
-    else match (x(a) ? t : e) with
-             | Leaf(b)    => b
-             | Node(tgt') => bdd_eval' ns' tgt' x
+    else case if x(a) then t else e of
+           Leaf(b)    $\rightarrow$ b
+           Node(tgt') $\rightarrow$ bdd_eval' ns' tgt' x
    \end{lstlisting}
    \begin{lstlisting}[firstnumber=7]
 bdd_eval (val   : Bdd.Leaf)  (x: $\N \rightarrow \B$) = val
@@ -565,13 +565,12 @@ bdd_eval (r::ns : Bdd.Nodes) (x: $\N \rightarrow \B$) = bdd_eval' r::ns r x
   \frametitle{bdd\_not f}
 
   \begin{lstlisting}
-operator ! (p: Ptr) = match p with
-                          | Leaf v => !v
-                          | Node u => u
+operator ! (p: Ptr) = case p of Leaf v $\rightarrow$ Leaf !v
+                                Node u $\rightarrow$ Node u
   \end{lstlisting}
   \begin{lstlisting}[firstnumber=4]
-bdd_not (val : Bdd.Leaf)  = Bdd.Leaf(!v)
-bdd_not (ns  : Bdd.Nodes) = Bdd.Nodes(map (i t e) => (i !t !e) ns)
+bdd_not (val : Bdd.Leaf)  = Bdd.Leaf !v
+bdd_not (ns  : Bdd.Nodes) = Bdd.Nodes (map $\lambda$(i t e) $\rightarrow$ (i !t !e) ns)
   \end{lstlisting}
 
   \pause
@@ -724,13 +723,13 @@ Req = (target : Uid, sum : $\N$, levels_visited : $\N$)
   all in-going edges to a single node with \texttt{Uid} \texttt{t}.
   \begin{lstlisting}
 combine_paths' (pq : PQ<Req>) (tgt : Uid) ((sacc, lacc) : $\N \times \N$) =
-    match pq.top() with
-        | None              => (sacc, lacc, pq)
-        | Some Req tgt' s $\ell$ => if tgt' $\neq$ tgt
-                               then (sacc, lacc, pq)
-                               else let acc' = (sacc$\cdot 2^{\ell-\texttt{lacc}}$ + s, $\ell$)
-                                      ; pq'  = pq.pop()
-                                    in combine_paths' pq' tgt acc'
+    case pq.top() of
+      None              $\rightarrow$ (sacc, lacc, pq)
+      Some Req tgt' s $\ell$ $\rightarrow$ if tgt' $\neq$ tgt
+                           then (sacc, lacc, pq)
+                           else let acc' = (sacc$\cdot 2^{\ell-\texttt{lacc}}$ + s, $\ell$)
+                                  ; pq'  = pq.pop()
+                                in combine_paths' pq' tgt acc'
   \end{lstlisting}
   \begin{lstlisting}[firstnumber=9]
 combine_paths (pq : PQ<Req>) (tgt : Uid) =
@@ -745,13 +744,13 @@ combine_paths (pq : PQ<Req>) (tgt : Uid) =
   all in-going edges to a single node with \texttt{Uid} \texttt{t}.
   \begin{lstlisting}
 combine_paths' (pq : PQ<Req>) (tgt : Uid) ((sacc, lacc) : $\N \times \N$) =
-    match pq.top() with
-        | None              => (sacc, lacc, pq)
-        | Some Req tgt' s $\ell$ => if tgt' $\neq$ tgt
-                               then (sacc, lacc, pq)
-                               else let acc' = (sacc$\cdot 2^{\ell-\texttt{lacc}}$ + s, $\ell$)
-                                      ; pq'  = pq.pop()
-                                    in combine_paths' pq' tgt acc'
+    case pq.top() of
+      None              $\rightarrow$ (sacc, lacc, pq)
+      Some Req tgt' s $\ell$ $\rightarrow$ if tgt' $\neq$ tgt
+                           then (sacc, lacc, pq)
+                           else let acc' = (sacc$\cdot 2^{\ell-\texttt{lacc}}$ + s, $\ell$)
+                                  ; pq'  = pq.pop()
+                                in combine_paths' pq' tgt acc'
   \end{lstlisting}
 
   \begin{lemma}
@@ -779,11 +778,11 @@ combine_paths' (pq : PQ<Req>) (tgt : Uid) ((sacc, lacc) : $\N \times \N$) =
 
   \begin{lstlisting}
 forward_paths (pq : PQ<Req>) (ptr : Ptr) (s : $\N$) ($\ell$ : $\N$) =
-    match s, ptr with
-        | 0, _          => (0, pq) *@{\color{gray} (* \emph{Well formed} $\not\Rightarrow$ fully connected *)}@*
-        | _, Leaf False => (0, pq)
-        | _, Leaf True  => (s$\cdot 2^{\vc - \ell}$, pq)
-        | _, Node tgt   => (0, pq + {(tgt, s, $\ell$)})
+    case s, ptr of
+      0, _          $\rightarrow$ (0, pq) *@{\color{gray} (* \emph{Well formed} $\not\Rightarrow$ fully connected *)}@*
+      _, Leaf False $\rightarrow$ (0, pq)
+      _, Leaf True  $\rightarrow$ (s$\cdot 2^{\vc - \ell}$, pq)
+      _, Node tgt   $\rightarrow$ (0, pq + {(tgt, s, $\ell$)})
   \end{lstlisting}
 
   \onslide<2->{
@@ -820,13 +819,13 @@ forward_paths (pq : PQ<Req>) (ptr : Ptr) (s : $\N$) ($\ell$ : $\N$) =
   Accumulate all in-going edges and then forward to children (to-be processed later).
   \begin{lstlisting}
 bdd_satcount' (ns : List<Node>) (pq : PQ<Req>) (racc : $\N$) =
-    match ns    , pq.top() with
-        | _     , None  => racc
-        | n::ns', _     =>
-            let (s, $\ell$, pq') = combine_paths pq    n.i
-              ; (rt, pq'')  = forward_paths pq'  n.t s ($\ell$+1)
-              ; (re, pq''') = forward_paths pq'' n.e s ($\ell$+1)
-            in bdd_satcount' ns' pq''' (racc + rt + re)
+    case ns    , pq.top() of
+      _     , None  $\rightarrow$ racc
+      n::ns', _     $\rightarrow$
+        let (s, $\ell$, pq') = combine_paths pq    n.i
+          ; (rt, pq'')  = forward_paths pq'  n.t s ($\ell$+1)
+          ; (re, pq''') = forward_paths pq'' n.e s ($\ell$+1)
+        in bdd_satcount' ns' pq''' (racc + rt + re)
     \end{lstlisting}
 \end{frame}
 
@@ -878,7 +877,7 @@ bdd_satcount (r::ns : Bdd.Nodes) (vc : $\N$) =
   Finally, deal with the root for a BDD $f$.
 
   \begin{lstlisting}
-bdd_satcount (  _   : Bdd)        (vc : $\N$) = ...
+bdd_satcount (  _   : Bdd)       (vc : $\N$) = ...
   \end{lstlisting}
 
   \begin{theorem}
