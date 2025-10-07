@@ -519,7 +519,7 @@ Bdd  = Leaf  (val : $\B$)
 bdd_eval' ((i t e)::ns': List[Node]) (tgt: Uid) (x: $\N \rightarrow \B$) =
     if i < tgt
     then bdd_eval' ns' tgt x
-    else case if x(a) then t else e of
+    else case if x i.level then t else e of
            Leaf(b)    $\rightarrow$ b
            Node(tgt') $\rightarrow$ bdd_eval' ns' tgt' x
    \end{lstlisting}
