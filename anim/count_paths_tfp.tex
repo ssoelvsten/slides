@@ -7,7 +7,7 @@
       \begin{subfigure}{1\linewidth}
         \centering
 
-        \begin{tikzpicture}[scale=0.9, every node/.style={transform shape}]
+        \begin{tikzpicture}[scale=1, every node/.style={transform shape}]
           \input{tikz/bdd_example_a.uid.tex}
 
           % animations
@@ -57,7 +57,7 @@
   \begin{column}{0.49\textwidth}
     \centering
 
-    \onslide<5->{ \small
+    \onslide<5->{
       \begin{tabular}{c c c}
         \onslide<5-22>{\hspace{10pt}Seek\hspace{10pt}}
         \onslide<5-22>{& \hspace{10pt}Sum\hspace{10pt}}
@@ -94,7 +94,7 @@
     \vspace{20pt}
 
     \onslide<2->{
-      {\footnotesize Priority Queue: $Q_{\mathit{count}}$:
+      {Priority Queue: $Q_{\mathit{count}}$:
 
         \begin{tabular}{rll}
           [ & \onslide<4-6>{$(\arc{(0,0)}{\top}{(1,0)}, \quad 1)$  & ,}
