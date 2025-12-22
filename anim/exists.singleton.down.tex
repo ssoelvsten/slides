@@ -1,156 +1,126 @@
-\begin{center}
-  \begin{tikzpicture}
-    % Sweepline
-    \onslide<2> { \draw[gray, thick, dashed] (-3, 0) -- (10, 0); }
-    \onslide<3> { \draw[gray, thick, dashed] (-3, -0.9) -- (10, -0.9); }
-    \onslide<4> { \draw[gray, thick, dashed] (-3, -1.85) -- (10, -1.85); }
-    \onslide<5> { \draw[gray, thick, dashed] (-3, -2.9) -- (10, -2.9); }
-    \onslide<6> { \draw[gray, thick, dashed] (-3, -3.9) -- (10, -3.9); }
-    \onslide<7> { \draw[gray, thick, dashed] (-3, -4.75) -- (10, -4.75); }
+\begin{columns}
+  \begin{column}{0.4\textwidth}
+    \centering
 
-    % INPUT
-    \draw[black, thick] (0.1,0.1)  -- (1.8,-1.85)  -- (1.5,-3.9)  -- (0.81,-5.7)
-                        (-0.1,0.1) -- (-1.8,-1.8) -- (-1.5,-3.9) -- (-0.8,-5.7);
+    \begin{tikzpicture}
+      % sweepline
+      \onslide<2> { \draw[red, thick, dashed] (-3, 0)   -- ++(5, 0); }
+      \onslide<3> { \draw[red, thick, dashed] (-3,-1.5) -- ++(5, 0); }
+      \onslide<4> { \draw[red, thick, dashed] (-3,-3)   -- ++(5, 0); }
+      \onslide<5> { \draw[red, thick, dashed] (-3,-4.5) -- ++(5, 0); }
+      \onslide<6> { \draw[red, thick, dashed] (-3,-6)   -- ++(5, 0); }
 
-    \node[shape = circle, draw = black, fill = white]
-    (i_root) {};
+      % nodes
+      \node[shape=circle, draw=black, fill=white] at ( 0, 0)
+      (0) {$x_0$};
 
-    \onslide<2-> {
-      \node[shape = circle, draw = black, fill = white,
-            below right=0.65cm and 0.1cm of i_root]
-      (i_p1) {};
+      \node[shape=circle, draw=black, fill=white] at (-1,-1.5)
+      (1) {$x_1$};
 
-      \draw[->] (i_root) edge (i_p1);
-    }
+      \node[shape=circle, draw=black, fill=white] at (-2,-3)
+      (21) {$x_2$};
+      \node[shape=circle, draw=black, fill=white] at ( 0,-3)
+      (22) {$x_2$};
 
-    \onslide<3-> {
-      \node[shape = circle, draw = black, fill = white,
-            below left=0.65cm and 0.1cm of i_p1]
-      (i_p2) {};
+      \node[shape=circle, draw=black, fill=white] at (-1,-4.5)
+      (31) {$x_3$};
+      \node[shape=circle, draw=black, fill=white] at ( 1,-4.5)
+      (32) {$x_3$};
 
-      \draw[->, dashed] (i_p1) edge (i_p2);
-    }
+      % leafs
+      \node[shape=rectangle, draw=black, fill=white] at (-1,-6)
+      (bot) {$\bot$};
+      \node[shape=rectangle, draw=black, fill=white] at ( 1,-6)
+      (top) {$\top$};
 
-    \onslide<4-> {
-      \node[shape = circle, draw = black, fill = white,
-            below right=0.7cm and 0.1cm of i_p2]
-      (i_quant) {\tiny $x_i$};
-
-      \draw[->] (i_p2) edge (i_quant);
-    }
-
-    \onslide<5-> {
-      \node[shape = circle, draw = black, fill = white,
-            below left =0.65cm and 0.1cm of i_quant]
-      (i_p3_1) {};
-
-      \node[shape = circle, draw = black, fill = white,
-            below right =0.65cm and 0.1cm of i_quant]
-      (i_p3_2) {};
-
-      \draw[->, dashed] (i_quant) edge (i_p3_1);
-
-      \draw[->] (i_quant) edge (i_p3_2);
-    }
-
-    \onslide<6-> {
-      \node[shape = circle, draw = black, fill = white,
-            below left =0.6cm and 0.2cm of i_p3_1]
-      (i_p4_1) {};
-
-      \draw[->, dashed] (i_p3_1) edge (i_p4_1);
-
-      \node[shape = circle, draw = black, fill = white,
-            below left =0.6cm and 0.2cm of i_p3_2]
-      (i_p4_2) {};
-
-      \draw[->, dashed] (i_p3_2) edge (i_p4_2);
-    }
-
-    \onslide<7-> {
-      \node[shape = rectangle, draw = black, fill = white,
-            below left=5.4cm and 0.2cm of i_root]
-      (i_p5_1) {};
-
-      \node[shape = rectangle, draw = black, fill = white,
-            below right=5.4cm and 0.2cm of i_root]
-      (i_p5_2) {};
-
-      \draw[->] (i_p4_1) edge (i_p5_1);
-      \draw[->] (i_p4_2) edge (i_p5_2);
-    }
-
-    % OUTPUT
-    \onslide<3-> {
-      \draw[black, densely dotted, thick]
-        (6.5,0.1)  -- (7.4,-0.9)
-        (6.25,0.1) -- (5.35,-0.9)
+      % arcs
+      \draw[->, dashed]
+        (0)  edge (1)
+        (1)  edge (21)
+        (21) edge[bend right=5] (bot)
+        (22) edge[bend left=10] (bot)
+        (31) edge (top)
+        (32) edge (bot)
       ;
 
-      \node[shape = circle, draw = black, fill = white,
-            right=6cm of i_root]
-      (o_root) {};
-
-      \node[shape = circle, draw = black, fill = white,
-            below right=0.65cm and 0.1cm of o_root]
-      (o_p1) {};
-
-      \draw[->, black] (o_p1) edge (o_root);
-    }
-
-    \onslide<4-> {
-      \draw[black, densely dotted, thick]
-        (7.4,-0.9)  -- (8.2,-1.85)
-        (5.35,-0.9) -- (4.55,-1.85)
+      \draw[->]
+        (0)  edge (22)
+        (1)  edge[bend left] (32)
+        (21) edge (31)
+        (22) edge[bend right=10] (top)
+        (31) edge (bot)
+        (32) edge (top)
       ;
+    \end{tikzpicture}
+  \end{column}
+  \begin{column}{3em}
+    \centering $\implies$
+  \end{column}
+  \begin{column}{0.4\textwidth}
+    \centering
 
-      \node[shape = circle, draw = black, fill = white,
-            below left=0.65cm and 0.1cm of o_p1]
-      (o_p2) {};
+    \begin{tikzpicture}
+      % sweepline
+      \onslide<2> { \draw[red, thick, dashed] (-3, 0)   -- ++(5, 0); }
+      \onslide<3> { \draw[red, thick, dashed] (-3,-1.5) -- ++(5, 0); }
+      \onslide<4> { \draw[red, thick, dashed] (-3,-3)   -- ++(5, 0); }
+      \onslide<5> { \draw[red, thick, dashed] (-3,-4.5) -- ++(5, 0); }
+      \onslide<6> { \draw[red, thick, dashed] (-3,-6)   -- ++(5, 0); }
 
-      \draw[->, black, dashed] (o_p2) edge (o_p1);
-    }
+      % levels
+      \onslide<2-> {
+        \node[shape=circle, draw=black, fill=white] at ( 0, 0)
+        (0) {$x_0$};
+      }
 
-    \onslide<5> {
-      \draw[black, dotted, thick]
-        (8.2,-1.85) -- (8.45, -2.9)
-        (4.55,-1.85) -- (4.27,-2.9)
-      ;
-    }
+      \onslide<3> {
+        \node[shape=circle, draw=gray, fill=white] at (-1,-1.5)
+        (1) {\color{gray} $\lor$};
 
-    \onslide<6-> {
-      \draw[black, densely dotted, thick]
-        (8.2,-1.85) -- (8.7, -3.9)
-        (4.55,-1.85) -- (4,-3.9)
-      ;
+        \draw[-, dotted, gray] (1) edge (0);
+      }
 
-      \node[shape = circle, draw = black, fill = white,
-            below right=1.78cm and 0.1cm of o_p2]
-       (o_p3) {};
+      \onslide<4-> {
+        \node[shape=circle, draw=black, fill=white] at (-2,-3)
+        (21) {$x_2$};
+        \node[shape=circle, draw=black, fill=white] at ( 0,-3)
+        (22) {$x_2$};
 
-       \draw[->, black] (o_p3) edge (o_p2);
-    }
+        \draw[->, dashed] (21) edge (0);
+        \draw[->] (22) edge (0);
+      }
 
-    \onslide<7-8> {
-      \draw[black, densely dotted, thick]
-        (8.7, -3.9) -- (8.6, -4.75)
-        (4,-3.9) -- (4.2,-4.75)
-      ;
+      \onslide<5-> {
+        \node[shape=circle, draw=black, fill=white] at (-1,-4.5)
+        (31) {$x_3$};
+        \node[shape=circle, draw=black, fill=white] at ( 1,-4.5)
+        (32) {$x_3$};
 
-      \node[shape = circle, draw = black, fill = white,
-            below left =0.6cm and 0.1cm of o_p3]
-      (o_p4) {};
+        \draw[->, dashed]
+          (31) edge (21)
+        ;
+        \draw[->]
+          (32) edge (21)
+        ;
+      }
 
-      \draw[->, black, dashed] (o_p4) edge (o_p3);
+      \onslide<6-7> {
+        \node[shape=rectangle, draw=black, fill=white] at (-1,-6)
+        (bot) {$\bot$};
+        \node[shape=rectangle, draw=black, fill=white] at ( 1,-6)
+        (top) {$\top$};
 
-      \node[shape = rectangle, draw = black, fill = white,
-            below =5.4cm of o_root]
-      (o_p5) {};
-
-      \draw[->, black] (o_p5) edge (o_p4);
-
-      \draw[black, densely dotted, thick] (8.6, -4.75) -- (8,-5.7)
-      (4.2,-4.75)  -- (4.8,-5.7);
-    }
-  \end{tikzpicture}
-\end{center}
+        \draw[->, dashed]
+          (bot) edge[bend right=15] (22)
+          (top) edge (31)
+          (top) edge[bend left] (32)
+        ;
+        \draw[->]
+          (bot) edge (31)
+          (top) edge[bend left=15] (22)
+          (top) edge[bend right] (32)
+        ;
+      }
+    \end{tikzpicture}
+  \end{column}
+\end{columns}

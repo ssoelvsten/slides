@@ -64,7 +64,7 @@
 
 \institute{\includegraphics[width=0.2\linewidth]{external/aulogo_uk_var2_black.eps}}
 
-\date{????? 202?}
+\date{VMCAI 2026}
 
 \begin{document}
 \titleframe
@@ -85,6 +85,15 @@
   \end{center}
 \end{frame}
 
+\begin{frame}
+  \begin{center}
+    {\LARGE\bf Graph-Based Algorithms\\for Boolean Function Manipulation}
+
+    {\large Randal E.\ Bryant}
+
+    {\footnotesize August 1986}
+  \end{center}
+\end{frame}
 
 \begin{frame}
   \frametitle{Binary Decision Diagrams}
@@ -97,7 +106,7 @@
         \begin{subfigure}{1\linewidth}
           \centering
 
-          \begin{tikzpicture}[scale=0.9, every node/.style={transform shape}]
+          \begin{tikzpicture}[scale=1, every node/.style={transform shape}]
             \input{tikz/bdd_example_a.tex}
           \end{tikzpicture}
 
@@ -107,6 +116,9 @@
     \end{column}
     \begin{column}{0.59\linewidth}
       \only<2>{
+        \begin{definition}[Lee~'58, Akers~78]
+        \end{definition}
+
         \begin{theorem}[Bryant~'86]
           Given a fixed variable order, a (Reduced Ordered) Binary Decision Diagram is a unique
           canonical representation of a Boolean function.
@@ -157,31 +169,20 @@
   \end{center}
 \end{frame}
 
-\iffalse
-\begin{frame}[fragile]
-  \frametitle{$\exists x_i.\ \phi(x_i)$}
+\begin{frame}
+  \begin{center}
+    {\LARGE\bf The I/O-Complexity of Ordered\\Binary-Decision Diagram Manipulation}
 
-  \begin{figure}
-    \centering
+    {\large Lars Arge}
 
-    \begin{lstlisting}
-  *@{\bf exists}@*($f$, $x_i$)
-      if $f = \bot \lor f = \top$
-          return $f$
-      if $f$.var = $x_i$
-          return *@{\bf or}@*($f$.low, $f$.high)
-      else
-          exi0 := *@{\bf exists}@*($f$.low, $X$)
-          exi1 := *@{\bf exists}@*($f$.high, $X$)
-          return Node { $f$.var, exi0, exi1 }
-    \end{lstlisting}
-    \caption{A recursive single-variable {\bf exists} operation.}
-  \end{figure}
+    % {\footnotesize Department of Computer Science\\University of Aarhus}
+
+    {\footnotesize August 1996}
+  \end{center}
 \end{frame}
-\fi
 
 \begin{frame}
-  \frametitle{$\exists x_i .\ \phi(x_i)$}
+  \frametitle{$\exists x_i .\ \phi$}
 
   \begin{figure}
     % tikz/tandem.tex (but simplified)
@@ -217,26 +218,28 @@
 
       \draw[->, color=black, thick]
         (6.5,0.5) -- ++(0.5,0)
-        node[pos=2.8]{\large $\exists x_i.\ \phi(x_i)$}
+        node[pos=2.1]{\large $\exists x_i.\ \phi$}
       ;
     \end{tikzpicture}
   \end{figure}
 \end{frame}
 
 \begin{frame}
-  \frametitle{$\exists x_i .\ \phi(x_i)$ : \texttt{Apply}}
+  \frametitle{$\exists x_1 .\ \phi \equiv \phi[x_1 \mapsto \bot] \lor \phi[x_i \mapsto \top]$ : \texttt{Apply}}
 
+  \centering
   \input{anim/exists.singleton.down.tex}
 \end{frame}
 
 \begin{frame}
-  \frametitle{$\exists x_i .\ \phi(x_i)$ : \texttt{Reduce}}
+  \frametitle{$\exists x_1 .\ \phi \equiv \phi[x_1 \mapsto \bot] \lor \phi[x_i \mapsto \top]$ : \texttt{Reduce}}
 
+  \centering
   \input{anim/exists.singleton.up.tex}
 \end{frame}
 
 \begin{frame}
-  \frametitle{$\exists x_i .\ \phi(x_i)$}
+  \frametitle{$\exists x_i .\ \phi$}
 
   \begin{theorem}[Lars Arge~'96]
     Given BDDs $\phi$ and $\psi$, $\phi \odot \psi$ is computible in
@@ -278,7 +281,18 @@
   \end{center}
 \end{frame}
 
-\input{fram/adiar.tex}
+\begin{frame}
+  \begin{center}
+    {\bf {\huge Adiar:}\\{\LARGE Binary Decision Diagrams in External Memory}}
+
+    {\large Steffan Christ Sølvsten, Jaco Van de Pol,\\Anna Blume Jakobsen,
+      and Mathias Weller Berg Thomasen}
+
+    % {\footnotesize Department of Computer Science\\Aarhus University}
+
+    {\footnotesize March 2022}
+  \end{center}
+\end{frame}
 
 \begin{frame}[plain,noframenumbering]
   % Let's go to the present day, where:
@@ -290,35 +304,24 @@
 
     \vspace{10pt}
 
-    {\Huge 2025}
+    {\Huge 2026}
   \end{center}
 \end{frame}
 
-\iffalse
-\begin{frame}[fragile]
-  \frametitle{$\exists \vec{x}.\ \phi(\vec{x})$}
+\begin{frame}
+  \begin{center}
+    {\LARGE\bf Multi-variable Quantification of BDDs\\in External Memory using Nested Sweeping}
 
-  \begin{figure}
-    \centering
+    {\large Steffan Christ Sølvsten and Jaco Van de Pol}
 
-    \begin{lstlisting}
-  *@{\bf exists}@*($f$, $X$)
-      if $f = \bot \lor f = \top$
-          return $f$
-      exi0 := *@{\bf exists}@*($f$.low, $X$)
-      exi1 := *@{\bf exists}@*($f$.high, $X$)
-      if $f$.var $\in$ $X$
-          return *@{\bf or}@*(exi0, exi1)
-      else
-          return Node { $f$.var, exi0, exi1 }
-    \end{lstlisting}
-    \caption{A (nested) recursive multi-variable {\bf exists} operation.}
-  \end{figure}
+    % {\footnotesize Department of Computer Science\\Aarhus University}
+
+    {\footnotesize January 2026}
+  \end{center}
 \end{frame}
-\fi
 
 \begin{frame}
-  \frametitle{$\exists \vec{x}.\ \phi(\vec{x})$}
+  \frametitle{$\exists \vec{x}.\ \phi$}
 
   \begin{figure}
     \centering
@@ -339,7 +342,7 @@
       node[pos=-0.55]{\large $\vec{x}$};
 
       \draw[->, thick] (5.5,0.5) -- ++(3,0)
-      node[pos=1.3]{\large $\exists \vec{x}.\ \phi(\vec{x})$};
+      node[pos=1.2]{\large $\exists \vec{x}.\ \phi$};
 
       % Boxes (inner)
       \draw[thick] (6.5,-2) rectangle ++(2,1)
@@ -358,17 +361,17 @@
 \end{frame}
 
 \begin{frame}
-  \frametitle{$\exists \vec{x}.\ \phi(\vec{x})$}
+  \frametitle{$\exists \vec{x}.\ \phi$ \quad $\vec{x} = \{ x_0, x_1 \}$}
 
   \input{anim/exists.nested_sweeping.tex}
 \end{frame}
 
 \begin{frame}
-  \frametitle{$\exists \vec{x}.\ \phi(\vec{x})$}
+  \frametitle{$\exists \vec{x}.\ \phi$}
 
   \Large
 
-  {\bf Theorem~(S{\o}lvsten et al.~'25)}
+  {\bf Theorem~(S{\o}lvsten et al.~'26)}
 
   Given BDD $\phi$, the quantification of $k$ variables, $\exists \vec{x}.\ \phi(\vec{x})$,\\
   is computible in $\Oh{\sort{\abs{\phi}^{2^k}}}$ time and I/Os.
@@ -761,7 +764,7 @@
       node[pos=-0.55]{\large $\vec{x}$};
 
       \draw[->, thick, gray] (5.5,0.5) -- ++(3,0)
-      node[pos=1.3]{\large $\exists \vec{x}.\ \phi(\vec{x})$};
+      node[pos=1.2]{\large $\exists \vec{x}.\ \phi$};
 
       % Boxes (inner)
       \draw[thick, gray] (6.5,-2) rectangle ++(2,1)
