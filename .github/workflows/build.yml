@@ -35,6 +35,7 @@ jobs:
           mlightdp.tex
           one_minute_madness.tex
           ssmg-complexity.tex
+          troupe.nomadic.prisc26.tex
 
     - name: 'remove external/*.pdf files'
       run: |
