@@ -29,66 +29,14 @@
 \titleframe
 
 % ------------------------------------------------------------------------------
-% Troupe Programming Language
-% - Decentralized Programming
-% - Information Flow Control
-% - Dynamically Typed
-
-\begin{frame}[fragile]
-  \frametitle{Troupe Programming Language}
-
-  \begin{columns}
-    \begin{column}{0.45\linewidth}
-      {\color{gray} \texttt{(* Alice.trp *)}}
-      \begin{lstlisting}[language=troupe]
-let val msg = "Hello, Bob!"
-    fun f () = print msg
-in send (@bob, f)
-end
-      \end{lstlisting}
-
-      {\color{gray} \texttt{(* Bob.trp *)}}
-      \begin{lstlisting}[language=troupe, firstnumber=last]
-let fun loop () =
-    receive [hn f => spawn f];
-    loop ()
-in loop ()
-end
-      \end{lstlisting}
-    \end{column}
-    \begin{column}{0.55\linewidth}
-      \begin{itemize}
-      \item \textbf{Decentralized Programming}
-
-        For creation of open self-organizing distributed systems.
-
-      \item \textbf{Information Flow Control}
-
-        Ensures secret information is not by accident shared with nor affected
-        by unwanted parties.
-
-      \item \textbf{Dynamically Typed}
-
-        Permits the dynamic behaviour needed by a truly open and updateable.
-        system
-
-      \end{itemize}
-    \end{column}
-  \end{columns}
-\end{frame}
-
-% ------------------------------------------------------------------------------
 % Goal: Resource Reuse
 % - Fig 1: The goal, Demo
 % - Fig 2 (confidentiality): Demo
 % - Fig 3 (integrity): Demo
 % - Fig 4 (availability): Demo
 
-\blankframe
-\section{Goal:\\Resource Reuse}
-
 \begin{frame}
-  \frametitle{Resource Reuse}
+  \frametitle{\quad}%{Resource Reuse}
 
   \begin{figure}
     \centering\huge
@@ -150,7 +98,7 @@ end
     \centering\huge
 
     \begin{tikzpicture}
-      \node[shape=rectangle, draw=black] at (0, 1)
+      \node[shape=rectangle, draw=black] at (0, 0)
       (A) {\texttt{A}};
 
       \node[shape=rectangle, draw=black] at (8, 0)
@@ -158,16 +106,16 @@ end
 
       \draw[->]
         % A -> B
-        (A) edge[bend left=10] node[above] {$g_{\texttt{auth}}$} (B)
+        (A) edge node[above] {$f_{\texttt{auth}}$} (B)
       ;
 
       \onslide<2-> {
-        \node[shape=rectangle, draw=black] at (0,-1)
+        \node[shape=rectangle, draw=black] at (0,-1.71)
         (M) {\texttt{M}};
 
         \draw[->]
           % C -> B
-          (M) edge[bend right=10] node[below] {$f_{\texttt{auth}}$} (B)
+          (M) edge[bend right=10] node[below] {$g_{\texttt{auth}}$} (B)
         ;
       }
     \end{tikzpicture}
@@ -240,33 +188,108 @@ end
   \end{figure}
 \end{frame}
 
+\begin{frame}[plain,noframenumbering]
+  \begin{center}
+    \onslide<1->{
+      \LARGE\bf
+
+      How can one add IFC-aware caching?
+    }
+
+    \onslide<2->{
+      \large\bf
+
+      (with the minimal extension to the TCB\dots)
+    }
+  \end{center}
+\end{frame}
+
+% ------------------------------------------------------------------------------
+% Troupe Programming Language
+% - Decentralized Programming
+% - Information Flow Control
+% - Dynamically Typed
+
+\begin{frame}[fragile]
+  \frametitle{Troupe Programming Language}
+
+  \begin{columns}
+    \begin{column}{0.45\linewidth}
+      {\color{gray} \texttt{(* Alice.trp *)}}
+      \begin{lstlisting}[language=troupe]
+let val msg = "Hello, Bob!"
+    fun f () = print msg
+in send (@bob, f)
+end
+      \end{lstlisting}
+
+      {\color{gray} \texttt{(* Bob.trp *)}}
+      \begin{lstlisting}[language=troupe, firstnumber=last]
+let fun loop () =
+    receive [hn f => spawn f];
+    loop ()
+in loop ()
+end
+      \end{lstlisting}
+    \end{column}
+    \begin{column}{0.55\linewidth}
+      \begin{itemize}
+      \item \textbf{Decentralized Programming}
+
+        For creation of open self-organizing distributed systems.
+
+      \item \textbf{Information Flow Control}
+
+        Ensures secret information is not by accident shared with nor affected
+        by unwanted parties.
+
+      \item \textbf{Dynamically Typed}
+
+        Permits the dynamic behaviour needed by a truly open and updateable.
+        system
+
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}
+
 % ------------------------------------------------------------------------------
 % Requirements on the HashMap
 % - Implemented in Troupe itself (to not increase the TCB)
-%   => Expand Figure 1
+% => Expand Figure 1
 % - Mitigate timing attacks
-%   => Use Troupe's sandboxing feature
+% => Use Troupe's sandboxing feature
 % - Resources should be (carefully) reused across levels
-%   => secret key-value pairs should not taint public ones
-%   => level-based view of history
+% => secret key-value pairs should not taint public ones
+% => level-based view of history
 
-\section{Requirements on Peer-To-Peer Cache}
+\begin{frame}[plain,noframenumbering]
+  \begin{center}
+    {
+      \LARGE\bf\only<2->{\color{lightgray}}
+
+      How can one add IFC-aware caching?
+    }
+
+    {
+      \large\bf
+
+      (with the minimal extension to the TCB\dots)
+    }
+  \end{center}
+\end{frame}
 
 \begin{frame}
-  \frametitle{Requirement: Small Trusted-Computing Base (TCB)}
-
-  % TODO: colours
-
   \begin{figure}
     \centering
 
     \begin{tikzpicture}
       \node at (1,1) {\Large Alice};
       \node[draw=black] at (0,0) (A-cache) {\texttt{cache.trp}};
-      \node[draw=black] at (2,0) (A-p2p) {\texttt{p2p.ts}};
+      \node[draw=black] at (2,0) (A-p2p) {\texttt{TCB}};
 
       \node at (8,1) {\Large Bob};
-      \node[draw=black] at (7,0) (B-p2p) {\texttt{p2p.ts}};
+      \node[draw=black] at (7,0) (B-p2p) {\texttt{TCB}};
       \node[draw=black] at (9,0) (B-cache) {\texttt{cache.trp}};
 
       \draw[->, thick]
@@ -320,104 +343,218 @@ end
 \end{frame}
 
 \begin{frame}
-  \frametitle{Requirement: Small Trusted-Computing Base (TCB)}
-
-  Changes to the Troupe runtime (\texttt{.ts}):
+  \frametitle{Changes to Runtime (TCB)}
   \begin{itemize}
-  \item To \texttt{deserialize}, (1) extract references (2) deserialize given
-    (all) dependencies.
-  \item During \texttt{serialize}, identify values to be referenced by hash.
-  \item Extend \texttt{Scheduler} to run Troupe code from \texttt{p2p} thread.
-  \end{itemize}
+  \item {\bf Peer-to-peer layer:}
 
-  Addition of the cache in Troupe itself (\texttt{.trp}):
-  \begin{itemize}
-  \item Design a \texttt{HashMap} and \texttt{Map} in Troupe's standard library.
+    Extend with \texttt{miss} and \texttt{miss reply} messages. Unlike
+    \texttt{send}, these should always be sent by value.
+
+  \item {\bf Serialization:}
+
+    Dependency resolution requires introspection of function closures.
+    \begin{itemize}
+    \item During \texttt{serialize}, identify (sub)values to be referenced by hash.
+
+    \item To \texttt{deserialize}, (1) extract references (2) deserialize given
+      (all resolved) dependencies.
+    \end{itemize}
+
+  \item {\bf Hash:}
+
+    Hashing Troupe values requires introspection of function closures and definition.
+
+  \item {\bf Scheduler:}
+
+    Extend to run Troupe code from the peer-to-peer layer.
   \end{itemize}
 \end{frame}
 
 \begin{frame}[t]
-  \frametitle{Requirement on \texttt{HashMap} (Level View)}
+  \frametitle{Additions in Troupe: IFC-aware \texttt{Map} / \texttt{HashMap}}
 
+  \vspace{-20pt}
+  \begin{align*}
+      A &\xrightarrow{m@\{A\}} B \implies \text{miss}
+    & C &\xrightarrow{m@\{\}}  B \implies \text{miss}
+    & D &\xrightarrow{m@\{D\}} B \onslide<2->{\implies \text{hit}}
+  \end{align*}
+
+  \onslide<3->{
+    \textbf{``Specification'':}
+
+    \vspace{-6pt} An IFC-aware \texttt{HashMap} is a single data structure with
+    public and secret key-value pairs which provides a IFC-aware projections of
+    its \texttt{insert} and \texttt{remove}\footnotemark\ history:
+
+    \vspace{-20pt}
+    \begin{center}
+      \begin{tabular}{cccccc}
+        \texttt{i($x \mapsto 1$)@\{\}}, &
+        \only<4,6>{\color{lightgray}}\texttt{i($x \mapsto 2$)@\{A\}}, &
+        \only<4-5>{\color{lightgray}}\texttt{i($y \mapsto 3$)@\{B\}}, &
+        \only<4-5>{\color{lightgray}}\texttt{r($x$)@\{B\}}, &
+        \texttt{i($y \mapsto 4$)@\{\}}, &
+        $\dots$
+      \end{tabular}
+
+      \vspace{-5pt}
+      \onslide<4->{
+        $\shortparallel$\,\,\\
+        {\large
+          \only<1-4>{\texttt{@\{\}}\\}%
+          \only<5>{\texttt{@\{A\}}\\}%
+          \only<6>{\texttt{@\{B\}}\\}
+        }
+        $\Downarrow$
+      }
+
+      \vspace{-5pt}
+      \onslide<4->{ \large
+        \only<1-4>{\texttt{[$x \mapsto 1$@\{\}, $y \mapsto 4$@\{\}] @\{\}}}%
+        \only<5>{\texttt{[$x \mapsto 2$@\{A\}, $y \mapsto 4$@\{\}] @\{A\}}}%
+        \only<6>{\texttt{[$y \mapsto 4$@\{\}] @\{B\}}}%
+      }
+    \end{center}
+  }
+
+  \footnotetext[1]<3->{In this particular use case, we actually only need public
+    ( \texttt{@\{\}} ) \texttt{remove} operations.}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Additions in Troupe: caching layer}
+
+  55~LOC to orchestrate a \texttt{HashMap} instance:
   \begin{itemize}
-  \item A single data structure with public and secret key-value pairs.
+  \item Hash function for \texttt{HashMap}: SHA256 \texttt{string}
+    $\rightarrow$ 32-bit \texttt{int}. (4~LOC)
 
-  \item Secret key-value pairs should not taint public ones.
+  \item Define and spawn a local Troupe thread to manage the \texttt{HashMap}
+    instance. (26~LOC)
 
-  \item Key-value pairs should be accessible across levels.
-    \only<1-4> {
-    \begin{align*}
-      \onslide<2-4> {
-      A &\xrightarrow{m@\{A\}} B \implies \text{miss},
-      }
-      \onslide<3-4> {
-      & C &\xrightarrow{m@\{\}}  B \implies \text{miss},
-      }
-      \onslide<4-4> {
-      & D &\xrightarrow{m@\{D\}} B \implies \text{hit}
-      }
-    \end{align*}
-    }
+  \item Define and export \texttt{set} and \texttt{get} functions callable
+    from the TCB. (8~LOC)
+
+  \item Wrapper on \texttt{sandbox} builtin. (14~LOC)
   \end{itemize}
 
-  \only<5-> {
-    \vspace{-20pt}
-  \begin{center}
-    \begin{tabular}{cccccc}
-      \texttt{i($x \mapsto 1$)@\{\}}, &
-      \only<6,8>{\color{lightgray}}\texttt{i($x \mapsto 2$)@\{A\}}, &
-      \only<6-7>{\color{lightgray}}\texttt{i($y \mapsto 3$)@\{B\}}, &
-      \only<6-7>{\color{lightgray}}\texttt{d($x$)@\{B\}}, &
-      \texttt{i($y \mapsto 4$)@\{\}}, &
-      $\dots$
-    \end{tabular}
+  Initialize twice in the TCB for the sender and receiver caches.
+\end{frame}
 
-    \onslide<6->{
-      $\shortparallel$\,\,\\
-      {\large
-        \only<6>{\texttt{@\{\}}}%
-        \only<7>{\texttt{@\{A\}}}%
-        \only<8>{\texttt{@\{B\}}}
-      }\\
-      $\Downarrow$
-    }
+\begin{frame}[fragile]
+  \frametitle{Additions in Troupe: caching layer (timing-attack mitigation)}
 
-    { \large
-      \only<5>{\phantom{\texttt{[$y$] @\{\}}}}%
-      \only<6>{\texttt{[$x \mapsto 1$@\{\}, $y \mapsto 4$@\{\}] @\{\}}}%
-      \only<7>{\texttt{[$x \mapsto 2$@\{A\}, $y \mapsto 4$@\{\}] @\{A\}}}%
-      \only<8>{\texttt{[$y \mapsto 4$@\{\}] @\{B\}}}%
-    }
-  \end{center}
-  }
+  Troupe provides the \texttt{{\color{blue} sandbox}($f$, $t$)} operation to run
+  $f$ for $t$~ms and either return the result, an error, or a continuation. In
+  practice, $t = 1$~ms seems to suffice.
+
+  \begin{lstlisting}[language=troupe, numbers=none]
+(* cache.trp : line 48 *)
+val (m, t') =
+    *@sandbox'@* (fn () => HashMap.insert  m auth k v) t m
+  \end{lstlisting}
+  \begin{lstlisting}[language=troupe, numbers=none]
+(* cache.trp : line 57 *)
+val (v, t') =
+    *@sandbox'@* (fn () => HashMap.findAll m auth k)   t []
+  \end{lstlisting}
 \end{frame}
 
 % ------------------------------------------------------------------------------
-% Design of the HashMap
-% - Current prototype is with a Hash Array-Mapped Trie
-%   - But, this requires too much declassification
-% - Alternative (meta?) data structure
-%   - IFC levels are first class
-%      => prior to the key, sort on (partially ordered) access levels
-%   - Buffers to ensure (amortized?) cheap `insert` and `delete`
-%   - But, how to keep `find` cheaply if the same key at different levels is not
-%     centralized?
 
-\section{Design of the \texttt{HashMap}}
+\begin{frame}[plain,noframenumbering]
+  \begin{center}
+    {
+      \LARGE\bf
+
+      How can one add IFC-aware caching?
+    }
+
+    \onslide<2->{
+      \large\bf
+
+      By piggy-backing on the IFC-aware language itself!
+    }
+  \end{center}
+\end{frame}
+
+\begin{frame}[plain,noframenumbering]
+  % custom copy of fram/endslate.tex
+  \begin{columns}
+    \begin{column}{0.43\linewidth}
+      {\Large \textbf{Steffan Christ S{\o}lvsten}}
+      \vspace{1pt} {\hrule width\linewidth}
+
+      \vspace{5pt}
+
+      \begin{itemize}
+      \item[\faIcon{envelope}] \mailto{soelvsten@cs.au.dk}
+      \item[\faIcon{globe}] \href{https://ssoelvsten.github.io}{ssoelvsten.github.io}
+      \end{itemize}
+
+      \vspace{10pt}
+
+      {\Large \textbf{Troupe}}
+      \vspace{1pt} {\hrule width\linewidth}
+
+      \vspace{5pt}
+
+      \begin{itemize}
+      \item[\faIcon{code}]
+        \href{http://github.com/TroupeLang/troupe}{github.com/TroupeLang/troupe}
+      \end{itemize}
+
+      \vspace{10pt}
+
+      \includegraphics[width=0.5\linewidth]{external/aulogo_uk_var2_black.eps}
+    \end{column}
+    \begin{column}{0.56\linewidth}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% ------------------------------------------------------------------------------
+\blankframe
+
+\begin{frame}
+  \frametitle{Troupe's Threat Model}
+
+  Uses several security mechanisms, inspired by Jif, Fabric, and FLAM.
+  \begin{itemize}
+  \item Progress-sensitive Dynamic Information-flow Control
+  \item Sandboxing
+  \item Capabilities
+  \end{itemize}
+
+  Few assumptions on adversaries! But, we do ignore:
+  \begin{itemize}
+  \item Network Traffic Analysis. Can be avoided with via recent methods.\\
+    {\footnotesize (Blaabjerg and Askarov '21 \& '23, Nelson, Pagnin, and Askarov '24)}
+  \item Timing-channels. Can be avoided via \texttt{sandbox}ing and predictive
+    mitigation.
+    {\footnotesize (Zhang, Askarov, Myers '10 \& '12)}
+  \end{itemize}
+\end{frame}
+
+% ------------------------------------------------------------------------------
+\blankframe
 
 \begin{frame}
   \frametitle{Design of the \texttt{HashMap}}
 
   \begin{columns}
     \begin{column}{0.5\linewidth}
-      Current prototype uses a Hash Array Mapped Trie (HAMT).
+      Current prototype uses a Hash Array Mapped Trie (HAMT) with 200~LOC.
 
       \bigskip
 
-      Only 3 declassifications per \texttt{insert}, \texttt{remove}, \texttt{find}:
+      Only 3 declassifications per \texttt{insert}, \texttt{remove},
+      \texttt{find} (--24/+55~LOC):
       \begin{itemize}
-      \item \texttt{hash key} and \texttt{hash bucket} to not raise \texttt{pc} and taint the entire
-        trie.
+      \item \texttt{hash key} and \texttt{hash bucket} to not raise \texttt{pc}
+        and taint the entire trie.
       \item The \texttt{bucket} list (but not its content).
       \end{itemize}
 
@@ -477,7 +614,7 @@ end
 
     \begin{columns}
     \begin{column}{0.5\linewidth}
-      \textbf{Future Work:} Meta data structure for \texttt{HashMap} and \texttt{Map}?
+      Can we design a meta data structure for \texttt{HashMap} and \texttt{Map}?
 
       \begin{itemize}
       \item<2-> Guard taint of secret sub structures with (first-class) IFC labels.
@@ -488,7 +625,7 @@ end
       \item<5-> Use time-stamps to identify latest key-value from sub structures.
       \end{itemize}
 
-      But, does this make \texttt{find} too slow?
+      \onslide<5->{But, does this make \texttt{find} too slow?}
     \end{column}
     \begin{column}{0.49\linewidth}
       \centering
@@ -525,80 +662,6 @@ end
       \end{tikzpicture}
     \end{column}
   \end{columns}
-\end{frame}
-
-\begin{frame}[plain,noframenumbering]
-  % custom copy of fram/endslate.tex
-  \begin{columns}
-    \begin{column}{0.43\linewidth}
-      {\Large \textbf{Steffan Christ S{\o}lvsten}}
-      \vspace{1pt} {\hrule width\linewidth}
-
-      \vspace{5pt}
-
-      \begin{itemize}
-      \item[\faIcon{envelope}] \mailto{soelvsten@cs.au.dk}
-      \item[\faIcon{globe}] \href{https://ssoelvsten.github.io}{ssoelvsten.github.io}
-      \end{itemize}
-
-      \vspace{10pt}
-
-      {\Large \textbf{Troupe}}
-      \vspace{1pt} {\hrule width\linewidth}
-
-      \vspace{5pt}
-
-      \begin{itemize}
-      \item[\faIcon{code}]
-        \href{http://github.com/TroupeLang/troupe}{github.com/TroupeLang/troupe}
-      \end{itemize}
-
-      \vspace{10pt}
-
-      \includegraphics[width=0.5\linewidth]{external/aulogo_uk_var2_black.eps}
-    \end{column}
-    \begin{column}{0.56\linewidth}
-    \end{column}
-  \end{columns}
-\end{frame}
-
-\begin{frame}
-  \frametitle{Troupe's Threat Model}
-
-  Uses several security mechanisms, inspired by Jif, Fabric, and FLAM.
-  \begin{itemize}
-  \item Progress-sensitive Dynamic Information-flow Control
-  \item Sandboxing
-  \item Capabilities
-  \end{itemize}
-
-  Few assumptions on adversaries! But, we do ignore:
-  \begin{itemize}
-  \item Network Traffic Analysis. Can be avoided with via recent methods.\\
-    {\footnotesize (Blaabjerg and Askarov '21 \& '23, Nelson, Pagnin, and Askarov '24)}
-  \item Timing-channels. Can be avoided via \texttt{sandbox}ing and predictive
-    mitigation.
-    {\footnotesize (Zhang, Askarov, Myers '10 \& '12)}
-  \end{itemize}
-\end{frame}
-
-\begin{frame}[fragile]
-  \frametitle{Mitigate Timing Attacks}
-
-  Troupe provides the \texttt{{\color{blue} sandbox}($f$, $t$)} to run $f$ for
-  $t$~ms and either return the result, an error, or a continuation. In practice,
-  $t = 1$~ms is never exceeded.
-
-  \begin{lstlisting}[language=troupe, numbers=none]
-(* cache.trp : line 48 *)
-val (m, t') =
-    *@sandbox'@* (fn () => HashMap.insert  m auth k v) t m
-  \end{lstlisting}
-  \begin{lstlisting}[language=troupe, numbers=none]
-(* cache.trp : line 57 *)
-val (v, t') =
-    *@sandbox'@* (fn () => HashMap.findAll m auth k)   t []
-  \end{lstlisting}
 \end{frame}
 
 \end{document}
