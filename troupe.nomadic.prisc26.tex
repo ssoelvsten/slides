@@ -52,16 +52,22 @@
         \draw[->] (A) edge node[above] {$f_M$} (B);
       }
       \onslide<3-> {
-        \draw[->] (A) edge[bend right] node[below] {$g_M$} (B);
+        \draw[->] (A) edge[bend right=30] node[below] {$g_M$} (B);
       }
     \end{tikzpicture}
 
-    \caption{Figure 1: Resource Reuse.}
+    % \caption{Figure 1: Resource Reuse\footnotemark.}
   \end{figure}
+
+  \footnotetext[1]{Using hashes to uniquely identify an object/class is called a
+    ``\textit{fingerprint}'' in\\O. Arden et al. \textit{Sharing Mobile Code
+      Securely with Information Flow Control} (2012).}
+
+  \setcounter{footnote}{1}
 \end{frame}
 
 \begin{frame}
-  \frametitle{Leaky Cache (Confidentiality)}
+  \frametitle{Leaky Cache\footnotemark\ (Confidentiality)}
 
   \begin{figure}
     \centering\huge
@@ -83,16 +89,20 @@
         \draw[->] (C) edge node[above, pos=.1] {*} node[above] {$f_M$} (B);
       }
       \onslide<4-> {
-        \draw[->] (A) edge[bend right] node[below] {$g_M$} (B);
+        \draw[->] (A) edge[bend right=30] node[below] {$g_M$} (B);
       }
     \end{tikzpicture}
 
-    \caption{Figure 2: Leaky Cache.}
+    % \caption{Figure 2: Leaky Cache.}
   \end{figure}
+
+  \footnotetext[2]{This behaviour is a remanifestation of a ``\textit{read
+      channel}'' in\\O. Arden et al. \textit{Sharing Mobile Code Securely with
+      Information Flow Control} (2012).}
 \end{frame}
 
 \begin{frame}
-  \frametitle{Replay Dependency (Integrity)}
+  \frametitle{Replay Dependency\footnotemark\ (Integrity)}
 
   \begin{figure}
     \centering\huge
@@ -110,22 +120,26 @@
       ;
 
       \onslide<2-> {
-        \node[shape=rectangle, draw=black] at (0,-1.71)
+        \node[shape=rectangle, draw=black] at (0,-1.69)
         (M) {\texttt{M}};
 
         \draw[->]
           % C -> B
-          (M) edge[bend right=10] node[below] {$g_{\texttt{auth}}$} (B)
+          (M) edge[bend right=10] node[below right] {$g_{\texttt{auth}}$} (B)
         ;
       }
     \end{tikzpicture}
 
-    \caption{Figure 3: Replay Dependency.}
+    %\caption{Figure 3: Replay Dependency.}
   \end{figure}
+
+  \footnotetext[3]{This behavior is a remanifestation of the
+    ``\textit{provider-bounded authority}'' requirement in\\O. Arden et al.
+    \textit{Sharing Mobile Code Securely with Information Flow Control} (2012).}
 \end{frame}
 
 \begin{frame}
-  \frametitle{Chain of Death (Availability)}
+  \frametitle{Chain of Death\footnotemark\ (Availability)}
 
   \begin{figure}
     \centering\huge
@@ -184,8 +198,13 @@
       }
     \end{tikzpicture}
 
-    \caption{Figure 4: Chain of Death.}
+    %\caption{Figure 4: Chain of Death.}
   \end{figure}
+
+  \footnotetext[4]{This is related to the notion of ``\textit{mobile code}''. But,
+    code should outlive its origin, i.e.\ be \textit{nomadic}.\\O. Arden et
+    al. \textit{Sharing Mobile Code Securely with Information Flow Control}
+    (2012)}
 \end{frame}
 
 \begin{frame}[plain,noframenumbering]
@@ -338,7 +357,7 @@ end
       }
     \end{tikzpicture}
 
-    \caption{Figure 1*: Resource Reuse}
+    % \caption{Figure 1*: Resource Reuse}
   \end{figure}
 \end{frame}
 
@@ -418,8 +437,8 @@ end
     \end{center}
   }
 
-  \footnotetext[1]<3->{In this particular use case, we actually only need public
-    ( \texttt{@\{\}} ) \texttt{remove} operations.}
+  \footnotetext[\number\value{footnote}]<3->{For this particular use case, we
+    actually only need public ( \texttt{@\{\}} ) \texttt{remove} operations.}
 \end{frame}
 
 
