@@ -49,10 +49,10 @@
       (B) {\texttt{B}};
 
       \onslide<2-> {
-        \draw[->] (A) edge node[above] {$f_M$} (B);
+        \draw[-latex, thick] (A) edge node[above] {$f_M$} (B);
       }
       \onslide<3-> {
-        \draw[->] (A) edge[bend right=30] node[below] {$g_M$} (B);
+        \draw[-latex, thick] (A) edge[bend right=30] node[below] {$g_M$} (B);
       }
     \end{tikzpicture}
 
@@ -83,13 +83,13 @@
       (B) {\texttt{B}};
 
       \onslide<2-> {
-        \draw[->] (A) edge node[above] {$f_M$} (C);
+        \draw[-latex, thick] (A) edge node[above] {$f_M$} (C);
       }
       \onslide<3-> {
-        \draw[->] (C) edge node[above, pos=.1] {*} node[above] {$f_M$} (B);
+        \draw[-latex, thick] (C) edge node[above, pos=.1] {*} node[above] {$f_M$} (B);
       }
       \onslide<4-> {
-        \draw[->] (A) edge[bend right=30] node[below] {$g_M$} (B);
+        \draw[-latex, thick] (A) edge[bend right=30] node[below] {$g_M$} (B);
       }
     \end{tikzpicture}
 
@@ -114,7 +114,7 @@
       \node[shape=rectangle, draw=black] at (8, 0)
       (B) {\texttt{B}};
 
-      \draw[->]
+      \draw[-latex, thick]
         % A -> B
         (A) edge node[above] {$f_{\texttt{auth}}$} (B)
       ;
@@ -123,7 +123,7 @@
         \node[shape=rectangle, draw=black] at (0,-1.69)
         (M) {\texttt{M}};
 
-        \draw[->]
+        \draw[-latex, thick]
           % C -> B
           (M) edge[bend right=10] node[below right] {$g_{\texttt{auth}}$} (B)
         ;
@@ -153,11 +153,11 @@
         \node[shape=rectangle, draw=black] at (1, 0)
         (B) {\texttt{B}};
 
-        \draw[->] (A) edge[bend left] node[above] {$f_M$} (B);
+        \draw[-latex, thick] (A) edge[bend left] node[above] {$f_M$} (B);
       }
       \onslide<3-> {
         \node at (0, -1) (Ad) {$\dagger$};
-        \draw[->] (A) edge[dashed] (Ad);
+        \draw[-latex, thick] (A) edge[dashed] (Ad);
       }
 
       % B -> C
@@ -165,11 +165,11 @@
         \node[shape=rectangle, draw=black] at (2, 0)
         (C) {\texttt{C}};
 
-        \draw[->] (B) edge[bend left] node[above] {$f_M$} (C);
+        \draw[-latex, thick] (B) edge[bend left] node[above] {$f_M$} (C);
       }
       \onslide<5-> {
         \node at (1, -1) (Bd) {$\dagger$};
-        \draw[->] (B) edge[dashed] (Bd);
+        \draw[-latex, thick] (B) edge[dashed] (Bd);
       }
 
       % C -> ...
@@ -177,11 +177,11 @@
         \node at (3, 0)   (D) {\quad};
         \node at (3.5, 0) (dots) {\dots};
 
-        \draw[->] (C) edge[bend left] node[above] {$f_M$} (D);
+        \draw[-latex, thick] (C) edge[bend left] node[above] {$f_M$} (D);
       }
       \onslide<7-> {
         \node at (2, -1) (Cd) {$\dagger$};
-        \draw[->] (C) edge[dashed] (Cd);
+        \draw[-latex, thick] (C) edge[dashed] (Cd);
       }
 
       % ... -> Z
@@ -190,11 +190,11 @@
         \node[shape=rectangle, draw=black] at (5, 0)
         (Z) {\texttt{Z}};
 
-        \draw[->] (Y) edge[bend left] node[above] {$f_M$} (Z);
+        \draw[-latex, thick] (Y) edge[bend left] node[above] {$f_M$} (Z);
       }
       \onslide<9-> {
         \node at (5, -1) (Zf) {$f_M()$};
-        \draw[->] (Z) edge[dashed] (Zf);
+        \draw[-latex, thick] (Z) edge[dashed] (Zf);
       }
     \end{tikzpicture}
 
@@ -311,7 +311,7 @@ end
       \node[draw=black] at (7,0) (B-p2p) {\texttt{TCB}};
       \node[draw=black] at (9,0) (B-cache) {\texttt{cache.trp}};
 
-      \draw[->, thick]
+      \draw[-latex, thick, lightgray]
         (A-cache) edge ++(0,-4)
         (A-p2p)   edge ++(0,-4)
         (B-p2p)   edge ++(0,-4)
@@ -323,23 +323,23 @@ end
         \node[shape=circle, draw=black, fill=white] (AC-1) at (0,-1) {};
         \node[shape=circle, draw=black, fill=white] (BP-1) at (7,-1) {};
 
-        \draw[->] (AP-1) edge node[above] {\texttt{set}} (AC-1);
-        \draw[->] (AP-1) edge node[above] {\texttt{send}} (BP-1);
+        \draw[-latex, thick] (AP-1) edge node[above] {\texttt{set}} (AC-1);
+        \draw[-latex, thick] (AP-1) edge node[above] {\texttt{send}} (BP-1);
       }
       \onslide<3-> {
         \node[shape=circle, draw=black, fill=white] (BC-1) at (9,-1) {};
-        \draw[->] (BP-1) edge node[above] {\texttt{get}} (BC-1);
+        \draw[-latex, thick] (BP-1) edge node[above] {\texttt{get}} (BC-1);
       }
       \onslide<4-> {
         \node[shape=circle, draw=black, fill=white] (BC-2) at (9,-2) {};
         \node[shape=circle, draw=black, fill=white] (BP-2) at (7,-2) {};
 
-        \draw[->] (BC-2) edge (BP-2);
+        \draw[-latex, thick] (BC-2) edge (BP-2);
       }
       \onslide<5-> {
         \node[shape=circle, draw=black, fill=white] (AP-2) at (2,-2) {};
 
-        \draw[->] (BP-2) edge node[above] {\texttt{miss}} (AP-2);
+        \draw[-latex, thick] (BP-2) edge node[above] {\texttt{miss}} (AP-2);
       }
       \onslide<6-> {
         \node[shape=circle, draw=black, fill=white] (AC-2) at (0,-2) {};
@@ -347,13 +347,13 @@ end
         \node[shape=circle, draw=black, fill=white] (AP-3) at (2,-3) {};
         \node[shape=circle, draw=black, fill=white] (BP-3) at (7,-3) {};
 
-        \draw[->] (AP-2) edge node[above] {\texttt{get}} (AC-2);
-        \draw[->] (AC-3) edge (AP-3);
-        \draw[->] (AP-3) edge node[above] {\texttt{miss reply}} (BP-3);
+        \draw[-latex, thick] (AP-2) edge node[above] {\texttt{get}} (AC-2);
+        \draw[-latex, thick] (AC-3) edge (AP-3);
+        \draw[-latex, thick] (AP-3) edge node[above] {\texttt{miss reply}} (BP-3);
       }
       \onslide<7-> {
         \node[shape=circle, draw=black, fill=white] (BC-3) at (9,-3) {};
-        \draw[->] (BP-3) edge node[above] {\texttt{set}} (BC-3);
+        \draw[-latex, thick] (BP-3) edge node[above] {\texttt{set}} (BC-3);
       }
     \end{tikzpicture}
 
@@ -608,7 +608,7 @@ val (v, t') =
 
         \node[trie_leaf] at (4.2, -1.0) (n5_l2) {$[ \#010 \mapsto 7 ]$};
 
-        \draw[->, dashed, thick]
+        \draw[-latex, dashed, thick]
           (n1) edge node[below left] {0} (n4)
           (n2) edge[bend right=15] node[below left] {0} (n2_l1)
           (n3) edge[bend right=15] node[below left] {0} (n3_l2)
@@ -616,7 +616,7 @@ val (v, t') =
           (n5) edge[bend right=15] node[below left] {0} (n5_l2)
         ;
 
-        \draw[->, thick]
+        \draw[-latex, thick]
           (n1) edge node[above left] {1} (n2)
           (n2) edge node[above left] {1} (n3)
           (n3) edge[bend left=15] node[above left] {1} (n3_l1)
@@ -656,11 +656,11 @@ val (v, t') =
         \node at (0, 2) (p) {};
         \node[tree_node] at (0,   0) (n) {$@\{\dots\}$};
 
-        \draw[->, thick] (p) edge (n);
+        \draw[-latex, thick] (p) edge (n);
 
         \onslide<2-> {
           \node at (3, 0) (ds) {$\dots$};
-          \draw[->, dashed, thick]
+          \draw[-latex, dashed, thick]
             (n) edge node[above] {$=$} (ds)
           ;
         }
@@ -669,7 +669,7 @@ val (v, t') =
           \node[tree_node] at ( 0, -3) (nNc) {};
           \node[tree_node] at ( 2, -3) (nGt) {};
 
-          \draw[->, thick]
+          \draw[-latex, thick]
             (n) edge node[above left]  {$\sqsubset$} (nLt)
             (n) edge node[above right] {$\sqsupset$} (nGt)
             (n) edge node[above left] {$?$} (nNc)
