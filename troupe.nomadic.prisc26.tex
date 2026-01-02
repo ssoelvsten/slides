@@ -454,25 +454,44 @@ end
     actually only need public ( \texttt{@\{\}} ) \texttt{remove} operations.}
 \end{frame}
 
-
-\begin{frame}
+\begin{frame}[fragile]
   \frametitle{Additions in Troupe: caching layer}
 
-  55~LOC to orchestrate a \texttt{HashMap} instance:
+  Peer-to-per cache is only a tiny Troupe program that orchestrate a
+  \texttt{HashMap} instance.
   \begin{itemize}
-  \item Hash function for \texttt{HashMap}: SHA256 \texttt{string}
+  \item<2-> Hash function for \texttt{HashMap}: SHA256 \texttt{string}
     $\rightarrow$ 32-bit \texttt{int}. (4~LOC)
 
-  \item Define and spawn a local Troupe thread to manage the \texttt{HashMap}
-    instance. (26~LOC)
+  \item<3-> Define and spawn a local Troupe thread that owns the
+    \texttt{HashMap}. (21~LOC)
 
-  \item Define and export \texttt{set} and \texttt{get} functions callable
+    \begin{columns}
+      \begin{column}{0.5\linewidth}
+        \begin{lstlisting}[language=troupe, numbers=none]
+    (* cache.trp : line 48 *)
+    HashMap.insert m auth k v
+        \end{lstlisting}
+      \end{column}
+      \begin{column}{0.5\linewidth}
+        \begin{lstlisting}[language=troupe, numbers=none]
+(* cache.trp : line 57 *)
+HashMap.findAll m auth k
+        \end{lstlisting}
+      \end{column}
+    \end{columns}
+
+  \item<4-> Define and export \texttt{set} and \texttt{get} functions callable
     from the TCB. (8~LOC)
 
-  \item Wrapper on \texttt{sandbox} builtin. (14~LOC)
-  \end{itemize}
+    \begin{lstlisting}[language=troupe, numbers=none]
+(** API Setter function *)
+fun set (key, value) = send(thread, (SET, key, value))
+    \end{lstlisting}
 
-  Initialize twice in the TCB for the sender and receiver caches.
+  \item<5-> Use \texttt{sandbox} builtin to guard against timing attacks.
+    (14~LOC)
+  \end{itemize}
 \end{frame}
 
 \begin{frame}[fragile]
@@ -484,12 +503,12 @@ end
 
   \begin{lstlisting}[language=troupe, numbers=none]
 (* cache.trp : line 48 *)
-val (m, t') =
+    val (m', t') =
     *@sandbox'@* (fn () => HashMap.insert  m auth k v) t m
   \end{lstlisting}
   \begin{lstlisting}[language=troupe, numbers=none]
 (* cache.trp : line 57 *)
-val (v, t') =
+    val (v, t') =
     *@sandbox'@* (fn () => HashMap.findAll m auth k)   t []
   \end{lstlisting}
 \end{frame}
