@@ -494,25 +494,6 @@ fun set (key, value) = send(thread, (SET, key, value))
   \end{itemize}
 \end{frame}
 
-\begin{frame}[fragile]
-  \frametitle{Additions in Troupe: caching layer (timing-attack mitigation)}
-
-  Troupe provides the \texttt{{\color{blue} sandbox}($f$, $t$)} operation to run
-  $f$ for $t$~ms and either return the result, an error, or a continuation. In
-  practice, $t = 1$~ms seems to suffice.
-
-  \begin{lstlisting}[language=troupe, numbers=none]
-(* cache.trp : line 48 *)
-    val (m', t') =
-    *@sandbox'@* (fn () => HashMap.insert  m auth k v) t m
-  \end{lstlisting}
-  \begin{lstlisting}[language=troupe, numbers=none]
-(* cache.trp : line 57 *)
-    val (v, t') =
-    *@sandbox'@* (fn () => HashMap.findAll m auth k)   t []
-  \end{lstlisting}
-\end{frame}
-
 % ------------------------------------------------------------------------------
 
 \begin{frame}[plain,noframenumbering]
@@ -587,6 +568,28 @@ fun set (key, value) = send(thread, (SET, key, value))
     mitigation.
     {\footnotesize (Zhang, Askarov, Myers '10 \& '12)}
   \end{itemize}
+\end{frame}
+
+% ------------------------------------------------------------------------------
+\blankframe
+
+\begin{frame}[fragile]
+  \frametitle{Additions in Troupe: caching layer (timing-attack mitigation)}
+
+  Troupe provides the \texttt{{\color{blue} sandbox}($f$, $t$)} operation to run
+  $f$ for $t$~ms and either return the result, an error, or a continuation. In
+  practice, $t = 1$~ms seems to suffice.
+
+  \begin{lstlisting}[language=troupe, numbers=none]
+(* cache.trp : line 48 *)
+val (m', t') =
+    *@sandbox'@* (fn () => HashMap.insert  m auth k v) t m
+  \end{lstlisting}
+  \begin{lstlisting}[language=troupe, numbers=none]
+(* cache.trp : line 57 *)
+val (v, t') =
+    *@sandbox'@* (fn () => HashMap.findAll m auth k)   t []
+  \end{lstlisting}
 \end{frame}
 
 % ------------------------------------------------------------------------------
