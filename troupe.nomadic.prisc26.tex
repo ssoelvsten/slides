@@ -49,10 +49,10 @@
       (B) {\texttt{B}};
 
       \onslide<2-> {
-        \draw[-latex, thick] (A) edge node[above] {$f_M$} (B);
+        \draw[-latex, thick] (A) edge node[above] {$f_{\texttt{Mod}}$} (B);
       }
       \onslide<3-> {
-        \draw[-latex, thick] (A) edge[bend right=30] node[below] {$g_M$} (B);
+        \draw[-latex, thick] (A) edge[bend right=30] node[below] {$g_{\texttt{Mod}}$} (B);
       }
     \end{tikzpicture}
 
@@ -83,13 +83,13 @@
       (B) {\texttt{B}};
 
       \onslide<2-> {
-        \draw[-latex, thick] (A) edge node[above] {$f_M$} (C);
+        \draw[-latex, thick] (A) edge node[above] {$f_{\texttt{Mod}}$} (C);
       }
       \onslide<3-> {
-        \draw[-latex, thick] (C) edge node[above, pos=.1] {*} node[above] {$f_M$} (B);
+        \draw[-latex, thick] (C) edge node[above, pos=.1] {*} node[above] {$f_{\texttt{Mod}}$} (B);
       }
       \onslide<4-> {
-        \draw[-latex, thick] (A) edge[bend right=30] node[below] {$g_M$} (B);
+        \draw[-latex, thick] (A) edge[bend right=30] node[below] {$g_{\texttt{Mod}}$} (B);
       }
     \end{tikzpicture}
 
@@ -153,7 +153,7 @@
         \node[shape=rectangle, draw=black] at (1, 0)
         (B) {\texttt{B}};
 
-        \draw[-latex, thick] (A) edge[bend left] node[above] {$f_M$} (B);
+        \draw[-latex, thick] (A) edge[bend left] node[above] {$f_{\texttt{Mod}}$} (B);
       }
       \onslide<3-> {
         \node at (0, -1) (Ad) {$\dagger$};
@@ -165,7 +165,7 @@
         \node[shape=rectangle, draw=black] at (2, 0)
         (C) {\texttt{C}};
 
-        \draw[-latex, thick] (B) edge[bend left] node[above] {$f_M$} (C);
+        \draw[-latex, thick] (B) edge[bend left] node[above] {$f_{\texttt{Mod}}$} (C);
       }
       \onslide<5-> {
         \node at (1, -1) (Bd) {$\dagger$};
@@ -177,7 +177,7 @@
         \node at (3, 0)   (D) {\quad};
         \node at (3.5, 0) (dots) {\dots};
 
-        \draw[-latex, thick] (C) edge[bend left] node[above] {$f_M$} (D);
+        \draw[-latex, thick] (C) edge[bend left] node[above] {$f_{\texttt{Mod}}$} (D);
       }
       \onslide<7-> {
         \node at (2, -1) (Cd) {$\dagger$};
@@ -190,10 +190,10 @@
         \node[shape=rectangle, draw=black] at (5, 0)
         (Z) {\texttt{Z}};
 
-        \draw[-latex, thick] (Y) edge[bend left] node[above] {$f_M$} (Z);
+        \draw[-latex, thick] (Y) edge[bend left] node[above] {$f_{\texttt{Mod}}$} (Z);
       }
       \onslide<9-> {
-        \node at (5, -1) (Zf) {$f_M()$};
+        \node at (5, -1) (Zf) {$f_{\texttt{Mod}}()$};
         \draw[-latex, thick] (Z) edge[dashed] (Zf);
       }
     \end{tikzpicture}
