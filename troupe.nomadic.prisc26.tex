@@ -30,10 +30,19 @@
 
 % ------------------------------------------------------------------------------
 % Goal: Resource Reuse
+% - Catchy setup
 % - Fig 1: The goal, Demo
 % - Fig 2 (confidentiality): Demo
 % - Fig 3 (integrity): Demo
 % - Fig 4 (availability): Demo
+
+\begin{frame}[plain,noframenumbering]
+  \begin{center}
+    \LARGE\bf
+
+    Module systems are difficult!
+  \end{center}
+\end{frame}
 
 \begin{frame}
   \frametitle{\quad}%{Resource Reuse}
@@ -64,6 +73,18 @@
       Securely with Information Flow Control} (2012).}
 
   \setcounter{footnote}{1}
+\end{frame}
+
+\begin{frame}[plain,noframenumbering]
+  \begin{center}
+    {
+      \LARGE\bf
+      How can one add a \only<1>{module}\only<2>{\sout{\color{lightgray}module}} cache?
+    }
+
+    \vspace{-32pt}
+    \onslide<2->{\hspace{100pt}{\large\bf \textit{dependency}}}
+  \end{center}
 \end{frame}
 
 \begin{frame}
@@ -209,17 +230,9 @@
 
 \begin{frame}[plain,noframenumbering]
   \begin{center}
-    \onslide<1->{
-      \LARGE\bf
+    \LARGE\bf
 
-      How can one add IFC-aware caching?
-    }
-
-    \onslide<2->{
-      \large\bf
-
-      (with the minimal extension to the TCB\dots)
-    }
+    {\color{gray}How can one add an} {IFC-aware} {\color{gray}cache?}
   \end{center}
 \end{frame}
 
@@ -285,12 +298,12 @@ end
 \begin{frame}[plain,noframenumbering]
   \begin{center}
     {
-      \LARGE\bf\only<2->{\color{lightgray}}
+      \LARGE\bf
 
-      How can one add IFC-aware caching?
+      {\color{gray}How can one add an} {IFC-aware} {\color{gray}cache?}
     }
 
-    {
+    \onslide<2->{
       \large\bf
 
       (with the minimal extension to the TCB\dots)
@@ -488,7 +501,7 @@ val (v, t') =
     {
       \LARGE\bf
 
-      How can one add IFC-aware caching?
+      How can one add an IFC-aware cache?
     }
 
     \onslide<2->{
