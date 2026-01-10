@@ -383,31 +383,43 @@ end
   \end{figure}
 \end{frame}
 
-\begin{frame}
-  \frametitle{Changes to Runtime (TCB)}
+\begin{frame}[fragile]
+  \frametitle{Additions in Troupe: caching layer}
+
+  \texttt{cache.trp} is only a tiny Troupe program that orchestrate a
+  \texttt{HashMap} instance.
   \begin{itemize}
-  \item {\bf Peer-to-peer layer:}
+  \item<2-> Hash function for \texttt{HashMap}: SHA256 \texttt{string}
+    $\rightarrow$ 32-bit \texttt{int}. (4~LOC)
 
-    Extend with \texttt{miss} and \texttt{miss reply} messages which are always
-    sent by value.
+  \item<3-> Define and spawn a local Troupe thread that owns the
+    \texttt{HashMap}. (21~LOC)
 
-  \item {\bf Serialization:}
+    \begin{columns}
+      \begin{column}{0.5\linewidth}
+        \begin{lstlisting}[language=troupe, numbers=none]
+    (* cache.trp : line 48 *)
+    HashMap.insert m auth k v
+        \end{lstlisting}
+      \end{column}
+      \begin{column}{0.5\linewidth}
+        \begin{lstlisting}[language=troupe, numbers=none]
+(* cache.trp : line 57 *)
+HashMap.findAll m auth k
+        \end{lstlisting}
+      \end{column}
+    \end{columns}
 
-    Dependency resolution requires introspection of function closures.
-    \begin{itemize}
-    \item During \texttt{serialize}, identify (sub)values to be referenced by hash.
+  \item<4-> Define and export \texttt{set} and \texttt{get} functions callable
+    from the TCB. (8~LOC)
 
-    \item To \texttt{deserialize}, (1) extract references (2) deserialize given
-      (all resolved) dependencies.
-    \end{itemize}
+    \begin{lstlisting}[language=troupe, numbers=none]
+(** API Setter function *)
+fun set (key, value) = send(thread, (SET, key, value))
+    \end{lstlisting}
 
-  \item {\bf Hash:}
-
-    Hashing Troupe values requires introspection of function closures and source.
-
-  \item {\bf Scheduler:}
-
-    Extend to run Troupe code from the peer-to-peer layer.
+  \item<5-> Use \texttt{sandbox} builtin to guard against timing attacks.
+    (14~LOC)
   \end{itemize}
 \end{frame}
 
@@ -463,43 +475,31 @@ end
     actually only need public ( \texttt{@\{\}} ) \texttt{remove} operations.}
 \end{frame}
 
-\begin{frame}[fragile]
-  \frametitle{Additions in Troupe: caching layer}
-
-  Peer-to-per cache is only a tiny Troupe program that orchestrate a
-  \texttt{HashMap} instance.
+\begin{frame}
+  \frametitle{Changes to Runtime (TCB)}
   \begin{itemize}
-  \item<2-> Hash function for \texttt{HashMap}: SHA256 \texttt{string}
-    $\rightarrow$ 32-bit \texttt{int}. (4~LOC)
+  \item {\bf Peer-to-peer layer:}
 
-  \item<3-> Define and spawn a local Troupe thread that owns the
-    \texttt{HashMap}. (21~LOC)
+    Extend with \texttt{miss} and \texttt{miss reply} messages which are always
+    sent by value.
 
-    \begin{columns}
-      \begin{column}{0.5\linewidth}
-        \begin{lstlisting}[language=troupe, numbers=none]
-    (* cache.trp : line 48 *)
-    HashMap.insert m auth k v
-        \end{lstlisting}
-      \end{column}
-      \begin{column}{0.5\linewidth}
-        \begin{lstlisting}[language=troupe, numbers=none]
-(* cache.trp : line 57 *)
-HashMap.findAll m auth k
-        \end{lstlisting}
-      \end{column}
-    \end{columns}
+  \item {\bf Serialization:}
 
-  \item<4-> Define and export \texttt{set} and \texttt{get} functions callable
-    from the TCB. (8~LOC)
+    Dependency resolution requires introspection of function closures.
+    \begin{itemize}
+    \item During \texttt{serialize}, identify (sub)values to be referenced by hash.
 
-    \begin{lstlisting}[language=troupe, numbers=none]
-(** API Setter function *)
-fun set (key, value) = send(thread, (SET, key, value))
-    \end{lstlisting}
+    \item To \texttt{deserialize}, (1) extract references (2) deserialize given
+      (all resolved) dependencies.
+    \end{itemize}
 
-  \item<5-> Use \texttt{sandbox} builtin to guard against timing attacks.
-    (14~LOC)
+  \item {\bf Hash:}
+
+    Hashing Troupe values requires introspection of function closures and source.
+
+  \item {\bf Scheduler:}
+
+    Extend to run Troupe code from the peer-to-peer layer.
   \end{itemize}
 \end{frame}
 
