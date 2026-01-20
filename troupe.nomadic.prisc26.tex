@@ -436,9 +436,10 @@ fun set (key, value) = send(thread, (SET, key, value))
   \onslide<3->{
     \textbf{``Specification'':}
 
-    \vspace{-6pt} An IFC-aware \texttt{HashMap} is a single data structure with
-    public and secret key-value pairs which provides a IFC-aware projections of
-    its \texttt{insert} and \texttt{remove}\footnotemark\ history:
+    \vspace{-6pt} An IFC-aware (\texttt{Hash})\texttt{Map} is a single data
+    structure with public and secret key-value pairs which provides a IFC-aware
+    projections of its \texttt{insert} and \texttt{remove}\footnotemark\
+    history:
 
     \vspace{-20pt}
     \begin{center}
@@ -458,6 +459,7 @@ fun set (key, value) = send(thread, (SET, key, value))
           \only<1-4>{\texttt{@\{\}}\\}%
           \only<5>{\texttt{@\{A\}}\\}%
           \only<6>{\texttt{@\{B\}}\\}
+          \only<7>{\texttt{@\{A,B\}}\\}
         }
         $\Downarrow$
       }
@@ -467,6 +469,7 @@ fun set (key, value) = send(thread, (SET, key, value))
         \only<1-4>{\texttt{[$x \mapsto 1$@\{\}, $y \mapsto 4$@\{\}] @\{\}}}%
         \only<5>{\texttt{[$x \mapsto 2$@\{A\}, $y \mapsto 4$@\{\}] @\{A\}}}%
         \only<6>{\texttt{[$y \mapsto 4$@\{\}] @\{B\}}}%
+        \only<7>{\texttt{[$y \mapsto 4$@\{\}] @\{A,B\}}}%
       }
     \end{center}
   }
